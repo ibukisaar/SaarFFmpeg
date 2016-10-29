@@ -8,6 +8,13 @@
 > * 音视频重采样(audio&video resampler)
 > * 音视频封装(audio&video remuxer)
 
+> ### 需要DLL(request DLL)
+> * avutil-55.dll
+> * avcodec-57.dll
+> * avformat-57.dll
+> * swscale-4.dll
+> * swresample-2.dll
+
 ***
 
 > ### 示例(examples)
