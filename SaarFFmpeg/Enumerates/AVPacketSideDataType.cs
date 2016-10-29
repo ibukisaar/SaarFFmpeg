@@ -1,0 +1,25 @@
+﻿namespace Saar.FFmpeg.Enumerates {
+	public enum AVPacketSideDataType : int {
+		Palette,
+		NewExtradata,
+		ParamChange,
+		H263MbInfo,
+		Replaygain,
+		Displaymatrix,
+		Stereo3d,
+		AudioServiceType,
+		QualityStats,
+		FallbackTrack,
+		CpbProperties,
+		SkipSamples = 70,
+		JpDualmono,
+		StringsMetadata,
+		SubtitlePosition,
+		MatroskaBlockadditional,
+		WebvttIdentifier,
+		WebvttSettings,
+		MetadataUpdate,
+		MpegtsStreamId,
+		MasteringDisplayMetadata,
+	}
+}

@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saar.FFmpeg</RootNamespace>
+    <AssemblyName>Saar.FFmpeg</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CSharp\AudioFormat.cs" />
+    <Compile Include="CSharp\AudioFrame.cs" />
+    <Compile Include="CSharp\AutoCache.cs" />
+    <Compile Include="CSharp\BitRate.cs" />
+    <Compile Include="CSharp\Codecs\AudioEncoder.cs" />
+    <Compile Include="CSharp\Codecs\Codec.cs" />
+    <Compile Include="CSharp\Codecs\AudioDecoder.cs" />
+    <Compile Include="CSharp\Codecs\Decoder.cs" />
+    <Compile Include="CSharp\Codecs\Encoder.cs" />
+    <Compile Include="CSharp\Codecs\VideoDecoder.cs" />
+    <Compile Include="CSharp\Codecs\VideoEncoder.cs" />
+    <Compile Include="CSharp\Codecs\VideoEncoderParameters.cs" />
+    <Compile Include="CSharp\Fraction.cs" />
+    <Compile Include="CSharp\Frame.cs" />
+    <Compile Include="CSharp\MediaReader.cs" />
+    <Compile Include="CSharp\MediaStream.cs" />
+    <Compile Include="CSharp\MediaWriter.cs" />
+    <Compile Include="CSharp\Packet.cs" />
+    <Compile Include="CSharp\AudioResampler.cs" />
+    <Compile Include="CSharp\DisposableObject.cs" />
+    <Compile Include="CSharp\VideoFormat.cs" />
+    <Compile Include="CSharp\VideoFrame.cs" />
+    <Compile Include="CSharp\VideoResampler.cs" />
+    <Compile Include="Enumerates\AVAudioServiceType.cs" />
+    <Compile Include="Enumerates\AVChannelLayout.cs" />
+    <Compile Include="Enumerates\AVChromaLocation.cs" />
+    <Compile Include="Enumerates\AVClassCategory.cs" />
+    <Compile Include="Enumerates\AVCodecFlag.cs" />
+    <Compile Include="Enumerates\AVCodecID.cs" />
+    <Compile Include="Enumerates\AVColorPrimaries.cs" />
+    <Compile Include="Enumerates\AVColorRange.cs" />
+    <Compile Include="Enumerates\AVColorSpace.cs" />
+    <Compile Include="Enumerates\AVColorTransferCharacteristic.cs" />
+    <Compile Include="Enumerates\AVDiscard.cs" />
+    <Compile Include="Enumerates\AVDurationEstimationMethod.cs" />
+    <Compile Include="Enumerates\AVFieldOrder.cs" />
+    <Compile Include="Enumerates\AVFmt.cs" />
+    <Compile Include="Enumerates\AVFmtFlag.cs" />
+    <Compile Include="Enumerates\AVFrameSideDataType.cs" />
+    <Compile Include="Enumerates\AVIODataMarkerType.cs" />
+    <Compile Include="Enumerates\AVIODirEntryType.cs" />
+    <Compile Include="Enumerates\AVMediaType.cs" />
+    <Compile Include="Enumerates\AVOptionType.cs" />
+    <Compile Include="Enumerates\AVPacketSideDataType.cs" />
+    <Compile Include="Enumerates\AVPictureStructure.cs" />
+    <Compile Include="Enumerates\AVPictureType.cs" />
+    <Compile Include="Enumerates\AVPixelFormat.cs" />
+    <Compile Include="Enumerates\AVPktFlag.cs" />
+    <Compile Include="Enumerates\AVRounding.cs" />
+    <Compile Include="Enumerates\AVSampleFormat.cs" />
+    <Compile Include="Enumerates\AVSeekFlag.cs" />
+    <Compile Include="Enumerates\AVSideDataParamChangeFlags.cs" />
+    <Compile Include="Enumerates\AVStreamParseType.cs" />
+    <Compile Include="Enumerates\AVSubtitleType.cs" />
+    <Compile Include="Enumerates\AVSeek.cs" />
+    <Compile Include="Enumerates\SwsFlags.cs" />
+    <Compile Include="Internal\AVCodec.cs" />
+    <Compile Include="Internal\AVFormat.cs" />
+    <Compile Include="Internal\AVUtil.cs" />
+    <Compile Include="Internal\Config.cs" />
+    <Compile Include="Internal\Delegates.cs" />
+    <Compile Include="Internal\Swresample.cs" />
+    <Compile Include="Internal\Swscale.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Structs\AVBitStreamFilter.cs" />
+    <Compile Include="Structs\AVBitStreamFilterContext.cs" />
+    <Compile Include="Structs\AVBufferRef.cs" />
+    <Compile Include="Structs\AVChapter.cs" />
+    <Compile Include="Structs\AVClass.cs" />
+    <Compile Include="Structs\AVCodec.cs" />
+    <Compile Include="Structs\AVCodecContext.cs" />
+    <Compile Include="Structs\AVCodecDefault.cs" />
+    <Compile Include="Structs\AVCodecDescriptor.cs" />
+    <Compile Include="Structs\AVCodecParameters.cs" />
+    <Compile Include="Structs\AVCodecParser.cs" />
+    <Compile Include="Structs\AVCodecParserContext.cs" />
+    <Compile Include="Structs\AVCodecTag.cs" />
+    <Compile Include="Structs\AVComponentDescriptor.cs" />
+    <Compile Include="Structs\AVDictionary.cs" />
+    <Compile Include="Structs\AVFormatContext.cs" />
+    <Compile Include="Structs\AVFrac.cs" />
+    <Compile Include="Structs\AVFrame.cs" />
+    <Compile Include="Structs\AVFrameSideData.cs" />
+    <Compile Include="Structs\AVHWAccel.cs" />
+    <Compile Include="Structs\AVIndexEntry.cs" />
+    <Compile Include="Structs\AVInputFormat.cs" />
+    <Compile Include="Structs\AVIOContext.cs" />
+    <Compile Include="Structs\AVIODirContext.cs" />
+    <Compile Include="Structs\AVIODirEntry.cs" />
+    <Compile Include="Structs\AVIOInterruptCB.cs" />
+    <Compile Include="Structs\AVOption.cs" />
+    <Compile Include="Structs\AVOptionRange.cs" />
+    <Compile Include="Structs\AVOptionRanges.cs" />
+    <Compile Include="Structs\AVOutputFormat.cs" />
+    <Compile Include="Structs\AVPacket.cs" />
+    <Compile Include="Structs\AVPacketList.cs" />
+    <Compile Include="Structs\AVPacketSideData.cs" />
+    <Compile Include="Structs\AVPicture.cs" />
+    <Compile Include="Structs\AVPixFmtDescriptor.cs" />
+    <Compile Include="Structs\AVProbeData.cs" />
+    <Compile Include="Structs\AVProfile.cs" />
+    <Compile Include="Structs\AVProgram.cs" />
+    <Compile Include="Structs\AVRational.cs" />
+    <Compile Include="Structs\AVResampleContext.cs" />
+    <Compile Include="Structs\AVStream.cs" />
+    <Compile Include="Structs\AVStreamInfo.cs" />
+    <Compile Include="Structs\AVSubtitle.cs" />
+    <Compile Include="Structs\AVSubtitleRect.cs" />
+    <Compile Include="Structs\RcOverride.cs" />
+    <Compile Include="Structs\ReSampleContextPtr.cs" />
+    <Compile Include="Structs\SwrContext.cs" />
+    <Compile Include="Structs\SwsContext.cs" />
+    <Compile Include="Structs\SwsFilter.cs" />
+    <Compile Include="Structs\SwsVector.cs" />
+    <Compile Include="Support\Debug.cs" />
+    <Compile Include="Support\FFmpegException.cs" />
+    <Compile Include="Support\IntPtrArray.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
