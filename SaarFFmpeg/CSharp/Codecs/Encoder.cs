@@ -10,9 +10,12 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 namespace Saar.FFmpeg.CSharp.Codecs {
 	unsafe public abstract class Encoder : Codec {
 		protected long inputFrames;
+		protected long outputFrames;
 		protected long encodeFrames;
 
 		public long InputFrames => inputFrames;
+		public long OutputFrames => outputFrames;
+		public long EncodeFrames => encodeFrames;
 		public TimeSpan InputTimestamp => TimeSpan.FromSeconds(inputFrames * codecContext->TimeBase.Value);
 
 		public Encoder(AVCodecID codecID) : base(codecID) { }
@@ -24,12 +27,10 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 		internal void ConfigPakcet(Packet packet) {
 			var frame = codecContext->CodedFrame;
 			if (stream != null) {
-				packet.packet->Pts = FF.av_rescale_q(inputFrames, codecContext->TimeBase, stream->TimeBase);
-				packet.packet->Duration = FF.av_rescale_q(encodeFrames, codecContext->TimeBase, stream->TimeBase);
+				packet.packet->Pts = FF.av_rescale_q(packet.packet->Pts, codecContext->TimeBase, stream->TimeBase);
+				packet.packet->Dts = FF.av_rescale_q(packet.packet->Dts, codecContext->TimeBase, stream->TimeBase);
+				packet.packet->Duration = FF.av_rescale_q(packet.packet->Duration, codecContext->TimeBase, stream->TimeBase);
 				packet.packet->StreamIndex = stream->Index;
-			} else {
-				packet.packet->Pts = inputFrames * codecContext->TimeBase.Num / codecContext->TimeBase.Den;
-				packet.packet->Duration = encodeFrames * codecContext->TimeBase.Num / codecContext->TimeBase.Den;
 			}
 
 			if (frame->KeyFrame != 0) {

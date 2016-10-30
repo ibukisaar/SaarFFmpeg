@@ -13,10 +13,12 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 		private VideoResampler resampler;
 		private VideoFrame tempFrame;
 		private VideoFormat outFormat;
+		private Fraction framePerSecond;
 
 		public VideoFormat InFormat { get; }
 		public VideoFormat OutFormat => outFormat;
 		public VideoResampler Resampler => resampler;
+		public double FramesPerSecond => framePerSecond.Value;
 
 		public VideoEncoder(AVCodecID codecID, VideoFormat format, VideoEncoderParameters encoderParams = null) : base(codecID) {
 			encoderParams = encoderParams ?? VideoEncoderParameters.Default;
@@ -46,6 +48,8 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 			} else {
 				outFormat = InFormat;
 			}
+
+			framePerSecond = encoderParams.FrameRate;
 
 			try {
 				codecContext->PixFmt = OutFormat.PixelFormat;
@@ -151,7 +155,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 				if (!(frame is VideoFrame)) throw new ArgumentException($"{nameof(frame)}必须是{nameof(VideoFrame)}类型", nameof(frame));
 				if (!(frame as VideoFrame).format.Equals(InFormat)) throw new ArgumentException("输入帧的格式和编码器输入格式不同");
 			}
-			
+
 			if (resampler != null) {
 				if (frame != null) {
 					resampler.Resample(frame as VideoFrame, tempFrame);
@@ -164,13 +168,13 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 			if (frame != null) {
 				try {
 					frame.SetupToNative();
-					frame.frame->Pts = inputFrames;
+					frame.frame->Pts = FF.av_rescale_q(inputFrames, framePerSecond.ToReciprocal(), codecContext->TimeBase);
 					int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture);
 					if (result < 0) throw new Support.FFmpegException(result, "视频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
 				}
-				
+
 				inputFrames++;
 				encodeFrames = 1;
 			} else {
@@ -178,8 +182,12 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 				if (result < 0) throw new Support.FFmpegException(result, "视频编码发生错误");
 			}
 
-			ConfigPakcet(outPacket);
-			return gotPicture != 0;
+			if (gotPicture != 0) {
+				outputFrames += encodeFrames;
+				ConfigPakcet(outPacket);
+				return true;
+			}
+			return false;
 		}
 
 		public override string ToString()

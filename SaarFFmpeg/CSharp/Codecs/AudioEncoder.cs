@@ -172,8 +172,13 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 				int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, null, &gotPicture);
 				if (result < 0) throw new Support.FFmpegException(result, "音频编码发生错误");
 			}
-			ConfigPakcet(outPacket);
-			return gotPicture != 0;
+
+			if (gotPicture != 0) {
+				outputFrames += encodeFrames;
+				ConfigPakcet(outPacket);
+				return true;
+			}
+			return false;
 		}
 
 		public override string ToString()
