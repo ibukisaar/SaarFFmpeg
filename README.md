@@ -1,6 +1,6 @@
 # SaarFFmpeg
 
-一个CSharp的FFmpeg库
+一个CSharp的FFmpeg库，可运行在Windows和Android上。
 
 > ### 特性(feature)
 > * 音视频解码(audio&video decoder)
@@ -14,6 +14,8 @@
 > * avformat-57.dll
 > * swscale-4.dll
 > * swresample-2.dll
+> 
+> 如果是Android要换成so
 
 ***
 
