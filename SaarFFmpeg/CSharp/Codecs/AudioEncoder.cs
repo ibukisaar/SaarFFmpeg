@@ -18,6 +18,12 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 		public AudioResampler Resampler => resampler;
 		public int RequestSamples => codecContext->FrameSize;
 
+		public override TimeSpan InputTimestamp
+			=> TimeSpan.FromTicks(inputFrames * 10000000 / outFormat.SampleRate);
+
+		public override TimeSpan OutputTimestamp
+			=> TimeSpan.FromTicks(outputFrames * 10000000 / outFormat.SampleRate);
+
 		public AudioEncoder(AVCodecID codecID, AudioFormat inFormat)
 			: this(codecID, inFormat, BitRate.Zero) { }
 

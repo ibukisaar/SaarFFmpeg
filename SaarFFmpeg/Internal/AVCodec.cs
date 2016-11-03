@@ -360,5 +360,50 @@ namespace Saar.FFmpeg.Internal {
 		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
 		[SuppressUnmanagedCodeSecurity]
 		public static extern AVCodecDescriptor* avcodec_descriptor_get_by_name(byte* name);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern FFTContext* av_fft_init(int nbits, int inverse);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_fft_permute(FFTContext* s, FFTComplex* z);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_fft_calc(FFTContext* s, FFTComplex* z);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_fft_end(FFTContext* s);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern FFTContext* av_mdct_init(int nbits, int inverse, double scale);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_imdct_calc(FFTContext* s, float* output, float* input);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_imdct_half(FFTContext* s, float* output, float* input);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_mdct_calc(FFTContext* s, float* output, float* input);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_mdct_end(FFTContext* s);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern RDFTContext* av_rdft_init(int nbits, RDFTransformType trans);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_rdft_calc(RDFTContext* s, float* data);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_rdft_end(RDFTContext* s);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern DCTContext* av_dct_init(int nbits, DCTTransformType type);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_dct_calc(DCTContext* s, float* data);
+		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+		[SuppressUnmanagedCodeSecurity]
+		public static extern void av_dct_end(DCTContext* s);
 	}
 }

@@ -55,6 +55,23 @@
     <Compile Include="CSharp\Codecs\VideoDecoder.cs" />
     <Compile Include="CSharp\Codecs\VideoEncoder.cs" />
     <Compile Include="CSharp\Codecs\VideoEncoderParameters.cs" />
+    <Compile Include="CSharp\DSP\DoubleFFT.cs" />
+    <Compile Include="CSharp\DSP\DoubleIFFT.cs" />
+    <Compile Include="CSharp\DSP\FFTBase.cs" />
+    <Compile Include="CSharp\DSP\DoubleFFTBase.cs" />
+    <Compile Include="CSharp\DSP\FloatFFT.cs" />
+    <Compile Include="CSharp\DSP\FloatFFTBase.cs" />
+    <Compile Include="CSharp\DSP\FFTWisdom.cs" />
+    <Compile Include="CSharp\DSP\FloatIFFT.cs" />
+    <Compile Include="CSharp\DSP\ILogarithm.cs" />
+    <Compile Include="CSharp\DSP\IPositiveFFT.cs" />
+    <Compile Include="CSharp\DSP\Windows\BlackmanHarrisWindow.cs" />
+    <Compile Include="CSharp\DSP\Windows\BlackmanNuttallWindow.cs" />
+    <Compile Include="CSharp\DSP\Windows\BlackmanWindow.cs" />
+    <Compile Include="CSharp\DSP\Windows\GaussianWindow.cs" />
+    <Compile Include="CSharp\DSP\Windows\NuttallWindow.cs" />
+    <Compile Include="CSharp\DSP\Windows\TriangularWindow.cs" />
+    <Compile Include="CSharp\DSP\Windows\Window.cs" />
     <Compile Include="CSharp\Fraction.cs" />
     <Compile Include="CSharp\Frame.cs" />
     <Compile Include="CSharp\MediaReader.cs" />
@@ -98,7 +115,11 @@
     <Compile Include="Enumerates\AVStreamParseType.cs" />
     <Compile Include="Enumerates\AVSubtitleType.cs" />
     <Compile Include="Enumerates\AVSeek.cs" />
+    <Compile Include="Enumerates\DCTTransformType.cs" />
+    <Compile Include="Enumerates\RDFTransformType.cs" />
     <Compile Include="Enumerates\SwsFlags.cs" />
+    <Compile Include="FFTW\Config.cs" />
+    <Compile Include="FFTW\Interop.cs" />
     <Compile Include="Internal\AVCodec.cs" />
     <Compile Include="Internal\AVFormat.cs" />
     <Compile Include="Internal\AVUtil.cs" />
@@ -151,7 +172,11 @@
     <Compile Include="Structs\AVStreamInfo.cs" />
     <Compile Include="Structs\AVSubtitle.cs" />
     <Compile Include="Structs\AVSubtitleRect.cs" />
+    <Compile Include="Structs\DCTContext.cs" />
+    <Compile Include="Structs\FFTComplex.cs" />
+    <Compile Include="Structs\FFTContext.cs" />
     <Compile Include="Structs\RcOverride.cs" />
+    <Compile Include="Structs\RDFTContext.cs" />
     <Compile Include="Structs\ReSampleContextPtr.cs" />
     <Compile Include="Structs\SwrContext.cs" />
     <Compile Include="Structs\SwsContext.cs" />
@@ -161,7 +186,14 @@
     <Compile Include="Support\FFmpegException.cs" />
     <Compile Include="Support\IntPtrArray.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="libfftw3-3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libfftw3f-3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

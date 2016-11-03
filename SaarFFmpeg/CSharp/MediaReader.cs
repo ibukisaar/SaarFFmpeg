@@ -56,7 +56,9 @@ namespace Saar.FFmpeg.CSharp {
 					}
 				}
 				Decoders = decoders;
-				Duration = TimeSpan.FromTicks(formatContext->Duration * 10);
+				if (formatContext->Duration != long.MinValue) {
+					Duration = TimeSpan.FromTicks(formatContext->Duration * 10);
+				}
 			} catch {
 				Dispose();
 				throw;

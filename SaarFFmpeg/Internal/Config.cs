@@ -3,11 +3,20 @@ using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.Internal {
 	unsafe public static partial class FFmpeg {
+
+#if !ANDROID
 		const string Dll_AVUtil = "avutil-55";
 		const string Dll_AVCodec = "avcodec-57";
 		const string Dll_AVFormat = "avformat-57";
 		const string Dll_Swscale = "swscale-4";
 		const string Dll_Swresample = "swresample-2";
+#else
+		const string Dll_AVUtil = "avutil";
+		const string Dll_AVCodec = "avcodec";
+		const string Dll_AVFormat = "avformat";
+		const string Dll_Swscale = "swscale";
+		const string Dll_Swresample = "swresample";
+#endif
 
 		const CallingConvention Convention = CallingConvention.Cdecl;
 

@@ -60,11 +60,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="coolest.win32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

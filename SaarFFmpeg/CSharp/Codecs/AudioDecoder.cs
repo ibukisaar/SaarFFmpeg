@@ -22,9 +22,13 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 			get { return resampler?.Target ?? InFormat; }
 			set {
 				if (value == null || InFormat.Equals(value)) {
+					resampler?.Dispose();
 					resampler = null;
 				} else {
-					resampler = new AudioResampler(InFormat, value);
+					if (resampler == null || !OutFormat.Equals(value)) {
+						resampler?.Dispose();
+						resampler = new AudioResampler(InFormat, value);
+					}
 				}
 			}
 		}

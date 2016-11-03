@@ -20,6 +20,12 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 		public VideoResampler Resampler => resampler;
 		public double FramesPerSecond => framePerSecond.Value;
 
+		public override TimeSpan InputTimestamp
+			=> TimeSpan.FromTicks(inputFrames * 10000000 * framePerSecond.den / framePerSecond.num);
+
+		public override TimeSpan OutputTimestamp
+			=> TimeSpan.FromTicks(outputFrames * 10000000 * framePerSecond.den / framePerSecond.num);
+
 		public VideoEncoder(AVCodecID codecID, VideoFormat format, VideoEncoderParameters encoderParams = null) : base(codecID) {
 			encoderParams = encoderParams ?? VideoEncoderParameters.Default;
 			if (codec->Type != AVMediaType.Video)

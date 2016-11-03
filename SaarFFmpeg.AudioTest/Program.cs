@@ -58,8 +58,8 @@ namespace SaarFFmpeg.AudioTest {
 		}
 
 		static void Main(string[] args) {
-			var audioStream = new AudioStream(File.OpenRead(@"Z:\15 - 青空サーチライト-Re-□-.mp3"));
-			var wasapi = new WasapiOut(audioStream, ShareMode.Shared, 320);
+			var audioStream = new AudioStream(File.OpenRead(@"Z:\output.flac"));
+			var wasapi = new WasapiOut(audioStream, ShareMode.Exclusive, 320);
 			wasapi.Play();
 			Console.ReadKey();
 		}
