@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 using Saar.FFmpeg.CSharp;
 using Saar.FFmpeg.CSharp.Codecs;
 using Coolest;
-using Coolest.SoundOut.Windows;
+using Coolest.Windows;
 
 namespace SaarFFmpeg.AudioTest {
 	public class Program {
-		class AudioStream : IWaveStream {
+		class AudioStream : IWaveStream, IDisposable {
 			public MediaReader media;
 			AudioDecoder decoder;
 			AudioFrame frame = new AudioFrame();
@@ -33,6 +33,11 @@ namespace SaarFFmpeg.AudioTest {
 					media.Position = value;
 					over = 0;
 				}
+			}
+
+			public void Dispose() {
+				media.Dispose();
+				frame.Dispose();
 			}
 
 			public int Read(byte[] buffer, int start, int length) {
@@ -58,10 +63,16 @@ namespace SaarFFmpeg.AudioTest {
 		}
 
 		static void Main(string[] args) {
-			var audioStream = new AudioStream(File.OpenRead(@"Z:\output.flac"));
-			var wasapi = new WasapiOut(audioStream, ShareMode.Exclusive, 320);
-			wasapi.Play();
-			Console.ReadKey();
+			var audioStream = new AudioStream(File.OpenRead(@"Z:\04 - The Flower Is Most Beautiful When It Blooms In Despair.mp3"));
+			using (var wasapi = new WasapiOut(ShareMode.Shared, true, Role.Multimedia, 320)) {
+				wasapi.Resample += (sender, e) => {
+					audioStream.Resample(e.OutFormat);
+				};
+				wasapi.Initialize(audioStream);
+				wasapi.Play();
+
+				Console.ReadKey();
+			}
 		}
 	}
 }
