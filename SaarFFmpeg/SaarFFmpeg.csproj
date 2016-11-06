@@ -55,10 +55,12 @@
     <Compile Include="CSharp\Codecs\VideoDecoder.cs" />
     <Compile Include="CSharp\Codecs\VideoEncoder.cs" />
     <Compile Include="CSharp\Codecs\VideoEncoderParameters.cs" />
+    <Compile Include="CSharp\DSP\Convolver.cs" />
     <Compile Include="CSharp\DSP\DoubleFFT.cs" />
     <Compile Include="CSharp\DSP\DoubleIFFT.cs" />
     <Compile Include="CSharp\DSP\FFTBase.cs" />
     <Compile Include="CSharp\DSP\DoubleFFTBase.cs" />
+    <Compile Include="CSharp\DSP\FFTTools.cs" />
     <Compile Include="CSharp\DSP\FloatFFT.cs" />
     <Compile Include="CSharp\DSP\FloatFFTBase.cs" />
     <Compile Include="CSharp\DSP\FFTWisdom.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="CSharp\Packet.cs" />
     <Compile Include="CSharp\AudioResampler.cs" />
     <Compile Include="CSharp\DisposableObject.cs" />
+    <Compile Include="CSharp\UnionBuffer.cs" />
     <Compile Include="CSharp\VideoFormat.cs" />
     <Compile Include="CSharp\VideoFrame.cs" />
     <Compile Include="CSharp\VideoResampler.cs" />

@@ -19,7 +19,11 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Resize(int newSize) {
-			data = FF.av_fast_realloc(data, ref capacity, (IntPtr) newSize);
+			if (data == IntPtr.Zero) {
+				data = Marshal.AllocHGlobal(capacity = newSize);
+			} else if (capacity < newSize) {
+				data = Marshal.ReAllocHGlobal(data, (IntPtr) (capacity = newSize));
+			}
 		}
 
 		public static explicit operator IntPtr(AutoCache @this) {
@@ -31,7 +35,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		unsafe public void Free() {
-			FF.av_free((void*) data);
+			Marshal.FreeHGlobal(data);
 		}
 	}
 }

@@ -532,6 +532,27 @@ namespace Saar.FFmpeg.FFTW {
 			 ExactSpelling = true,
 			 CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr alloc_complex(IntPtr count);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftwf_execute_dft_r2c",
+			 ExactSpelling = true,
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern void execute_dft_r2c(IntPtr plan, IntPtr input, IntPtr output);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftwf_execute_dft_c2r",
+			 ExactSpelling = true,
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern void execute_dft_c2r(IntPtr plan, IntPtr input, IntPtr output);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftwf_cost",
+			 ExactSpelling = true,
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern double cost(IntPtr plan);
 	}
 	#endregion
 
@@ -953,6 +974,27 @@ namespace Saar.FFmpeg.FFTW {
 			 ExactSpelling = true,
 			 CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr alloc_complex(IntPtr count);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftw_execute_dft_r2c",
+			 ExactSpelling = true,
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern void execute_dft_r2c(IntPtr plan, IntPtr input, IntPtr output);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftw_execute_dft_c2r",
+			 ExactSpelling = true,
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern void execute_dft_c2r(IntPtr plan, IntPtr input, IntPtr output);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftw_cost",
+			 ExactSpelling = true,
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern double cost(IntPtr plan);
 	}
 	#endregion
 }

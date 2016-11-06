@@ -10,17 +10,12 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		public static readonly string FFTW_ConfigName = "fftw.wisdom";
 		public static readonly string FFTWF_ConfigName = "fftwf.wisdom";
 
-		// 20 / ln(10)
-		public const double LOG_2_DB = 8.6858896380650365530225783783321;
-
-		// ln(10) / 20
-		public const double DB_2_LOG = 0.11512925464970228420089957273422;
-
 		protected IntPtr fftPlan;
 		protected Task<IntPtr> optimalPlanTask;
 		protected int fftSize, fftComplexCount;
 		private IntPtr tempInput;
 		protected IntPtr inData, outData;
+		private bool canFreeInData, canFreeOutData;
 
 
 		public abstract Type SampleType { get; }
@@ -28,19 +23,28 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		public abstract int OutputBytes { get; }
 		public IntPtr InData => inData;
 		public IntPtr OutData => outData;
-		public int FFTSize => FFTSize;
+		public int FFTSize => fftSize;
 		public int FFTComplexCount => fftComplexCount;
 
-		public FFTBase(int fftSize) {
+		public FFTBase(int fftSize) : this(fftSize, IntPtr.Zero, IntPtr.Zero) {
+		}
+
+		public FFTBase(int fftSize, IntPtr inData, IntPtr outData) {
 			if (fftSize <= 0) throw new ArgumentException($"{nameof(fftSize)}不能小于等于0", nameof(fftSize));
+
+			canFreeInData = inData == IntPtr.Zero;
+			canFreeOutData = outData == IntPtr.Zero;
+
+			this.inData = canFreeInData ? AllocInput() : inData;
+			this.outData = canFreeOutData ? AllocOutput() : outData;
 
 			this.fftSize = fftSize;
 			fftComplexCount = fftSize / 2 + 1;
 
-			inData = AllocInput();
-			outData = AllocOutput();
-			fftPlan = CreatePlan(fftSize, inData, outData, fftw_flags.Estimate);
-			optimalPlanTask = GetOptimalPlan();
+			fftPlan = CreatePlan(fftSize, IntPtr.Zero, IntPtr.Zero, fftw_flags.Estimate);
+			if (fftSize > 4096) {
+				optimalPlanTask = GetOptimalPlan();
+			}
 		}
 
 		protected abstract IntPtr AllocInput();
@@ -53,18 +57,20 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		protected abstract void Free(IntPtr buffer);
 
-		protected abstract void Execute(IntPtr plan);
+		protected abstract void Execute(IntPtr plan, IntPtr input, IntPtr output);
 
 		protected abstract void SaveConfig();
-		
+
 
 		private Task<IntPtr> GetOptimalPlan() {
 			return Task.Run(() => {
-				tempInput = AllocInput();
-				IntPtr tempOutput = AllocOutput();
-				IntPtr fft = CreatePlan(fftSize, tempInput, tempOutput, fftw_flags.Measure);
-				Free(tempOutput);
-				SaveConfig();
+				IntPtr tempIn = AllocInput();
+				IntPtr tempOut = AllocOutput();
+				IntPtr fft = CreatePlan(fftSize, tempIn, tempOut, fftw_flags.Measure);
+				Free(tempIn);
+				Free(tempOut);
+
+				// SaveConfig();
 				return fft;
 			});
 		}
@@ -74,24 +80,27 @@ namespace Saar.FFmpeg.CSharp.DSP {
 				DestroyPlan(fftPlan);
 				fftPlan = optimalPlanTask.Result;
 
-				Buffer.MemoryCopy((void*) inData, (void*) tempInput, InputBytes, InputBytes);
-				Free(inData);
-				inData = tempInput;
-
 				optimalPlanTask = null;
 			}
 		}
 
 		public void Execute() {
 			TrySwitchOptimalPlan();
-			Execute(fftPlan);
+			Execute(fftPlan, inData, outData);
 		}
 
 		protected override void Dispose(bool disposing) {
 			if (fftPlan != IntPtr.Zero) {
-				DestroyPlan(fftPlan);
-				Free(inData);
-				Free(outData);
+				if (optimalPlanTask != null) {
+					Task.Run(() => {
+						optimalPlanTask.Wait();
+						TrySwitchOptimalPlan();
+						DestroyPlan(fftPlan);
+					}).Start();
+				}
+
+				if (canFreeInData) Free(inData);
+				if (canFreeOutData) Free(outData);
 				fftPlan = IntPtr.Zero;
 			}
 		}

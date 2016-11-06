@@ -64,7 +64,7 @@ namespace SaarFFmpeg.AudioTest {
 
 		static void Main(string[] args) {
 			var audioStream = new AudioStream(File.OpenRead(@"Z:\04 - The Flower Is Most Beautiful When It Blooms In Despair.mp3"));
-			using (var wasapi = new WasapiOut(ShareMode.Shared, true, Role.Multimedia, 320)) {
+			using (var wasapi = new WasapiOut(ShareMode.Exclusive, true, Role.Multimedia, 1280)) {
 				wasapi.Resample += (sender, e) => {
 					audioStream.Resample(e.OutFormat);
 				};

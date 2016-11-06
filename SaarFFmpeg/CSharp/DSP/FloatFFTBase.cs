@@ -8,21 +8,17 @@ using Saar.FFmpeg.FFTW;
 namespace Saar.FFmpeg.CSharp.DSP {
 	unsafe public abstract class FloatFFTBase : FFTBase {
 		static FloatFFTBase() {
-			fftwf.import_wisdom_from_filename(FFTWF_ConfigName);
+			// fftwf.import_wisdom_from_filename(FFTWF_ConfigName);
 		}
 
 		public override Type SampleType => typeof(float);
-		public float* Input => (float*) inData;
-		public float* Output => (float*) outData;
 
-		public FloatFFTBase(int fftSize) : base(fftSize) {
-		}
+		public FloatFFTBase(int fftSize) : base(fftSize) { }
+
+		public FloatFFTBase(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
 
 		protected override void DestroyPlan(IntPtr plan)
 			=> fftwf.destroy_plan(plan);
-
-		protected override void Execute(IntPtr plan)
-			=> fftwf.execute(plan);
 
 		protected override void Free(IntPtr buffer)
 			=> fftwf.free(buffer);

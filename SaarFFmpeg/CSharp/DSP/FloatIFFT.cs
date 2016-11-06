@@ -11,8 +11,9 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		public override int OutputBytes => fftSize * sizeof(float);
 
-		public FloatIFFT(int fftSize) : base(fftSize) {
-		}
+		public FloatIFFT(int fftSize) : base(fftSize) { }
+
+		public FloatIFFT(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
 
 		protected override IntPtr AllocInput()
 			=> fftwf.alloc_complex((IntPtr) fftComplexCount);
@@ -22,6 +23,9 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		protected override IntPtr CreatePlan(int fftSize, IntPtr input, IntPtr output, fftw_flags flags)
 			=> fftwf.dft_c2r_1d(fftSize, input, output, flags);
+
+		protected override void Execute(IntPtr plan, IntPtr input, IntPtr output)
+			=> fftwf.execute_dft_c2r(plan, input, output);
 
 		public override string ToString() 
 			=> $"float IFFT({fftSize})";
