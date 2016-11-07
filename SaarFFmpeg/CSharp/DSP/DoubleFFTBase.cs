@@ -10,6 +10,8 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		static DoubleFFTBase() {
 			// 导入智能方案后速度反而更低了，已取消此功能
 			// fftw.import_wisdom_from_filename(FFTW_ConfigName);
+
+			fftw.thread_safe();
 		}
 
 		public override Type SampleType => typeof(double);

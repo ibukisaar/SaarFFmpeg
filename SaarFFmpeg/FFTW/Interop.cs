@@ -520,6 +520,12 @@ namespace Saar.FFmpeg.FFTW {
 			 EntryPoint = "fftwf_cost",
 			 CallingConvention = CallingConvention.Cdecl)]
 		public static extern double cost(IntPtr plan);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftwf_make_planner_thread_safe",
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern void thread_safe();
 	}
 	#endregion
 
@@ -929,6 +935,12 @@ namespace Saar.FFmpeg.FFTW {
 			 EntryPoint = "fftw_cost",
 			 CallingConvention = CallingConvention.Cdecl)]
 		public static extern double cost(IntPtr plan);
+
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DllName,
+			 EntryPoint = "fftw_make_planner_thread_safe",
+			 CallingConvention = CallingConvention.Cdecl)]
+		public static extern void thread_safe();
 	}
 	#endregion
 }

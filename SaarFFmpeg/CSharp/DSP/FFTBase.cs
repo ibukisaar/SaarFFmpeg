@@ -39,8 +39,8 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 			this.inData = canFreeInData ? AllocInput() : inData;
 			this.outData = canFreeOutData ? AllocOutput() : outData;
-			
-			fftPlan = CreatePlan(fftSize, IntPtr.Zero, IntPtr.Zero, fftw_flags.Estimate);
+
+			fftPlan = CreatePlan(fftSize, this.inData, this.outData, fftw_flags.Estimate);
 			if (fftSize > 4096) {
 				optimalPlanTask = GetOptimalPlan();
 			}
@@ -78,7 +78,6 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			if (optimalPlanTask != null && optimalPlanTask.Status == TaskStatus.RanToCompletion) {
 				DestroyPlan(fftPlan);
 				fftPlan = optimalPlanTask.Result;
-
 				optimalPlanTask = null;
 			}
 		}
@@ -95,9 +94,11 @@ namespace Saar.FFmpeg.CSharp.DSP {
 						optimalPlanTask.Wait();
 						TrySwitchOptimalPlan();
 						DestroyPlan(fftPlan);
-					}).Start();
+					});
+				} else {
+					DestroyPlan(fftPlan);
 				}
-
+				
 				if (canFreeInData) Free(inData);
 				if (canFreeOutData) Free(outData);
 				fftPlan = IntPtr.Zero;

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.CSharp.DSP {
+	/// <summary>
+	/// 快速卷积运算
+	/// </summary>
 	unsafe public class Convolver : DisposableObject {
 		const int Size = sizeof(double);
 
@@ -30,7 +33,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			if (length > 32) {
 				fft = new DoubleFFT(length * 2);
 				ifft = new DoubleIFFT(length * 2, fft.OutData, IntPtr.Zero);
-				fftKernel = FFTW.fftw.alloc_complex((IntPtr) fft.FFTComplexCount);
+				fftKernel = Marshal.AllocHGlobal(fft.FFTComplexCount * Size * 2);
 				Marshal.Copy(this.kernel, 0, fft.InData, length);
 				fft.Execute();
 				Buffer.MemoryCopy((void*) fft.OutData, (void*) fftKernel, fft.FFTComplexCount * Size * 2, fft.FFTComplexCount * Size * 2);
@@ -103,7 +106,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 				}
 				dst += step;
 			}
-
+			
 			if (outLen > 0) {
 				int len = outLen + kernelLength - 1;
 				if (fft != null) {
@@ -137,7 +140,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		public int ConvolutionFinal(double* dst, int dstLength) {
 			double[] padding = new double[kernel.Length - 1];
 			fixed (double* srcPadding = padding) {
-				int result = Convolution(srcPadding, kernel.Length - 1, dst, dstLength);
+				int result = Convolution(srcPadding, padding.Length, dst, dstLength);
 				delay = 0;
 				return result;
 			}
@@ -156,7 +159,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			}
 
 			if (fftKernel != IntPtr.Zero) {
-				FFTW.fftw.free(fftKernel);
+				Marshal.FreeHGlobal(fftKernel);
 				fftKernel = IntPtr.Zero;
 			}
 			delayData.Free();
