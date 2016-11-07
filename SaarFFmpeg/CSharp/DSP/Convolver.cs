@@ -87,41 +87,43 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			}
 		}
 
+		private void ConvolutionOnce(double* dst, int dstLength, bool fastFFT) {
+			if (fastFFT) {
+				FFTConvolutionOnce(dst, dstLength);
+			} else {
+				ConvolutionOnce(dst, dstLength);
+			}
+		}
+
 		public int Convolution(double* src, int srcLength, double* dst, int dstLength) {
 			var input = new UnionBuffer(delayData.Data, delay * Size, (IntPtr) src, srcLength * Size);
-
-			int kernelLength = kernel.Length;
+			int kernelLength = kernel.Length, offset = 0, step, copyLength;
 			int outLen = Math.Max(Math.Min(delay + srcLength - (kernelLength - 1), dstLength), 0);
-			int offset = 0;
-			
+			IntPtr tempInput;
+			bool fastFFT = fft != null;
+
 			delay = Math.Min(Math.Max(kernelLength - 1, delay + srcLength - dstLength), delay + srcLength);
-
-			if (fft != null) {
-				for (int step = kernelLength + 1; outLen >= step; outLen -= step, offset += step) {
-					input.CopyTo(offset * Size, fft.InData, fft.FFTSize * Size);
-					FFTConvolutionOnce(dst, step);
-					dst += step;
-				}
-
-				if (outLen > 0) {
-					input.CopyTo(offset * Size, fft.InData, (outLen + kernelLength - 1) * Size);
-					FFTConvolutionOnce(dst, outLen);
-				}
+			
+			if (fastFFT) {
+				copyLength = fft.FFTSize;
+				tempInput = fft.InData;
+				step = kernelLength + 1;
 			} else {
-				int copy = FixedStep + kernelLength - 1;
-				tempBuffer.Resize(copy * Size);
-				for (; outLen >= FixedStep; outLen -= FixedStep, offset += FixedStep) {
-					input.CopyTo(offset * Size, tempBuffer.Data, copy * Size);
-					ConvolutionOnce(dst, FixedStep);
-					dst += FixedStep;
-				}
-
-				if (outLen > 0) {
-					input.CopyTo(offset * Size, tempBuffer.Data, (outLen + kernelLength - 1) * Size);
-					ConvolutionOnce(dst, outLen);
-				}
+				copyLength = FixedStep + kernelLength - 1;
+				tempBuffer.Resize(copyLength * Size);
+				tempInput = tempBuffer.Data;
+				step = FixedStep;
 			}
-
+			
+			for (; outLen >= step; outLen -= step, offset += step) {
+				input.CopyTo(offset * Size, tempInput, copyLength * Size);
+				ConvolutionOnce(dst, step, fastFFT);
+				dst += step;
+			}
+			if (outLen > 0) {
+				input.CopyTo(offset * Size, tempInput, (outLen + kernelLength - 1) * Size);
+				ConvolutionOnce(dst, outLen, fastFFT);
+			}
 			offset += outLen;
 
 			int delayBytes = delay * Size;
