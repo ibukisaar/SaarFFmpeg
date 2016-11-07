@@ -27,21 +27,21 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			this.kernel = new double[length];
 			Array.Copy(kernel, index, this.kernel, 0, length);
 
-			//if (length > 32) {
-			fft = new DoubleFFT(length * 2);
-			ifft = new DoubleIFFT(length * 2);
-			fftKernel = FFTW.fftw.alloc_complex((IntPtr) fft.FFTComplexCount);
-			Marshal.Copy(this.kernel, 0, fft.InData, length);
-			fft.Execute();
-			Buffer.MemoryCopy((void*) fft.OutData, (void*) fftKernel, fft.FFTComplexCount * Size * 2, fft.FFTComplexCount * Size * 2);
-			//}
+			if (length > 32) {
+				fft = new DoubleFFT(length * 2);
+				ifft = new DoubleIFFT(length * 2, fft.OutData, IntPtr.Zero);
+				fftKernel = FFTW.fftw.alloc_complex((IntPtr) fft.FFTComplexCount);
+				Marshal.Copy(this.kernel, 0, fft.InData, length);
+				fft.Execute();
+				Buffer.MemoryCopy((void*) fft.OutData, (void*) fftKernel, fft.FFTComplexCount * Size * 2, fft.FFTComplexCount * Size * 2);
+			}
 		}
 
 		public int GetOutLength(int inLength) {
 			return delay + inLength;
 		}
 
-		private void ConvolutionOnce(double* dst, int dstLength) {
+		private void FFTConvolutionOnce(double* dst, int dstLength) {
 			int kernelLength = kernel.Length;
 
 			fft.Execute();
@@ -56,8 +56,6 @@ namespace Saar.FFmpeg.CSharp.DSP {
 				in1[2 * i + 1] = r1 * i2 + i1 * r2;
 			}
 
-			int count = fft.FFTComplexCount * Size * 2;
-			Buffer.MemoryCopy((void*) fft.OutData, (void*) ifft.InData, count, count);
 			ifft.Execute();
 
 			int fftSize = fft.FFTSize;
@@ -71,6 +69,19 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			Buffer.MemoryCopy(@out + start, dst, dstLength * Size, dstLength * Size);
 		}
 
+		private void ConvolutionOnce(double* dst, int dstLength) {
+			int kernelLength = kernel.Length;
+			double* @in = (double*) tempBuffer.data;
+
+			for (int i = 0; i < dstLength; i++) {
+				double sum = 0;
+				for (int j = 0; j < kernelLength; j++) {
+					sum += kernel[j] * @in[i + j];
+				}
+				dst[i] = sum;
+			}
+		}
+
 		public int Convolution(double* src, int srcLength, double* dst, int dstLength) {
 			var input = new UnionBuffer(delayData.Data, delay * Size, (IntPtr) src, srcLength * Size);
 
@@ -82,25 +93,36 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			delay = Math.Min(Math.Max(kernelLength - 1, delay + srcLength - dstLength), delay + srcLength);
 
 			for (int step = kernelLength + 1; outLen >= step; outLen -= step, offset += step) {
-				input.CopyTo(offset * Size, fft.InData, fft.FFTSize * Size);
-				Console.WriteLine(offset);
-				ConvolutionOnce(dst, step);
-				Console.WriteLine("end " + offset);
+				if (fft != null) {
+					input.CopyTo(offset * Size, fft.InData, fft.FFTSize * Size);
+					FFTConvolutionOnce(dst, step);
+				} else {
+					tempBuffer.Resize(kernelLength * 2 * Size);
+					input.CopyTo(offset * Size, tempBuffer.Data, kernelLength * 2 * Size);
+					ConvolutionOnce(dst, step);
+				}
 				dst += step;
 			}
 
 			if (outLen > 0) {
 				int len = outLen + kernelLength - 1;
-				input.CopyTo(offset * Size, fft.InData, len * Size);
-				ConvolutionOnce(dst, outLen);
+				if (fft != null) {
+					input.CopyTo(offset * Size, fft.InData, len * Size);
+					FFTConvolutionOnce(dst, outLen);
+				} else {
+					tempBuffer.Resize(len * Size);
+					input.CopyTo(offset * Size, tempBuffer.Data, len * Size);
+					ConvolutionOnce(dst, outLen);
+				}
 				offset += outLen;
 			}
 
 			int delayBytes = delay * Size;
 			tempBuffer.Resize(delayBytes);
-			input.CopyTo(delayBytes, tempBuffer.Data, delayBytes);
-			delayData.Resize(delayBytes);
-			Buffer.MemoryCopy((void*) tempBuffer.Data, (void*) delayData.Data, delayBytes, delayBytes);
+			input.CopyTo(offset * Size, tempBuffer.Data, delayBytes);
+			var temp = tempBuffer;
+			tempBuffer = delayData;
+			delayData = temp;
 
 			return result;
 		}
@@ -109,6 +131,21 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			fixed (double* input = &src[srcOffset])
 			fixed (double* output = &dst[dstOffset]) {
 				return Convolution(input, srcLength, output, dstLength);
+			}
+		}
+
+		public int ConvolutionFinal(double* dst, int dstLength) {
+			double[] padding = new double[kernel.Length - 1];
+			fixed (double* srcPadding = padding) {
+				int result = Convolution(srcPadding, kernel.Length - 1, dst, dstLength);
+				delay = 0;
+				return result;
+			}
+		}
+
+		public int ConvolutionFinal(double[] dst, int dstOffset, int dstLength) {
+			fixed (double* output = &dst[dstOffset]) {
+				return ConvolutionFinal(output, dstLength);
 			}
 		}
 
