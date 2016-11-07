@@ -17,6 +17,8 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		private AutoCache delayData = new AutoCache();
 		private AutoCache tempBuffer = new AutoCache();
 
+		public Convolver(double[] kerenl) : this(kerenl, 0, kerenl.Length) { }
+
 		public Convolver(double[] kernel, int index, int length) {
 			if (kernel == null) throw new ArgumentNullException(nameof(kernel));
 			if (index < 0 || index > kernel.Length) throw new ArgumentOutOfRangeException(nameof(index));
@@ -27,7 +29,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 			//if (length > 32) {
 			fft = new DoubleFFT(length * 2);
-			ifft = new DoubleIFFT(length * 2, fft.OutData, IntPtr.Zero);
+			ifft = new DoubleIFFT(length * 2);
 			fftKernel = FFTW.fftw.alloc_complex((IntPtr) fft.FFTComplexCount);
 			Marshal.Copy(this.kernel, 0, fft.InData, length);
 			fft.Execute();
@@ -39,7 +41,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			return delay + inLength;
 		}
 
-		private void SingleConvolution(double* dst, int dstLength) {
+		private void ConvolutionOnce(double* dst, int dstLength) {
 			int kernelLength = kernel.Length;
 
 			fft.Execute();
@@ -54,6 +56,8 @@ namespace Saar.FFmpeg.CSharp.DSP {
 				in1[2 * i + 1] = r1 * i2 + i1 * r2;
 			}
 
+			int count = fft.FFTComplexCount * Size * 2;
+			Buffer.MemoryCopy((void*) fft.OutData, (void*) ifft.InData, count, count);
 			ifft.Execute();
 
 			int fftSize = fft.FFTSize;
@@ -77,22 +81,26 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 			delay = Math.Min(Math.Max(kernelLength - 1, delay + srcLength - dstLength), delay + srcLength);
 
-			for (kernelLength++; outLen >= kernelLength; outLen -= kernelLength, offset += kernelLength) {
+			for (int step = kernelLength + 1; outLen >= step; outLen -= step, offset += step) {
 				input.CopyTo(offset * Size, fft.InData, fft.FFTSize * Size);
-				SingleConvolution(dst, kernelLength);
-				dst += kernelLength;
+				Console.WriteLine(offset);
+				ConvolutionOnce(dst, step);
+				Console.WriteLine("end " + offset);
+				dst += step;
 			}
 
 			if (outLen > 0) {
-				input.CopyTo(offset * Size, fft.InData, fft.FFTSize * Size);
-				SingleConvolution(dst, outLen);
+				int len = outLen + kernelLength - 1;
+				input.CopyTo(offset * Size, fft.InData, len * Size);
+				ConvolutionOnce(dst, outLen);
 				offset += outLen;
 			}
 
-			tempBuffer.Resize(delay * Size);
-			input.CopyTo(offset * Size, tempBuffer.Data, delay * Size);
-			delayData.Resize(delay * Size);
-			Buffer.MemoryCopy((void*) tempBuffer.Data, (void*) delayData.Data, delay * Size, delay * Size);
+			int delayBytes = delay * Size;
+			tempBuffer.Resize(delayBytes);
+			input.CopyTo(delayBytes, tempBuffer.Data, delayBytes);
+			delayData.Resize(delayBytes);
+			Buffer.MemoryCopy((void*) tempBuffer.Data, (void*) delayData.Data, delayBytes, delayBytes);
 
 			return result;
 		}

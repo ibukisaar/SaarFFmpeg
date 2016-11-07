@@ -13,7 +13,6 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		protected IntPtr fftPlan;
 		protected Task<IntPtr> optimalPlanTask;
 		protected int fftSize, fftComplexCount;
-		private IntPtr tempInput;
 		protected IntPtr inData, outData;
 		private bool canFreeInData, canFreeOutData;
 
@@ -32,15 +31,15 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		public FFTBase(int fftSize, IntPtr inData, IntPtr outData) {
 			if (fftSize <= 0) throw new ArgumentException($"{nameof(fftSize)}不能小于等于0", nameof(fftSize));
 
+			this.fftSize = fftSize;
+			fftComplexCount = fftSize / 2 + 1;
+
 			canFreeInData = inData == IntPtr.Zero;
 			canFreeOutData = outData == IntPtr.Zero;
 
 			this.inData = canFreeInData ? AllocInput() : inData;
 			this.outData = canFreeOutData ? AllocOutput() : outData;
-
-			this.fftSize = fftSize;
-			fftComplexCount = fftSize / 2 + 1;
-
+			
 			fftPlan = CreatePlan(fftSize, IntPtr.Zero, IntPtr.Zero, fftw_flags.Estimate);
 			if (fftSize > 4096) {
 				optimalPlanTask = GetOptimalPlan();
