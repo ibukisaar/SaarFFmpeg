@@ -11,6 +11,8 @@ namespace Saar.FFmpeg.CSharp.DSP {
 	/// </summary>
 	unsafe public class Convolver : DisposableObject {
 		const int Size = sizeof(double);
+		const int Threshold = 32;
+		const int FixedStep = 1024;
 
 		private DoubleFFT fft;
 		private DoubleIFFT ifft;
@@ -30,7 +32,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			this.kernel = new double[length];
 			Array.Copy(kernel, index, this.kernel, 0, length);
 
-			if (length > 32) {
+			if (length > Threshold) {
 				fft = new DoubleFFT(length * 2);
 				ifft = new DoubleIFFT(length * 2, fft.OutData, IntPtr.Zero);
 				fftKernel = Marshal.AllocHGlobal(fft.FFTComplexCount * Size * 2);
@@ -91,43 +93,46 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			int kernelLength = kernel.Length;
 			int outLen = Math.Max(Math.Min(delay + srcLength - (kernelLength - 1), dstLength), 0);
 			int offset = 0;
-			int result = outLen;
-
+			
 			delay = Math.Min(Math.Max(kernelLength - 1, delay + srcLength - dstLength), delay + srcLength);
 
-			for (int step = kernelLength + 1; outLen >= step; outLen -= step, offset += step) {
-				if (fft != null) {
+			if (fft != null) {
+				for (int step = kernelLength + 1; outLen >= step; outLen -= step, offset += step) {
 					input.CopyTo(offset * Size, fft.InData, fft.FFTSize * Size);
 					FFTConvolutionOnce(dst, step);
-				} else {
-					tempBuffer.Resize(kernelLength * 2 * Size);
-					input.CopyTo(offset * Size, tempBuffer.Data, kernelLength * 2 * Size);
-					ConvolutionOnce(dst, step);
+					dst += step;
 				}
-				dst += step;
-			}
-			
-			if (outLen > 0) {
-				int len = outLen + kernelLength - 1;
-				if (fft != null) {
-					input.CopyTo(offset * Size, fft.InData, len * Size);
+
+				if (outLen > 0) {
+					input.CopyTo(offset * Size, fft.InData, (outLen + kernelLength - 1) * Size);
 					FFTConvolutionOnce(dst, outLen);
-				} else {
-					tempBuffer.Resize(len * Size);
-					input.CopyTo(offset * Size, tempBuffer.Data, len * Size);
+				}
+			} else {
+				int copy = FixedStep + kernelLength - 1;
+				tempBuffer.Resize(copy * Size);
+				for (; outLen >= FixedStep; outLen -= FixedStep, offset += FixedStep) {
+					input.CopyTo(offset * Size, tempBuffer.Data, copy * Size);
+					ConvolutionOnce(dst, FixedStep);
+					dst += FixedStep;
+				}
+
+				if (outLen > 0) {
+					input.CopyTo(offset * Size, tempBuffer.Data, (outLen + kernelLength - 1) * Size);
 					ConvolutionOnce(dst, outLen);
 				}
-				offset += outLen;
 			}
+
+			offset += outLen;
 
 			int delayBytes = delay * Size;
 			tempBuffer.Resize(delayBytes);
 			input.CopyTo(offset * Size, tempBuffer.Data, delayBytes);
+
 			var temp = tempBuffer;
 			tempBuffer = delayData;
 			delayData = temp;
 
-			return result;
+			return offset;
 		}
 
 		public int Convolution(double[] src, int srcOffset, int srcLength, double[] dst, int dstOffset, int dstLength) {
