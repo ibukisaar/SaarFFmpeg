@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Saar.FFmpeg.Enumerates {
+namespace Saar.FFmpeg.CSharp {
 	public enum AVCodecFlag : int {
 		Unaligned = 1 << 0,
 		Qscale = 1 << 1,

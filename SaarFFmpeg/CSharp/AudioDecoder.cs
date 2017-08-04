@@ -1,4 +1,4 @@
-﻿using Saar.FFmpeg.Enumerates;
+﻿using Saar.FFmpeg.CSharp;
 using Saar.FFmpeg.Structs;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
-namespace Saar.FFmpeg.CSharp.Codecs {
+namespace Saar.FFmpeg.CSharp {
 	unsafe public class AudioDecoder : Decoder {
 		private AudioResampler resampler;
 
@@ -60,7 +60,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 
 				int gotPicture = 0;
 				int resultCode = FF.avcodec_decode_audio4(codecContext, outFrame.frame, &gotPicture, packet.packet);
-				if (resultCode < 0) throw new Support.FFmpegException(resultCode, "音频解码发生错误");
+				if (resultCode < 0) throw new CSharp.FFmpegException(resultCode, "音频解码发生错误");
 
 				if (gotPicture == 0) return false;
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
@@ -61,7 +61,7 @@ namespace Saar.FFmpeg.CSharp {
 		/// <returns>返回输出的采样个数</returns>
 		public int Resample(IntPtr inDatas, int inSampleCount, IntPtr outDatas, int outSampleCount) {
 			int resultSampleCount = FF.swr_convert(ctx, (byte**) outDatas, outSampleCount, (byte**) inDatas, inSampleCount);
-			if (resultSampleCount < 0) throw new Support.FFmpegException(resultSampleCount);
+			if (resultSampleCount < 0) throw new CSharp.FFmpegException(resultSampleCount);
 			return resultSampleCount;
 		}
 
@@ -208,7 +208,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public void Reset() {
 			int result = FF.swr_init(ctx);
-			if (result != 0) throw new Support.FFmpegException(result);
+			if (result != 0) throw new CSharp.FFmpegException(result);
 		}
 
 		protected override void Dispose(bool disposing) {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Saar.FFmpeg.Structs;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
-namespace Saar.FFmpeg.CSharp.Codecs {
+namespace Saar.FFmpeg.CSharp {
 	unsafe public class VideoDecoder : Decoder {
 		private VideoResampler resampler;
 
@@ -48,7 +48,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 			}
 			int gotPicture = 0;
 			int resultCode = FF.avcodec_decode_video2(codecContext, outFrame.frame, &gotPicture, packet.packet);
-			if (resultCode < 0) throw new Support.FFmpegException(resultCode, "视频解码发生错误");
+			if (resultCode < 0) throw new CSharp.FFmpegException(resultCode, "视频解码发生错误");
 
 			if (gotPicture == 0) return false;
 

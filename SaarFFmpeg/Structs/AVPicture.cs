@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Saar.FFmpeg.Support;
+using Saar.FFmpeg.CSharp;
 
 namespace Saar.FFmpeg.Structs {
 	[StructLayout(LayoutKind.Sequential)]

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Saar.FFmpeg.Support {
+namespace Saar.FFmpeg.CSharp {
 	public interface IPtrArray {
 		int FixedCount { get; }
 		int PtrCount { get; }

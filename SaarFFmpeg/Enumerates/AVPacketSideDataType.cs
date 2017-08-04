@@ -1,4 +1,4 @@
-﻿namespace Saar.FFmpeg.Enumerates {
+﻿namespace Saar.FFmpeg.CSharp {
 	public enum AVPacketSideDataType : int {
 		Palette,
 		NewExtradata,

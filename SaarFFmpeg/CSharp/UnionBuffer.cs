@@ -49,10 +49,12 @@ namespace Saar.FFmpeg.CSharp {
 			return copyBytes;
 		}
 
-		public int CopyTo(int srcOffset, Array dst, int copyBytes) {
+		public int CopyTo(int srcOffset, Array dst, int dstOffset, int copyBytes) {
+			if (dstOffset + copyBytes > Buffer.ByteLength(dst)) throw new ArgumentOutOfRangeException();
+
 			var handle = GCHandle.Alloc(dst, GCHandleType.Pinned);
 			try {
-				return CopyTo(srcOffset, handle.AddrOfPinnedObject(), copyBytes);
+				return CopyTo(srcOffset, handle.AddrOfPinnedObject() + dstOffset, copyBytes);
 			} finally {
 				handle.Free();
 			}

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
-namespace Saar.FFmpeg.Support {
+namespace Saar.FFmpeg.CSharp {
 	public sealed class FFmpegException : Exception {
 		public int ErrorCode { get; }
 

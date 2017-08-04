@@ -1,4 +1,4 @@
-﻿using Saar.FFmpeg.Enumerates;
+﻿using Saar.FFmpeg.CSharp;
 using Saar.FFmpeg.Structs;
 using System;
 using System.Collections.Generic;

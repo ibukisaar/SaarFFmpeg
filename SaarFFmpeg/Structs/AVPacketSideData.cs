@@ -1,4 +1,4 @@
-﻿using Saar.FFmpeg.Enumerates;
+﻿using Saar.FFmpeg.CSharp;
 using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.Structs {

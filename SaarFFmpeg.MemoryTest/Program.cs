@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Saar.FFmpeg.CSharp;
-using Saar.FFmpeg.CSharp.Codecs;
 
 namespace SaarFFmpeg.MemoryTest {
 	class Program {

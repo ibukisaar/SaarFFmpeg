@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 using Saar.FFmpeg.Internal;
 
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 using System.Runtime.InteropServices;
 
-namespace Saar.FFmpeg.CSharp.Codecs {
+namespace Saar.FFmpeg.CSharp {
 	unsafe public abstract class Codec : DisposableObject {
 		internal AVStream* stream;
 		internal AVCodecContext* codecContext;

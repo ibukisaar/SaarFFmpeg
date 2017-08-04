@@ -1,4 +1,4 @@
-﻿namespace Saar.FFmpeg.Enumerates {
+﻿namespace Saar.FFmpeg.CSharp {
 	public enum AVFieldOrder : int {
 		Unknown,
 		Progressive,

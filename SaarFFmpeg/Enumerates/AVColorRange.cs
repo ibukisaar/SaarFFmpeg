@@ -1,4 +1,4 @@
-﻿namespace Saar.FFmpeg.Enumerates {
+﻿namespace Saar.FFmpeg.CSharp {
 	public enum AVColorRange : int {
 		Unspecified = 0,
 		Mpeg = 1,

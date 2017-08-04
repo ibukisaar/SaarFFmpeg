@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace Saar.FFmpeg.Internal {
+	[SuppressUnmanagedCodeSecurity]
 	unsafe public static partial class FFmpeg {
 
 #if !ANDROID

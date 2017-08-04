@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
-namespace Saar.FFmpeg.CSharp.Codecs {
+namespace Saar.FFmpeg.CSharp {
 	unsafe public sealed class VideoEncoder : Encoder {
 		private VideoResampler resampler;
 		private VideoFrame tempFrame;
@@ -76,7 +76,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 					codecContext->Qmax = encoderParams.Qmax;
 
 				var result = FF.avcodec_open2(codecContext, codec, null);
-				if (result < 0) throw new Support.FFmpegException(result);
+				if (result < 0) throw new CSharp.FFmpegException(result);
 			} catch {
 				Dispose();
 				throw;
@@ -176,7 +176,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 					frame.SetupToNative();
 					frame.frame->Pts = FF.av_rescale_q(inputFrames, framePerSecond.ToReciprocal(), codecContext->TimeBase);
 					int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture);
-					if (result < 0) throw new Support.FFmpegException(result, "视频编码发生错误");
+					if (result < 0) throw new CSharp.FFmpegException(result, "视频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
 				}
@@ -185,7 +185,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 				encodeFrames = 1;
 			} else {
 				int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, null, &gotPicture);
-				if (result < 0) throw new Support.FFmpegException(result, "视频编码发生错误");
+				if (result < 0) throw new CSharp.FFmpegException(result, "视频编码发生错误");
 			}
 
 			if (gotPicture != 0) {

@@ -1,4 +1,4 @@
-﻿namespace Saar.FFmpeg.Enumerates {
+﻿namespace Saar.FFmpeg.CSharp {
 	public enum AVSampleFormat : int {
 		None = -1,
 		UInt8,

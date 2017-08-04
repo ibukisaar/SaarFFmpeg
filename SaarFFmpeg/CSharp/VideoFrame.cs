@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {

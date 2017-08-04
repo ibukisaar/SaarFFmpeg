@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 
-namespace Saar.FFmpeg.Support {
+namespace Saar.FFmpeg.CSharp {
 	public static class Debug {
 		unsafe public static void Print(object ffStruct) {
 			ConsoleColor oldColor = Console.ForegroundColor;

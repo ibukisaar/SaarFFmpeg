@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 
-namespace Saar.FFmpeg.CSharp.Codecs {
+namespace Saar.FFmpeg.CSharp {
 	public class VideoEncoderParameters {
 		public BitRate BitRate { get; set; }
 		public Fraction FrameRate { get; set; }

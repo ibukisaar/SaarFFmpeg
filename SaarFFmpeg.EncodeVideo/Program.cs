@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Saar.FFmpeg.CSharp;
-using Saar.FFmpeg.CSharp.Codecs;
-using Saar.FFmpeg.Enumerates;
 
 namespace SaarFFmpeg.EncodeVideo {
 	class Program {

@@ -1,4 +1,4 @@
-﻿namespace Saar.FFmpeg.Enumerates {
+﻿namespace Saar.FFmpeg.CSharp {
 	public enum AVColorPrimaries : int {
 		Reserved0 = 0,
 		Bt709 = 1,

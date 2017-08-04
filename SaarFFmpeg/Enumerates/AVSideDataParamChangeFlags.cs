@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Saar.FFmpeg.Enumerates {
+namespace Saar.FFmpeg.CSharp {
 	[Flags]
 	public enum AVSideDataParamChangeFlags : int {
 		ChannelCount = 1,

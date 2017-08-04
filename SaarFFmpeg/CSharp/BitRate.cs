@@ -39,13 +39,13 @@ namespace Saar.FFmpeg.CSharp {
 
 		public override string ToString() {
 			if (Value < 8000) {
-				return Value / 8d + " B/s";
+				return $"{Value / 8d:N2} B/s";
 			} else if (Value < 8000 * 1000) {
-				return Value / 8000d + " KB/s";
+				return $"{Value / 8000d:N2} KB/s";
 			} else if (Value < 8000L * 1000 * 1000) {
-				return Value / (8000d * 1000) + " MB/s";
+				return $"{Value / (8000d * 1000):N2} MB/s";
 			} else {
-				return Value / (8000d * 1000 * 1000) + " GB/s";
+				return $"{Value / (8000d * 1000 * 1000):N2} GB/s";
 			}
 		}
 
@@ -119,14 +119,14 @@ namespace Saar.FFmpeg.CSharp {
 
 
 		public readonly static BitRate Zero = new BitRate();
-		public readonly static BitRate _64KBps = FromKBytePerSecond(64);
-		public readonly static BitRate _80KBps = FromKBytePerSecond(80);
-		public readonly static BitRate _96KBps = FromKBytePerSecond(96);
-		public readonly static BitRate _128KBps = FromKBytePerSecond(128);
-		public readonly static BitRate _160KBps = FromKBytePerSecond(160);
-		public readonly static BitRate _192KBps = FromKBytePerSecond(192);
-		public readonly static BitRate _224KBps = FromKBytePerSecond(224);
-		public readonly static BitRate _256KBps = FromKBytePerSecond(256);
-		public readonly static BitRate _320KBps = FromKBytePerSecond(320);
+		public readonly static BitRate _64Kbps = FromKBitPerSecond(64);
+		public readonly static BitRate _80Kbps = FromKBitPerSecond(80);
+		public readonly static BitRate _96Kbps = FromKBitPerSecond(96);
+		public readonly static BitRate _128Kbps = FromKBitPerSecond(128);
+		public readonly static BitRate _160Kbps = FromKBitPerSecond(160);
+		public readonly static BitRate _192Kbps = FromKBitPerSecond(192);
+		public readonly static BitRate _224Kbps = FromKBitPerSecond(224);
+		public readonly static BitRate _256Kbps = FromKBitPerSecond(256);
+		public readonly static BitRate _320Kbps = FromKBitPerSecond(320);
 	}
 }

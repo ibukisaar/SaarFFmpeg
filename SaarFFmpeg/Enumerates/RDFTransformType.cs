@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Saar.FFmpeg.Enumerates {
+namespace Saar.FFmpeg.CSharp {
 	public enum RDFTransformType : int {
 		DFT_R2C,
 		IDFT_C2R,

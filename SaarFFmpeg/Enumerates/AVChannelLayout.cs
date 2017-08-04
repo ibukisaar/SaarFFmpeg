@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Saar.FFmpeg.Enumerates {
+namespace Saar.FFmpeg.CSharp {
 	[Flags]
 	public enum AVChannelLayout : ulong {
 		FrontLeft = 0x00000001,

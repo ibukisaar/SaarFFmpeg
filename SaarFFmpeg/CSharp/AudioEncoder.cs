@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
-namespace Saar.FFmpeg.CSharp.Codecs {
+namespace Saar.FFmpeg.CSharp {
 	unsafe public class AudioEncoder : Encoder {
 		private AudioResampler resampler;
 		private AudioFrame tempFrame;
@@ -69,7 +69,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 				var rates = codecContext->Flags;
 
 				int result = FF.avcodec_open2(codecContext, codec, null);
-				if (result < 0) throw new Support.FFmpegException(result);
+				if (result < 0) throw new CSharp.FFmpegException(result);
 			} catch {
 				Dispose();
 				throw;
@@ -168,7 +168,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 					frame.SetupToNative();
 					frame.frame->Pts = FF.av_rescale_q(inputFrames, new AVRational(1, OutFormat.SampleRate), codecContext->TimeBase);
 					int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, frame.frame, &gotPicture);
-					if (result < 0) throw new Support.FFmpegException(result, "音频编码发生错误");
+					if (result < 0) throw new CSharp.FFmpegException(result, "音频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
 				}
@@ -176,7 +176,7 @@ namespace Saar.FFmpeg.CSharp.Codecs {
 				inputFrames += encodeFrames;
 			} else {
 				int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, null, &gotPicture);
-				if (result < 0) throw new Support.FFmpegException(result, "音频编码发生错误");
+				if (result < 0) throw new CSharp.FFmpegException(result, "音频编码发生错误");
 			}
 
 			if (gotPicture != 0) {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Saar.FFmpeg.Enumerates;
+using Saar.FFmpeg.CSharp;
 
 namespace Saar.FFmpeg.CSharp {
 	public sealed class AudioFormat {
@@ -45,7 +45,7 @@ namespace Saar.FFmpeg.CSharp {
 			ValidBitsPerSample = EqualsIgnorePlanar(SampleFormat, AVSampleFormat.Int32) ? 24 : BitsPerSample;
 		}
 
-		public AudioFormat(int sampleRate, int channels, int sampleBits) {
+		public AudioFormat(int sampleRate, int channels, int sampleBits, bool planar  = false) {
 			SampleRate = sampleRate;
 			Channels = channels;
 			BitsPerSample = sampleBits == 24 ? 32 : sampleBits;
@@ -58,8 +58,9 @@ namespace Saar.FFmpeg.CSharp {
 				case 64: SampleFormat = AVSampleFormat.Double; break;
 				default: throw new ArgumentException($"不支持的采样位数:{sampleBits}");
 			}
+			if (planar) SampleFormat = ToPackedFormat(SampleFormat);
 			SampleType = GetSampleType(SampleFormat);
-			IsPlanarFormat = IsPlanar(SampleFormat);
+			IsPlanarFormat = planar;
 			LineCount = IsPlanarFormat ? Channels : 1;
 			LineBlock = IsPlanarFormat ? (BitsPerSample >> 3) : (BitsPerSample >> 3) * Channels;
 			ValidBitsPerSample = EqualsIgnorePlanar(SampleFormat, AVSampleFormat.Int32) ? 24 : BitsPerSample;

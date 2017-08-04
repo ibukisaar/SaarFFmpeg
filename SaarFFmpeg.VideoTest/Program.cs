@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Saar.FFmpeg.CSharp;
-using Saar.FFmpeg.CSharp.Codecs;
-using Saar.FFmpeg.Enumerates;
 using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace SaarFFmpeg.VideoTest {
 	class Program {
 		static void Main(string[] args) {
-			var media = new MediaReader(@"Z:\game.dat_000004.wmv");
+			var media = new MediaReader(@"Z:\【神之超赛】来自深渊+01话.mp4");
 			var decoder = media.Decoders.OfType<VideoDecoder>().First();
 			decoder.OutFormat = new VideoFormat(decoder.InFormat.Width, decoder.InFormat.Height, AVPixelFormat.Bgr24, 4);
 			VideoFrame frame = new VideoFrame();

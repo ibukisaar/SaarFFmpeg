@@ -4,8 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.IO;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
-using Saar.FFmpeg.CSharp.Codecs;
+using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
@@ -41,10 +40,10 @@ namespace Saar.FFmpeg.CSharp {
 				fixed (AVFormatContext** pFormatContext = &formatContext) {
 					resultCode = FF.avformat_open_input(pFormatContext, null, null, null);
 				}
-				if (resultCode != 0) throw new Support.FFmpegException(resultCode);
+				if (resultCode != 0) throw new CSharp.FFmpegException(resultCode);
 
 				resultCode = FF.avformat_find_stream_info(formatContext, null);
-				if (resultCode != 0) throw new Support.FFmpegException(resultCode);
+				if (resultCode != 0) throw new CSharp.FFmpegException(resultCode);
 
 				var decoders = new Decoder[StreamCount];
 				for (int i = 0; i < StreamCount; i++) {

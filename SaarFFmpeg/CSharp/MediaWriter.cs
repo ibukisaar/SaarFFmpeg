@@ -5,23 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Enumerates;
-using Saar.FFmpeg.CSharp.Codecs;
+using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public class MediaWriter : MediaStream {
-		public delegate Frame RequestFrameHandle(Codecs.Encoder encoder);
+		public delegate Frame RequestFrameHandle(Encoder encoder);
 
 		private bool remuxing = false;
 		private AudioFrame tempAudioFrame = new AudioFrame();
 		private Packet packet = new Packet();
 		private AVOutputFormat* outputFormat;
-		private List<Codecs.Encoder> encoders = new List<Codecs.Encoder>();
-		private HashSet<Codecs.Encoder> readyEncoders;
+		private List<Encoder> encoders = new List<Encoder>();
+		private HashSet<Encoder> readyEncoders;
 		private AVFormatContext* inputFmtCtx;
 
-		public IReadOnlyList<Codecs.Encoder> Encoders => encoders;
+		public IReadOnlyList<Encoder> Encoders => encoders;
 
 		public AVCodecID AudioCodecID => remuxing ? inputFmtCtx->AudioCodecId : outputFormat->AudioCodec;
 		public AVCodecID VideoCodecID => remuxing ? inputFmtCtx->VideoCodecId : outputFormat->VideoCodec;
@@ -80,7 +79,7 @@ namespace Saar.FFmpeg.CSharp {
 						var stream = FF.avformat_new_stream(formatContext, decoder.codec);
 						if (stream == null) throw new InvalidOperationException("无法创建流");
 						int result = FF.avcodec_copy_context(stream->Codec, decoder.codecContext);
-						if (result < 0) throw new Support.FFmpegException(result);
+						if (result < 0) throw new CSharp.FFmpegException(result);
 						stream->Codec->CodecTag = 0;
 						if (outputFormat->Flags.HasFlag(AVFmt.GlobalHeader)) {
 							stream->Codec->Flags |= AVCodecFlag.GlobalHeader;
@@ -88,7 +87,7 @@ namespace Saar.FFmpeg.CSharp {
 						stream->TimeBase = mediaReader.formatContext->Streams[decoder.StreamIndex]->TimeBase;
 						//stream->TimeBase = decoder.codecContext->TimeBase;
 						result = FF.avcodec_parameters_from_context(stream->Codecpar, stream->Codec);
-						if (result < 0) throw new Support.FFmpegException(result);
+						if (result < 0) throw new CSharp.FFmpegException(result);
 					}
 				}
 				inputFmtCtx = mediaReader.formatContext;
@@ -111,7 +110,7 @@ namespace Saar.FFmpeg.CSharp {
 			var audioEncoder = new AudioEncoder(stream, format, bitRate);
 			stream->TimeBase = codecContext->TimeBase;
 			int result = FF.avcodec_parameters_from_context(stream->Codecpar, codecContext);
-			if (result < 0) throw new Support.FFmpegException(result);
+			if (result < 0) throw new CSharp.FFmpegException(result);
 			encoders.Add(audioEncoder);
 			return this;
 		}
@@ -134,12 +133,12 @@ namespace Saar.FFmpeg.CSharp {
 			stream->TimeBase = codecContext->TimeBase;
 			stream->AvgFrameRate = codecContext->Framerate;
 			int result = FF.avcodec_parameters_from_context(stream->Codecpar, codecContext);
-			if (result < 0) throw new Support.FFmpegException(result);
+			if (result < 0) throw new CSharp.FFmpegException(result);
 			encoders.Add(videoEncoder);
 			return this;
 		}
 
-		public MediaWriter AddEncoder(Codecs.Encoder encoder) {
+		public MediaWriter AddEncoder(Encoder encoder) {
 			if (readyEncoders != null) throw new InvalidOperationException($"该{nameof(MediaWriter)}对象已经初始化");
 
 			if (outputFormat == null) {
@@ -154,7 +153,7 @@ namespace Saar.FFmpeg.CSharp {
 			if (stream == null) throw new Exception("无法创建流");
 			// stream->TimeBase = encoder.codecContext->TimeBase;
 			int result = FF.avcodec_parameters_from_context(stream->Codecpar, encoder.codecContext);
-			if (result < 0) throw new Support.FFmpegException(result);
+			if (result < 0) throw new CSharp.FFmpegException(result);
 			encoder.stream = stream;
 			encoders.Add(encoder);
 			return this;
@@ -165,9 +164,9 @@ namespace Saar.FFmpeg.CSharp {
 			if (outputFormat == null) throw new InvalidOperationException("无法确定媒体的输出格式");
 
 			int result = FF.avformat_write_header(formatContext, null);
-			if (result < 0) throw new Support.FFmpegException(result, "写入头部错误");
+			if (result < 0) throw new CSharp.FFmpegException(result, "写入头部错误");
 
-			readyEncoders = new HashSet<Codecs.Encoder>(encoders);
+			readyEncoders = new HashSet<Encoder>(encoders);
 			return this;
 		}
 
@@ -196,11 +195,11 @@ namespace Saar.FFmpeg.CSharp {
 		private void InternalWrite(Packet packet) {
 			if (packet.Size > 0) {
 				var result = FF.av_interleaved_write_frame(formatContext, packet.packet);
-				if (result < 0) throw new Support.FFmpegException(result);
+				if (result < 0) throw new CSharp.FFmpegException(result);
 			}
 		}
 
-		private void Encode(Codecs.Encoder encoder, Frame frame) {
+		private void Encode(Encoder encoder, Frame frame) {
 			var audioEncoder = encoder as AudioEncoder;
 			var audioFrame = frame as AudioFrame;
 			if (audioEncoder != null && audioFrame != null && audioFrame.sampleCount > audioEncoder.RequestSamples) {
@@ -250,7 +249,7 @@ namespace Saar.FFmpeg.CSharp {
 		public void Flush() {
 			int result;
 
-			readyEncoders = new HashSet<Codecs.Encoder>(encoders);
+			readyEncoders = new HashSet<Encoder>(encoders);
 			while (true) {
 				var encoder = readyEncoders.OrderBy(e => e.InputFrames * e.codecContext->TimeBase.Value).FirstOrDefault();
 				if (encoder == null) break;
@@ -264,7 +263,7 @@ namespace Saar.FFmpeg.CSharp {
 			}
 
 			result = FF.av_write_trailer(formatContext);
-			if (result < 0) throw new Support.FFmpegException(result);
+			if (result < 0) throw new CSharp.FFmpegException(result);
 			readyEncoders = null;
 		}
 

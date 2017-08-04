@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Saar.FFmpeg.Enumerates {
+namespace Saar.FFmpeg.CSharp {
 	public enum AVRounding {
 		Zero = 0,
 		Inf = 1,

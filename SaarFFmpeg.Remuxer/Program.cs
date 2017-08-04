@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Saar.FFmpeg.Enumerates;
 using Saar.FFmpeg.CSharp;
-using Saar.FFmpeg.CSharp.Codecs;
 
 namespace SaarFFmpeg.Remuxer {
 	class Program {
