@@ -19,15 +19,15 @@ namespace Saar.FFmpeg.CSharp {
 		private SwrContext* ctx;
 
 		public AudioFormat Source { get; }
-		public AudioFormat Target { get; }
+		public AudioFormat Destination { get; }
 
 		public AudioResampler(AudioFormat src, AudioFormat dst) {
 			Source = src;
-			Target = dst;
+			Destination = dst;
 
 			try {
 				ctx = FF.swr_alloc_set_opts(null,
-					Target.ChannelLayout, Target.SampleFormat, Target.SampleRate,
+					Destination.ChannelLayout, Destination.SampleFormat, Destination.SampleRate,
 					Source.ChannelLayout, Source.SampleFormat, Source.SampleRate,
 					0, null);
 				Reset();
@@ -44,11 +44,11 @@ namespace Saar.FFmpeg.CSharp {
 		/// <returns></returns>
 		public int GetOutSampleCount(int inSampleCount) {
 			long delaySampleCount = FF.swr_get_delay(ctx, Source.SampleRate);
-			return (int) FF.av_rescale_rnd(delaySampleCount + inSampleCount, Target.SampleRate, Source.SampleRate, AVRounding.Up);
+			return (int) FF.av_rescale_rnd(delaySampleCount + inSampleCount, Destination.SampleRate, Source.SampleRate, AVRounding.Up);
 		}
 
 		public int GetOutBytes(int outSampleCount) {
-			return Target.GetBytes(outSampleCount);
+			return Destination.GetBytes(outSampleCount);
 		}
 
 		/// <summary>
@@ -145,7 +145,7 @@ namespace Saar.FFmpeg.CSharp {
 			int inSamples = frame.frame->NbSamples;
 			int outSamples = GetOutSampleCount(inSamples);
 
-			frame.format = Target;
+			frame.format = Destination;
 			frame.Resize(outSamples);
 			fixed (IntPtr* output = frame.datas) {
 				outSamples = Resample((IntPtr) frame.frame->ExtendedData, inSamples, (IntPtr) output, outSamples);
@@ -155,7 +155,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public void ResampleFinal(AudioFrame outFrame) {
 			int outSamples = GetOutSampleCount(0);
-			outFrame.format = Target;
+			outFrame.format = Destination;
 			outFrame.Resize(outSamples);
 			outSamples = Resample(null, 0, outFrame.datas, outSamples);
 			outFrame.sampleCount = outSamples;
@@ -167,7 +167,7 @@ namespace Saar.FFmpeg.CSharp {
 
 			int inSamples = inFrame.SampleCount;
 			int outSamples = GetOutSampleCount(inSamples);
-			outFrame.format = Target;
+			outFrame.format = Destination;
 			outFrame.Resize(outSamples);
 			outSamples = Resample(inFrame.datas, inSamples, outFrame.datas, outSamples);
 			outFrame.sampleCount = outSamples;
@@ -184,7 +184,7 @@ namespace Saar.FFmpeg.CSharp {
 			fixed (IntPtr* input = inOutFrame.datas) {
 				resampler.Resample((IntPtr) input, samples, (IntPtr) (&data), samples);
 			}
-			inOutFrame.format = resampler.Target;
+			inOutFrame.format = resampler.Destination;
 			inOutFrame.Update(samples, packedCache.data);
 		}
 
@@ -197,8 +197,8 @@ namespace Saar.FFmpeg.CSharp {
 			packedCache.Resize(bytes);
 			var data = packedCache.data;
 			Buffer.MemoryCopy((void*) inOutFrame.datas[0], (void*) data, bytes, bytes);
-			int lineBytes = resampler.Target.GetLineBytes(samples);
-			inOutFrame.format = resampler.Target;
+			int lineBytes = resampler.Destination.GetLineBytes(samples);
+			inOutFrame.format = resampler.Destination;
 			inOutFrame.Resize(samples);
 			fixed (IntPtr* input = inOutFrame.datas) {
 				resampler.Resample((IntPtr) (&data), samples, (IntPtr) input, samples);

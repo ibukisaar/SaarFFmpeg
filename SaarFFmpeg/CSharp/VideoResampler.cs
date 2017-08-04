@@ -13,15 +13,15 @@ namespace Saar.FFmpeg.CSharp {
 		private SwsContext* ctx;
 
 		public VideoFormat Source { get; }
-		public VideoFormat Target { get; }
+		public VideoFormat Destination { get; }
 
-		public VideoResampler(VideoFormat source, VideoFormat target, SwsFlags flags = SwsFlags.FastBilinear) {
+		public VideoResampler(VideoFormat source, VideoFormat destination, SwsFlags flags = SwsFlags.FastBilinear) {
 			Source = source;
-			Target = target;
+			Destination = destination;
 
 			ctx = FF.sws_getContext(
 				source.Width, source.Height, source.PixelFormat,
-				target.Width, target.Height, target.PixelFormat,
+				destination.Width, destination.Height, destination.PixelFormat,
 				flags, null, null, null);
 		}
 
@@ -37,11 +37,11 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		internal void InternalResample(VideoFrame frame) {
-			frame.format = Target;
+			frame.format = Destination;
 			frame.Resize();
 
 			fixed (IntPtr* dst = frame.datas)
-			fixed (int* dstLinesize = Target.strides) {
+			fixed (int* dstLinesize = Destination.strides) {
 				Resample((IntPtr) (&frame.frame->Data), (IntPtr) frame.frame->Linesize, (IntPtr) dst, (IntPtr) dstLinesize);
 			}
 		}
@@ -50,12 +50,12 @@ namespace Saar.FFmpeg.CSharp {
 			if (src.format != Source)
 				throw new ArgumentException("输入帧的格式和重采样器的源格式不一致", nameof(src));
 
-			dst.format = Target;
+			dst.format = Destination;
 			dst.Resize();
 			fixed (IntPtr* input = src.datas)
 			fixed (int* inputLengths = Source.strides)
 			fixed (IntPtr* output = dst.datas)
-			fixed (int* outputLengths = Target.strides) {
+			fixed (int* outputLengths = Destination.strides) {
 				Resample((IntPtr) input, (IntPtr) inputLengths, (IntPtr) output, (IntPtr) outputLengths);
 			}
 		}

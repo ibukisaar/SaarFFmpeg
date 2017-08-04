@@ -16,7 +16,7 @@ namespace Saar.FFmpeg.CSharp {
 		/// 获取或设置输出格式。如果设置为null或和<see cref="InFormat"/>的值一致 ，则不使用重采样。
 		/// </summary>
 		public VideoFormat OutFormat {
-			get { return resampler?.Target ?? InFormat; }
+			get { return resampler?.Destination ?? InFormat; }
 			set {
 				if (value == null || InFormat.Equals(value)) {
 					resampler?.Dispose();
