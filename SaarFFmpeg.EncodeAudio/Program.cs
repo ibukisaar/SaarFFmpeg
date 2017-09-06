@@ -14,7 +14,7 @@ namespace SaarFFmpeg.EncodeAudio {
 			using (var reader = new MediaReader(@"Z:\Crazy Berry-liar lips.mp3")) {
 				var decoder = reader.Decoders.OfType<AudioDecoder>().First();
 				var frame = new AudioFrame();
-				using (var writer = new MediaWriter(@"Z:\output.mp3").AddAudio(decoder.OutFormat, BitRate._64Kbps).Initialize()) {
+				using (var writer = new MediaWriter(@"Z:\output.flac").AddAudio(decoder.OutFormat, BitRate.Zero).Initialize()) {
 					var enc = writer.Encoders[0] as AudioEncoder;
 					while (reader.NextFrame(frame, decoder.StreamIndex)) {
 						Console.Write($"\rframes: {enc.InputFrames}, time: {enc.InputTimestamp}");

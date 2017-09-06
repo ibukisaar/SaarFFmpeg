@@ -77,7 +77,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public static bool IsSupportedFormat(AVCodecID codecID, AudioFormat format) {
-			var codec = GetEncoder(codecID);
+			var codec = CheckCodec(GetEncoder(codecID));
 			var sampleFormats = GetSupportedSampleFormats(codec);
 			var sampleRates = GetSupportedSampleRates(codec);
 			var channelLayouts = GetSupportedChannelLayouts(codec);
@@ -87,7 +87,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public static AudioFormat MatchSupportedFormat(AVCodecID codecID, AudioFormat format) {
-			var codec = GetEncoder(codecID);
+			var codec = CheckCodec(GetEncoder(codecID));
 			var sampleFormats = GetSupportedSampleFormats(codec);
 			var sampleRates = GetSupportedSampleRates(codec);
 			var channelLayouts = GetSupportedChannelLayouts(codec);

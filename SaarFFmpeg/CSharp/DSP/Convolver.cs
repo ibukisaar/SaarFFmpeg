@@ -151,7 +151,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			}
 		}
 
-		public int ConvolutionFinal(double[] dst, int dstOffset, int dstLength) {
+		public int ConvolveFinal(double[] dst, int dstOffset, int dstLength) {
 			fixed (double* output = &dst[dstOffset]) {
 				return ConvolveFinal(output, dstLength);
 			}

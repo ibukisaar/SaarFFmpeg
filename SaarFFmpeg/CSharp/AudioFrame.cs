@@ -29,7 +29,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Resize(int sampleCount) {
-			if (format == null) throw new InvalidOperationException($"{nameof(AudioFormat)} 对象未指定格式");
+			if (format == null) throw new InvalidOperationException($"{nameof(AudioFrame)} 对象未指定格式");
 
 			this.sampleCount = sampleCount;
 			int bytes = format.GetBytes(sampleCount);

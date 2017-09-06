@@ -58,7 +58,7 @@ namespace Saar.FFmpeg.CSharp {
 				case 64: SampleFormat = AVSampleFormat.Double; break;
 				default: throw new ArgumentException($"不支持的采样位数:{sampleBits}");
 			}
-			if (planar) SampleFormat = ToPackedFormat(SampleFormat);
+			if (planar) SampleFormat = ToPlanarFormat(SampleFormat);
 			SampleType = GetSampleType(SampleFormat);
 			IsPlanarFormat = planar;
 			LineCount = IsPlanarFormat ? Channels : 1;
