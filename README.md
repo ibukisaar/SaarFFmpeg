@@ -15,7 +15,8 @@
 > * swscale-4.dll
 > * swresample-2.dll
 > 
-> 如果是Android要换成so
+> 如果是Android要换成so。
+> [下载DLL](http://ffmpeg.zeranoe.com/builds/)，下载页面里选择Shared。
 
 ***
 
