@@ -90,10 +90,11 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		protected override void Dispose(bool disposing) {
 			if (fftPlan != IntPtr.Zero) {
 				if (optimalPlanTask != null) {
+					var currFft = fftPlan;
 					Task.Run(() => {
 						optimalPlanTask.Wait();
-						TrySwitchOptimalPlan();
-						DestroyPlan(fftPlan);
+						DestroyPlan(currFft);
+						DestroyPlan(optimalPlanTask.Result);
 					});
 				} else {
 					DestroyPlan(fftPlan);

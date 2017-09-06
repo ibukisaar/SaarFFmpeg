@@ -87,8 +87,8 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			}
 		}
 
-		private void ConvolveOnce(double* dst, int dstLength, bool fastFFT) {
-			if (fastFFT) {
+		private void ConvolveOnce(double* dst, int dstLength, bool fft) {
+			if (fft) {
 				FFTConvolveOnce(dst, dstLength);
 			} else {
 				ConvolveOnce(dst, dstLength);
@@ -100,9 +100,9 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			int kernelLength = kernel.Length, offset = 0, step, copyLength;
 			int outLen = Math.Max(Math.Min(delay + srcLength - (kernelLength - 1), dstLength), 0);
 			IntPtr tempInput;
-			bool fastFFT = fft != null;
+			bool fast = fft != null;
 			
-			if (fastFFT) {
+			if (fast) {
 				copyLength = fft.FFTSize;
 				tempInput = fft.InData;
 				step = kernelLength + 1;
@@ -115,12 +115,12 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			
 			for (; outLen >= step; outLen -= step, offset += step) {
 				input.CopyTo(offset * Size, tempInput, copyLength * Size);
-				ConvolveOnce(dst, step, fastFFT);
+				ConvolveOnce(dst, step, fast);
 				dst += step;
 			}
 			if (outLen > 0) {
 				input.CopyTo(offset * Size, tempInput, (outLen + kernelLength - 1) * Size);
-				ConvolveOnce(dst, outLen, fastFFT);
+				ConvolveOnce(dst, outLen, fast);
 				offset += outLen;
 			}
 
