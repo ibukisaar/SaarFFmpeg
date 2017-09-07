@@ -37,6 +37,15 @@ namespace Saar.FFmpeg.CSharp {
 			InFormat = new VideoFormat(codecContext->Width, codecContext->Height, codecContext->PixFmt);
 		}
 
+		protected override void Dispose(bool disposing) {
+			if (disposing) {
+				resampler?.Dispose();
+				resampler = null;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		public override bool Decode(Packet packet, Frame outFrame) {
 			var videoFrame = outFrame as VideoFrame;
 			if (videoFrame == null) {
