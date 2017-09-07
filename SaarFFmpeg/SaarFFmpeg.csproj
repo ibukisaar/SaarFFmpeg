@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharp\AudioConverter.cs" />
+    <Compile Include="CSharp\AudioConvolver.cs" />
+    <Compile Include="CSharp\AudioDelayConverter.cs" />
     <Compile Include="CSharp\AudioFormat.cs" />
     <Compile Include="CSharp\AudioFrame.cs" />
     <Compile Include="CSharp\AutoCache.cs" />
@@ -61,10 +64,8 @@
     <Compile Include="CSharp\DSP\FFTBase.cs" />
     <Compile Include="CSharp\DSP\DoubleFFTBase.cs" />
     <Compile Include="CSharp\DSP\FFTTools.cs" />
-    <Compile Include="CSharp\DSP\Filter.cs" />
     <Compile Include="CSharp\DSP\FloatFFT.cs" />
     <Compile Include="CSharp\DSP\FloatFFTBase.cs" />
-    <Compile Include="CSharp\DSP\FFTWisdom.cs" />
     <Compile Include="CSharp\DSP\FloatIFFT.cs" />
     <Compile Include="CSharp\DSP\ILogarithm.cs" />
     <Compile Include="CSharp\DSP\IPositiveFFT.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="CSharp\VideoFormat.cs" />
     <Compile Include="CSharp\VideoFrame.cs" />
     <Compile Include="CSharp\VideoResampler.cs" />
+    <Compile Include="CSharp\扩展.cs" />
     <Compile Include="Enumerates\AVAudioServiceType.cs" />
     <Compile Include="Enumerates\AVChannelLayout.cs" />
     <Compile Include="Enumerates\AVChromaLocation.cs" />

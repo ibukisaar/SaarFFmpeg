@@ -39,13 +39,13 @@ namespace Saar.FFmpeg.CSharp {
 			Channels = GetChannels(channelLayout);
 			BitsPerSample = GetBytePerSample(sampleFormat) * 8;
 			SampleType = GetSampleType(sampleFormat);
-			IsPlanarFormat = IsPlanar(sampleFormat);
+			IsPlanarFormat = sampleFormat.IsPlanar();
 			LineCount = IsPlanarFormat ? Channels : 1;
 			LineBlock = IsPlanarFormat ? (BitsPerSample >> 3) : (BitsPerSample >> 3) * Channels;
-			ValidBitsPerSample = EqualsIgnorePlanar(SampleFormat, AVSampleFormat.Int32) ? 24 : BitsPerSample;
+			ValidBitsPerSample = SampleFormat.EqualsType(AVSampleFormat.Int32) ? 24 : BitsPerSample;
 		}
 
-		public AudioFormat(int sampleRate, int channels, int sampleBits, bool planar  = false) {
+		public AudioFormat(int sampleRate, int channels, int sampleBits, bool planar = false) {
 			SampleRate = sampleRate;
 			Channels = channels;
 			BitsPerSample = sampleBits == 24 ? 32 : sampleBits;
@@ -58,12 +58,12 @@ namespace Saar.FFmpeg.CSharp {
 				case 64: SampleFormat = AVSampleFormat.Double; break;
 				default: throw new ArgumentException($"不支持的采样位数:{sampleBits}");
 			}
-			if (planar) SampleFormat = ToPlanarFormat(SampleFormat);
+			if (planar) SampleFormat = SampleFormat.ToPlanar();
 			SampleType = GetSampleType(SampleFormat);
 			IsPlanarFormat = planar;
 			LineCount = IsPlanarFormat ? Channels : 1;
 			LineBlock = IsPlanarFormat ? (BitsPerSample >> 3) : (BitsPerSample >> 3) * Channels;
-			ValidBitsPerSample = EqualsIgnorePlanar(SampleFormat, AVSampleFormat.Int32) ? 24 : BitsPerSample;
+			ValidBitsPerSample = SampleFormat.EqualsType(AVSampleFormat.Int32) ? 24 : BitsPerSample;
 		}
 
 		public override bool Equals(object obj) {
@@ -84,11 +84,11 @@ namespace Saar.FFmpeg.CSharp {
 			=> IsPlanarFormat ? String + ", planar" : String;
 
 		public AudioFormat ToPacked() {
-			return new AudioFormat(SampleRate, ChannelLayout, ToPackedFormat(SampleFormat));
+			return new AudioFormat(SampleRate, ChannelLayout, SampleFormat.ToPacked());
 		}
 
 		public AudioFormat ToPlanar() {
-			return new AudioFormat(SampleRate, ChannelLayout, ToPlanarFormat(SampleFormat));
+			return new AudioFormat(SampleRate, ChannelLayout, SampleFormat.ToPlanar());
 		}
 
 		public int GetLineBytes(int sampleCount) {
@@ -97,22 +97,6 @@ namespace Saar.FFmpeg.CSharp {
 
 		public int GetBytes(int sampleCount) {
 			return sampleCount * LineBlock * LineCount;
-		}
-
-		public static bool IsPlanar(AVSampleFormat sampleFormat) {
-			return Internal.FFmpeg.av_sample_fmt_is_planar(sampleFormat) != 0;
-		}
-
-		public static AVSampleFormat ToPlanarFormat(AVSampleFormat sampleFormat) {
-			return Internal.FFmpeg.av_get_planar_sample_fmt(sampleFormat);
-		}
-
-		public static AVSampleFormat ToPackedFormat(AVSampleFormat sampleFormat) {
-			return Internal.FFmpeg.av_get_packed_sample_fmt(sampleFormat);
-		}
-
-		public static bool EqualsIgnorePlanar(AVSampleFormat sampleFormat1, AVSampleFormat sampleFormat2) {
-			return ToPackedFormat(sampleFormat1) == ToPackedFormat(sampleFormat2);
 		}
 
 		public static AVChannelLayout GetDefaultChannelLayout(int channels) {

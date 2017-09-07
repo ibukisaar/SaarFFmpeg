@@ -32,21 +32,12 @@ namespace Saar.FFmpeg.CSharp {
 		/// <param name="copyBytes">拷贝的字节数，可以大于源缓冲区长度，但会被截断</param>
 		/// <returns>实际拷贝的字节数</returns>
 		public int CopyTo(int srcOffset, IntPtr dst, int copyBytes) {
-			copyBytes = Math.Min(Length - srcOffset, copyBytes);
-
-			if (srcOffset >= SrcLength1) {
-				srcOffset -= SrcLength1;
-				Buffer.MemoryCopy((void*) (SrcData2 + srcOffset), (void*) dst, copyBytes, copyBytes);
-			} else {
-				int srcLen1 = SrcLength1 - srcOffset;
-				if (srcLen1 >= copyBytes) {
-					Buffer.MemoryCopy((void*) (SrcData1 + srcOffset), (void*) dst, copyBytes, copyBytes);
-				} else {
-					Buffer.MemoryCopy((void*) (SrcData1 + srcOffset), (void*) dst, srcLen1, srcLen1);
-					Buffer.MemoryCopy((void*) SrcData2, (void*) (dst + srcLen1), copyBytes - srcLen1, copyBytes - srcLen1);
-				}
-			}
-			return copyBytes;
+			int offset = 0;
+			ForEach(srcOffset, copyBytes, (data, len) => {
+				Buffer.MemoryCopy((void*) data, (void*) (dst + offset), len, len);
+				offset += len;
+			});
+			return offset;
 		}
 
 		public int CopyTo(int srcOffset, Array dst, int dstOffset, int copyBytes) {
@@ -57,6 +48,24 @@ namespace Saar.FFmpeg.CSharp {
 				return CopyTo(srcOffset, handle.AddrOfPinnedObject() + dstOffset, copyBytes);
 			} finally {
 				handle.Free();
+			}
+		}
+
+		public void ForEach(int offset, int length, Action<IntPtr, int> callback) {
+			if (offset > Length) throw new ArgumentOutOfRangeException(nameof(offset), "偏移超过长度");
+			length = Math.Min(Length - offset, length);
+
+			if (offset >= SrcLength1) {
+				offset -= SrcLength1;
+				callback(SrcData2 + offset, length);
+			} else {
+				int srcLen1 = SrcLength1 - offset;
+				if (srcLen1 >= length) {
+					callback(SrcData1 + offset, length);
+				} else {
+					callback(SrcData1 + offset, srcLen1);
+					callback(SrcData2, length - srcLen1);
+				}
 			}
 		}
 	}

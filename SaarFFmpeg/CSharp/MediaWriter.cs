@@ -10,15 +10,46 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public class MediaWriter : MediaStream {
+		private class FixedAudioFrame {
+			public AudioFrame Frame { get; }
+			public int Offset { get; private set; } = 0;
+
+			public FixedAudioFrame(AudioFormat format, int fixedCount) {
+				Frame = new AudioFrame(format);
+				Frame.Resize(fixedCount);
+			}
+
+			public void AppendForEach(AudioFrame input, Action<AudioFrame> callback) {
+				int fixedCount = Frame.sampleCount;
+				int length = Offset + input.sampleCount;
+				int i;
+				if (fixedCount <= length) {
+					for (i = 0; i + fixedCount <= length; i += fixedCount) {
+						if (i == 0) {
+							input.CopyToNoResize(0, fixedCount - Offset, Frame, Offset);
+						} else {
+							input.CopyToNoResize(i - Offset, fixedCount, Frame, 0);
+						}
+						callback(Frame);
+					}
+					input.CopyToNoResize(i - Offset, length - i, Frame, 0);
+					Offset = length - i;
+				} else {
+					input.CopyToNoResize(0, input.sampleCount, Frame, Offset);
+					Offset += input.sampleCount;
+				}
+			}
+		}
+
 		public delegate Frame RequestFrameHandle(Encoder encoder);
 
 		private bool remuxing = false;
-		private AudioFrame tempAudioFrame = new AudioFrame();
 		private Packet packet = new Packet();
 		private AVOutputFormat* outputFormat;
 		private List<Encoder> encoders = new List<Encoder>();
 		private HashSet<Encoder> readyEncoders;
 		private AVFormatContext* inputFmtCtx;
+		private FixedAudioFrame[] fixedAudioFrames;
 
 		public IReadOnlyList<Encoder> Encoders => encoders;
 
@@ -167,6 +198,7 @@ namespace Saar.FFmpeg.CSharp {
 			if (result < 0) throw new CSharp.FFmpegException(result, "写入头部错误");
 
 			readyEncoders = new HashSet<Encoder>(encoders);
+			fixedAudioFrames = new FixedAudioFrame[encoders.Count];
 			return this;
 		}
 
@@ -202,14 +234,16 @@ namespace Saar.FFmpeg.CSharp {
 		private void Encode(Encoder encoder, Frame frame) {
 			var audioEncoder = encoder as AudioEncoder;
 			var audioFrame = frame as AudioFrame;
-			if (audioEncoder != null && audioFrame != null && audioFrame.sampleCount > audioEncoder.RequestSamples) {
-				for (int offset = 0; offset < audioFrame.sampleCount; offset += audioEncoder.RequestSamples) {
-					int samples = Math.Min(audioFrame.sampleCount - offset, audioEncoder.RequestSamples);
-					audioFrame.CopyTo(offset, samples, tempAudioFrame);
-					if (encoder.Encode(tempAudioFrame, packet)) {
+			if (audioEncoder != null && audioFrame != null) {
+				ref FixedAudioFrame fixedAudioFrame = ref fixedAudioFrames[encoder.StreamIndex];
+				if (fixedAudioFrame == null)
+					fixedAudioFrame = new FixedAudioFrame(audioFrame.format, audioEncoder.RequestSamples);
+
+				fixedAudioFrame.AppendForEach(audioFrame, f => {
+					if (encoder.Encode(f, packet)) {
 						InternalWrite(packet);
 					}
-				}
+				});
 			} else {
 				if (encoder.Encode(frame, packet)) {
 					InternalWrite(packet);
@@ -247,14 +281,23 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Flush() {
-			int result;
+			if (readyEncoders == null) return;
 
-			readyEncoders = new HashSet<Encoder>(encoders);
 			while (true) {
+				readyEncoders = new HashSet<Encoder>(encoders);
 				var encoder = readyEncoders.OrderBy(e => e.InputFrames * e.codecContext->TimeBase.Value).FirstOrDefault();
 				if (encoder == null) break;
 
-				if (encoder.Encode(null, packet)) {
+				var fixedFrame = fixedAudioFrames[encoder.StreamIndex];
+				if (fixedFrame != null) {
+					using (var tempFrame = new AudioFrame(fixedFrame.Frame.format)) {
+						tempFrame.Resize(fixedFrame.Offset);
+						fixedFrame.Frame.CopyToNoResize(0, fixedFrame.Offset, tempFrame);
+						if (encoder.Encode(tempFrame, packet)) InternalWrite(packet);
+					}
+					fixedFrame.Frame.Dispose();
+					fixedAudioFrames[encoder.StreamIndex] = null;
+				} else if (encoder.Encode(null, packet)) {
 					InternalWrite(packet);
 				} else {
 					readyEncoders.Remove(encoder);
@@ -262,15 +305,13 @@ namespace Saar.FFmpeg.CSharp {
 				}
 			}
 
-			result = FF.av_write_trailer(formatContext);
+			int result = FF.av_write_trailer(formatContext);
 			if (result < 0) throw new CSharp.FFmpegException(result);
 			readyEncoders = null;
 		}
 
 		protected override void Dispose(bool disposing) {
-			if (readyEncoders != null) {
-				Flush();
-			}
+			Flush();
 
 			if (disposing) {
 				packet.Dispose();

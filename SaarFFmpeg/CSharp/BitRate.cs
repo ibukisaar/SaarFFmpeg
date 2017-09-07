@@ -26,16 +26,10 @@ namespace Saar.FFmpeg.CSharp {
 		public double GBytePerSecond => Value / (1000d * 1000 * 1000 * 8);
 
 		public override bool Equals(object obj) {
-			if (obj is BitRate) {
-				return Value == ((BitRate) obj).Value;
-			}
-			return false;
+			return obj is BitRate other && Value == other.Value;
 		}
 
-		unsafe public override int GetHashCode() {
-			double temp = Value;
-			return ((int*) &temp)[0] ^ ((int*) &temp)[1];
-		}
+		unsafe public override int GetHashCode() => Value.GetHashCode();
 
 		public override string ToString() {
 			if (Value < 8000) {

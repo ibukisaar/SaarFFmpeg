@@ -7,18 +7,19 @@ using Saar.FFmpeg.FFTW;
 
 namespace Saar.FFmpeg.CSharp.DSP {
 	public sealed class DoubleIFFT : DoubleFFTBase {
+		public static DoubleIFFT Create(int fftSize)
+			=> Create(typeof(DoubleIFFT), fftSize, () => new DoubleIFFT(fftSize));
+
 		public override int InputBytes => fftComplexCount * sizeof(double) * 2;
 
 		public override int OutputBytes => fftSize * sizeof(double);
 
-		public DoubleIFFT(int fftSize) : base(fftSize) { }
+		private DoubleIFFT(int fftSize) : base(fftSize) { }
 
-		public DoubleIFFT(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
-
-		protected override IntPtr AllocInput()
+		public override IntPtr AllocInput()
 			=> fftw.alloc_complex((IntPtr) fftComplexCount);
 
-		protected override IntPtr AllocOutput()
+		public override IntPtr AllocOutput()
 			=> fftw.alloc_real((IntPtr) fftSize);
 
 		protected override IntPtr CreatePlan(int fftSize, IntPtr input, IntPtr output, fftw_flags flags)

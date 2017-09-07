@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg", "SaarFFmpeg\SaarFFmpeg.csproj", "{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}"
 EndProject
@@ -22,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.EncodeVideo", "SaarFFmpeg.EncodeVideo\SaarFFmpeg.EncodeVideo.csproj", "{CB0DFF74-B100-4E35-81EE-B4C0A1D41A46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.GenYuv", "SaarFFmpeg.GenYuv\SaarFFmpeg.GenYuv.csproj", "{3BF6680E-6FEC-4760-911C-58185FC402B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.ConvolverTest", "SaarFFmpeg.ConvolverTest\SaarFFmpeg.ConvolverTest.csproj", "{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.FFTWTest", "SaarFFmpeg.FFTWTest\SaarFFmpeg.FFTWTest.csproj", "{EAD981EC-9B4B-4242-8EDD-943A2E79D59F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,14 @@ Global
 		{3BF6680E-6FEC-4760-911C-58185FC402B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BF6680E-6FEC-4760-911C-58185FC402B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BF6680E-6FEC-4760-911C-58185FC402B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAD981EC-9B4B-4242-8EDD-943A2E79D59F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAD981EC-9B4B-4242-8EDD-943A2E79D59F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAD981EC-9B4B-4242-8EDD-943A2E79D59F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAD981EC-9B4B-4242-8EDD-943A2E79D59F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +90,10 @@ Global
 		{BDDF8A10-42FE-49F3-9F87-B2BD7BBB1CCC} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 		{CB0DFF74-B100-4E35-81EE-B4C0A1D41A46} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 		{3BF6680E-6FEC-4760-911C-58185FC402B4} = {7841373E-43F6-46BA-B6AD-7356308765A2}
+		{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6} = {7841373E-43F6-46BA-B6AD-7356308765A2}
+		{EAD981EC-9B4B-4242-8EDD-943A2E79D59F} = {7841373E-43F6-46BA-B6AD-7356308765A2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {06E3976E-161F-476A-AC7F-05BF84D87E7A}
 	EndGlobalSection
 EndGlobal

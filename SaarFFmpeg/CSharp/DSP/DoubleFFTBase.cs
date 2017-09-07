@@ -16,14 +16,12 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		public override Type SampleType => typeof(double);
 
-		public DoubleFFTBase(int fftSize) : base(fftSize) { }
-
-		public DoubleFFTBase(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
+		protected DoubleFFTBase(int fftSize) : base(fftSize) { }
 
 		protected override void DestroyPlan(IntPtr plan)
 			=> fftw.destroy_plan(plan);
 
-		protected override void Free(IntPtr buffer)
+		public override void Free(IntPtr buffer)
 			=> fftw.free(buffer);
 
 		protected override void SaveConfig()

@@ -14,14 +14,12 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		public override Type SampleType => typeof(float);
 
-		public FloatFFTBase(int fftSize) : base(fftSize) { }
-
-		public FloatFFTBase(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
+		protected FloatFFTBase(int fftSize) : base(fftSize) { }
 
 		protected override void DestroyPlan(IntPtr plan)
 			=> fftwf.destroy_plan(plan);
 
-		protected override void Free(IntPtr buffer)
+		public override void Free(IntPtr buffer)
 			=> fftwf.free(buffer);
 
 		protected override void SaveConfig()

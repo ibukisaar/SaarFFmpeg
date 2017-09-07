@@ -114,16 +114,17 @@ namespace SaarFFmpeg.AudioTest {
 		*/
 
 		static void Main(string[] args) {
-			var audioStream = new AudioStream(File.OpenRead(@"Z:\Crazy Berry-liar lips.mp3"));
-			using (var wasapi = new WasapiOut(ShareMode.Exclusive, true, Role.Multimedia, 1280)) {
+			var audioStream = new AudioStream(File.OpenRead(@"Z:\ラブリーサマーちゃん-私の好きなもの.mp3"));
+			using (var wasapi = new WasapiOut(ShareMode.Exclusive, true, Role.Multimedia, 640)) {
 				wasapi.Resample += (sender, e) => {
 					audioStream.Resample(e.OutFormat);
 				};
 				wasapi.Initialize(audioStream);
 				wasapi.Play();
-
+				Console.WriteLine("播放...");
 				Console.ReadKey();
 			}
+			Console.WriteLine("释放");
 		}
 	}
 }

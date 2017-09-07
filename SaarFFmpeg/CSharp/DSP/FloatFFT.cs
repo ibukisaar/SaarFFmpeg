@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using Saar.FFmpeg.FFTW;
 
 namespace Saar.FFmpeg.CSharp.DSP {
-	public sealed class FloatFFT : FloatFFTBase, IPositiveFFT {
+	public sealed class FloatFFT : FloatFFTBase {
+		public static FloatFFT Create(int fftSize)
+			=> Create(typeof(FloatFFT), fftSize, () => new FloatFFT(fftSize));
+
 		public override int InputBytes => fftSize * sizeof(float);
 
 		public override int OutputBytes => fftComplexCount * sizeof(float) * 2;
 
-		public FloatFFT(int fftSize) : base(fftSize) { }
+		private FloatFFT(int fftSize) : base(fftSize) { }
 
-		public FloatFFT(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
-
-		protected override IntPtr AllocInput()
+		public override IntPtr AllocInput()
 			=> fftwf.alloc_real((IntPtr) fftSize);
 
-		protected override IntPtr AllocOutput()
+		public override IntPtr AllocOutput()
 			=> fftwf.alloc_complex((IntPtr) fftComplexCount);
 
 		protected override IntPtr CreatePlan(int fftSize, IntPtr input, IntPtr output, fftw_flags flags)
@@ -29,13 +30,5 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		public override string ToString()
 			=> $"float FFT({fftSize})";
-
-		unsafe public void ApplyWindow(Windows.Window window) {
-			float* input = (float*) inData;
-			double[] win = window.window;
-			for (int i = 0; i < fftSize; i++) {
-				input[i] = (float) (input[i] * win[i]);
-			}
-		}
 	}
 }

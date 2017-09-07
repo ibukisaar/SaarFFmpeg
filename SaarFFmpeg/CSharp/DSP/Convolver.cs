@@ -12,12 +12,11 @@ namespace Saar.FFmpeg.CSharp.DSP {
 	unsafe public class Convolver : DisposableObject {
 		const int Size = sizeof(double);
 		const int Threshold = 32;
-		const int FixedStep = 1024;
 
 		private DoubleFFT fft;
 		private DoubleIFFT ifft;
 		private double[] kernel;
-		private IntPtr fftKernel;
+		private IntPtr fftKernel, fftIn, fftOut;
 		private int delay = 0;
 		private AutoCache delayData = new AutoCache();
 		private AutoCache tempBuffer = new AutoCache();
@@ -31,28 +30,33 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 			this.kernel = new double[length];
 			Array.Copy(kernel, index, this.kernel, 0, length);
+			delayData = new AutoCache(0);
 
 			if (length > Threshold) {
-				fft = new DoubleFFT(length * 2);
-				ifft = new DoubleIFFT(length * 2, fft.OutData, IntPtr.Zero);
-				fftKernel = Marshal.AllocHGlobal(fft.FFTComplexCount * Size * 2);
-				Marshal.Copy(this.kernel, 0, fft.InData, length);
-				fft.Execute();
-				Buffer.MemoryCopy((void*) fft.OutData, (void*) fftKernel, fft.FFTComplexCount * Size * 2, fft.FFTComplexCount * Size * 2);
+				fft = DoubleFFT.Create(length * 2);
+				ifft = DoubleIFFT.Create(length * 2);
+				fftIn = fft.AllocInput();
+				fftOut = fft.AllocOutput();
+				fftKernel = fft.AllocOutput();
+				Marshal.Copy(this.kernel, 0, fftIn, length);
+				for (int i = length; i < length * 2; i++) {
+					((double*) fftIn)[i] = 0;
+				}
+				fft.Execute(fftIn, fftKernel);
 			}
 		}
 
 		public int GetOutLength(int inLength) {
-			return delay + inLength;
+			return Math.Max(delay + inLength - (kernel.Length - 1), 0);
 		}
 
 		private void FFTConvolveOnce(double* dst, int dstLength) {
 			int kernelLength = kernel.Length;
 
-			fft.Execute();
+			fft.Execute(fftIn, fftOut);
 
 			int complexCount = fft.FFTComplexCount;
-			double* in1 = (double*) fft.OutData;
+			double* in1 = (double*) fftOut;
 			double* in2 = (double*) fftKernel;
 			for (int i = 0; i < complexCount; i++) {
 				double r1 = in1[i * 2 + 0], i1 = in1[i * 2 + 1];
@@ -61,10 +65,10 @@ namespace Saar.FFmpeg.CSharp.DSP {
 				in1[2 * i + 1] = r1 * i2 + i1 * r2;
 			}
 
-			ifft.Execute();
+			ifft.Execute(fftOut, fftIn);
 
 			int fftSize = fft.FFTSize;
-			double* @out = (double*) ifft.OutData;
+			double* @out = (double*) fftIn;
 			int start = kernelLength - 1;
 			int end = start + dstLength;
 			for (int i = start; i < end; i++) {
@@ -74,54 +78,42 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			Buffer.MemoryCopy(@out + start, dst, dstLength * Size, dstLength * Size);
 		}
 
-		private void ConvolveOnce(double* dst, int dstLength) {
+		private void ConvolveOnce(double* src, double* dst, int dstLength) {
 			int kernelLength = kernel.Length;
-			double* @in = (double*) tempBuffer.data;
 
 			for (int i = 0; i < dstLength; i++) {
 				double sum = 0;
 				for (int j = 0; j < kernelLength; j++) {
-					sum += kernel[j] * @in[i + j];
+					sum += kernel[j] * src[i + j];
 				}
 				dst[i] = sum;
 			}
 		}
 
-		private void ConvolveOnce(double* dst, int dstLength, bool fft) {
-			if (fft) {
-				FFTConvolveOnce(dst, dstLength);
-			} else {
-				ConvolveOnce(dst, dstLength);
-			}
-		}
-
 		public int Convolve(double* src, int srcLength, double* dst, int dstLength) {
 			var input = new UnionBuffer(delayData.Data, delay * Size, (IntPtr) src, srcLength * Size);
-			int kernelLength = kernel.Length, offset = 0, step, copyLength;
+			int kernelLength = kernel.Length, offset = 0;
 			int outLen = Math.Max(Math.Min(delay + srcLength - (kernelLength - 1), dstLength), 0);
-			IntPtr tempInput;
-			bool fast = fft != null;
-			
-			if (fast) {
-				copyLength = fft.FFTSize;
-				tempInput = fft.InData;
-				step = kernelLength + 1;
+
+			if (fft != null) {
+				int step = kernelLength + 1;
+
+				for (; outLen >= step; outLen -= step, offset += step) {
+					input.CopyTo(offset * Size, fftIn, fft.FFTSize * Size);
+					FFTConvolveOnce(dst, step);
+					dst += step;
+				}
+				if (outLen > 0) {
+					input.CopyTo(offset * Size, fftIn, (outLen + kernelLength - 1) * Size);
+					FFTConvolveOnce(dst, outLen);
+					offset += outLen;
+				}
 			} else {
-				copyLength = FixedStep + kernelLength - 1;
-				tempBuffer.Resize(copyLength * Size);
-				tempInput = tempBuffer.Data;
-				step = FixedStep;
-			}
-			
-			for (; outLen >= step; outLen -= step, offset += step) {
-				input.CopyTo(offset * Size, tempInput, copyLength * Size);
-				ConvolveOnce(dst, step, fast);
-				dst += step;
-			}
-			if (outLen > 0) {
-				input.CopyTo(offset * Size, tempInput, (outLen + kernelLength - 1) * Size);
-				ConvolveOnce(dst, outLen, fast);
-				offset += outLen;
+				input.ForEach(0, outLen * Size, (data, len) => {
+					len /= Size;
+					ConvolveOnce((double*) data, dst + offset, len);
+					offset += len;
+				});
 			}
 
 			delay = Math.Min(Math.Max(kernelLength - 1, delay + srcLength - dstLength), delay + srcLength);
@@ -158,15 +150,18 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		}
 
 		protected override void Dispose(bool disposing) {
+			if (fft != null) {
+				fft.Free(fftIn);
+				fft.Free(fftOut);
+				fft.Free(fftKernel);
+				fftKernel = fftIn = fftOut = IntPtr.Zero;
+			}
+
 			if (disposing) {
 				ifft?.Dispose();
 				fft?.Dispose();
 			}
 
-			if (fftKernel != IntPtr.Zero) {
-				Marshal.FreeHGlobal(fftKernel);
-				fftKernel = IntPtr.Zero;
-			}
 			delayData.Free();
 			tempBuffer.Free();
 		}

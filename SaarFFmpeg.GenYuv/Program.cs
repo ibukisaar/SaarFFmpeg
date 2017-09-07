@@ -21,7 +21,7 @@ namespace SaarFFmpeg.GenYuv {
 			decoder.OutFormat = new VideoFormat(
 				decoder.InFormat.Width,
 				decoder.InFormat.Height,
-				Saar.FFmpeg.CSharp.AVPixelFormat.Yuv420p);
+				AVPixelFormat.Yuv420p);
 			VideoFrame frame = new VideoFrame();
 
 			for (int i = 0; i < 10; i++) {

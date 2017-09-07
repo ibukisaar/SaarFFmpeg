@@ -7,19 +7,20 @@ using Saar.FFmpeg.CSharp.DSP.Windows;
 using Saar.FFmpeg.FFTW;
 
 namespace Saar.FFmpeg.CSharp.DSP {
-	unsafe public sealed class DoubleFFT : DoubleFFTBase, IPositiveFFT {
+	unsafe public sealed class DoubleFFT : DoubleFFTBase {
+		public static DoubleFFT Create(int fftSize)
+			=> Create(typeof(DoubleFFT), fftSize, () => new DoubleFFT(fftSize));
+
 		public override int InputBytes => fftSize * sizeof(double);
 
 		public override int OutputBytes => fftComplexCount * sizeof(double) * 2;
 
-		public DoubleFFT(int fftSize) : base(fftSize) { }
+		private DoubleFFT(int fftSize) : base(fftSize) { }
 
-		public DoubleFFT(int fftSize, IntPtr inData, IntPtr outData) : base(fftSize, inData, outData) { }
-
-		protected override IntPtr AllocInput()
+		public override IntPtr AllocInput()
 			=> fftw.alloc_real((IntPtr) fftSize);
 
-		protected override IntPtr AllocOutput()
+		public override IntPtr AllocOutput()
 			=> fftw.alloc_complex((IntPtr) fftComplexCount);
 
 		protected override IntPtr CreatePlan(int fftSize, IntPtr input, IntPtr output, fftw_flags flags)
@@ -30,13 +31,5 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		public override string ToString()
 			=> $"double FFT({fftSize})";
-
-		public void ApplyWindow(Window window) {
-			double* input = (double*) inData;
-			double[] win = window.window;
-			for (int i = 0; i < fftSize; i++) {
-				input[i] *= win[i];
-			}
-		}
 	}
 }

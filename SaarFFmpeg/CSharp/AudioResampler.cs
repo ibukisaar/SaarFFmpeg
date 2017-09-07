@@ -12,7 +12,7 @@ namespace Saar.FFmpeg.CSharp {
 	/// <summary>
 	/// 音频重采样器
 	/// </summary>
-	unsafe public sealed class AudioResampler : DisposableObject {
+	unsafe public sealed class AudioResampler : AudioConverter {
 		private static readonly Dictionary<AudioFormat, AudioResampler> planarResamplers = new Dictionary<AudioFormat, AudioResampler>();
 		private static AutoCache packedCache = new AutoCache();
 
@@ -239,6 +239,14 @@ namespace Saar.FFmpeg.CSharp {
 			resampler = new AudioResampler(packedFormat, packedFormat.ToPlanar());
 			planarResamplers.Add(packedFormat, resampler);
 			return resampler;
+		}
+
+		public override void Convert(AudioFrame inFrame, AudioFrame outFrame) {
+			if (!inFrame.IsEmpty) {
+				Resample(inFrame, outFrame);
+			} else {
+				ResampleFinal(outFrame);
+			}
 		}
 	}
 }
