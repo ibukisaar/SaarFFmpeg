@@ -12,6 +12,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 	unsafe public class Convolver : DisposableObject {
 		const int Size = sizeof(double);
 		const int Threshold = 32;
+		const int FixedStep = 1024;
 
 		private DoubleFFT fft;
 		private DoubleIFFT ifft;
@@ -90,30 +91,40 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			}
 		}
 
+		private void ConvolveOnce(IntPtr src, double* dst, int dstLength, bool fast) {
+			if (fast) {
+				FFTConvolveOnce(dst, dstLength);
+			} else {
+				ConvolveOnce((double*) src, dst, dstLength);
+			}
+		}
+
 		public int Convolve(double* src, int srcLength, double* dst, int dstLength) {
 			var input = new UnionBuffer(delayData.Data, delay * Size, (IntPtr) src, srcLength * Size);
-			int kernelLength = kernel.Length, offset = 0;
+			int kernelLength = kernel.Length, offset = 0, step, copyLength;
 			int outLen = Math.Max(Math.Min(delay + srcLength - (kernelLength - 1), dstLength), 0);
+			IntPtr tempInput;
+			bool fast = fft != null;
 
-			if (fft != null) {
-				int step = kernelLength + 1;
-
-				for (; outLen >= step; outLen -= step, offset += step) {
-					input.CopyTo(offset * Size, fftIn, fft.FFTSize * Size);
-					FFTConvolveOnce(dst, step);
-					dst += step;
-				}
-				if (outLen > 0) {
-					input.CopyTo(offset * Size, fftIn, (outLen + kernelLength - 1) * Size);
-					FFTConvolveOnce(dst, outLen);
-					offset += outLen;
-				}
+			if (fast) {
+				copyLength = fft.FFTSize;
+				tempInput = fftIn;
+				step = kernelLength + 1;
 			} else {
-				input.ForEach(0, outLen * Size, (data, len) => {
-					len /= Size;
-					ConvolveOnce((double*) data, dst + offset, len);
-					offset += len;
-				});
+				copyLength = FixedStep + kernelLength - 1;
+				tempBuffer.Resize(copyLength * Size);
+				tempInput = tempBuffer.data;
+				step = FixedStep;
+			}
+
+			for (; outLen >= step; outLen -= step, offset += step) {
+				input.CopyTo(offset * Size, tempInput, copyLength * Size);
+				ConvolveOnce(tempInput, dst + offset, step, fast);
+			}
+			if (outLen > 0) {
+				input.CopyTo(offset * Size, tempInput, (outLen + kernelLength - 1) * Size);
+				ConvolveOnce(tempInput, dst + offset, outLen, fast);
+				offset += outLen;
 			}
 
 			delay = Math.Min(Math.Max(kernelLength - 1, delay + srcLength - dstLength), delay + srcLength);
