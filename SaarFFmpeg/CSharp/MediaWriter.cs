@@ -238,6 +238,8 @@ namespace Saar.FFmpeg.CSharp {
 				ref FixedAudioFrame fixedAudioFrame = ref fixedAudioFrames[encoder.StreamIndex];
 				if (fixedAudioFrame == null)
 					fixedAudioFrame = new FixedAudioFrame(audioFrame.format, audioEncoder.RequestSamples);
+				if (fixedAudioFrame.Frame.SampleCount != audioEncoder.RequestSamples)
+					throw new InvalidOperationException();
 
 				fixedAudioFrame.AppendForEach(audioFrame, f => {
 					if (encoder.Encode(f, packet)) {
@@ -283,13 +285,10 @@ namespace Saar.FFmpeg.CSharp {
 		public void Flush() {
 			if (readyEncoders == null) return;
 
-			readyEncoders = new HashSet<Encoder>(encoders);
-			while (true) {
-				var encoder = readyEncoders.Minimal(e => e.InputFrames * e.codecContext->TimeBase.Value);
-				if (encoder == null) break;
-
-				var fixedFrame = fixedAudioFrames[encoder.StreamIndex];
-				if (fixedFrame != null) {
+			for (int i = 0; i < fixedAudioFrames.Length; i++) {
+				var fixedFrame = fixedAudioFrames[i];
+				if (fixedFrame != null && fixedFrame.Offset > 0) {
+					var encoder = encoders[i];
 					using (var tempFrame = new AudioFrame(fixedFrame.Frame.format)) {
 						tempFrame.Resize(fixedFrame.Offset);
 						fixedFrame.Frame.CopyToNoResize(0, fixedFrame.Offset, tempFrame);
@@ -297,12 +296,17 @@ namespace Saar.FFmpeg.CSharp {
 					}
 					fixedFrame.Frame.Dispose();
 					fixedAudioFrames[encoder.StreamIndex] = null;
-				} else if (encoder.Encode(null, packet)) {
-					InternalWrite(packet);
-				} else {
-					readyEncoders.Remove(encoder);
-					formatContext->Streams[encoder.StreamIndex]->Duration = encoder.InputTimestamp.Ticks / 10;
 				}
+			}
+
+			readyEncoders = new HashSet<Encoder>(encoders);
+			while (true) {
+				var encoder = readyEncoders.Minimal(e => e.InputFrames * e.codecContext->TimeBase.Value);
+				if (encoder == null) break;
+
+				while (encoder.Encode(null, packet)) InternalWrite(packet);
+				readyEncoders.Remove(encoder);
+				formatContext->Streams[encoder.StreamIndex]->Duration = encoder.InputTimestamp.Ticks / 10;
 			}
 
 			int result = FF.av_write_trailer(formatContext);

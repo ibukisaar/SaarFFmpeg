@@ -10,14 +10,11 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 namespace Saar.FFmpeg.CSharp {
 	unsafe public abstract class Encoder : Codec {
 		protected long inputFrames;
-		protected long outputFrames;
 		protected long encodeFrames;
 
 		public long InputFrames => inputFrames;
-		public long OutputFrames => outputFrames;
 		public long EncodeFrames => encodeFrames;
 		public virtual TimeSpan InputTimestamp => TimeSpan.FromSeconds(inputFrames * codecContext->TimeBase.Value);
-		public virtual TimeSpan OutputTimestamp => TimeSpan.FromSeconds(outputFrames * codecContext->TimeBase.Value);
 
 		public Encoder(AVCodecID codecID) : base(codecID) { }
 

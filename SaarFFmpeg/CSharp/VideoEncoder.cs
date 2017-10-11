@@ -23,9 +23,6 @@ namespace Saar.FFmpeg.CSharp {
 		public override TimeSpan InputTimestamp
 			=> TimeSpan.FromTicks(inputFrames * 10000000 * framePerSecond.den / framePerSecond.num);
 
-		public override TimeSpan OutputTimestamp
-			=> TimeSpan.FromTicks(outputFrames * 10000000 * framePerSecond.den / framePerSecond.num);
-
 		public VideoEncoder(AVCodecID codecID, VideoFormat format, VideoEncoderParameters encoderParams = null) : base(codecID) {
 			encoderParams = encoderParams ?? VideoEncoderParameters.Default;
 			if (codec->Type != AVMediaType.Video)
@@ -185,11 +182,10 @@ namespace Saar.FFmpeg.CSharp {
 				encodeFrames = 1;
 			} else {
 				int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, null, &gotPicture);
-				if (result < 0) throw new CSharp.FFmpegException(result, "视频编码发生错误");
+				if (result < 0) throw new FFmpegException(result, "视频编码发生错误");
 			}
 
 			if (gotPicture != 0) {
-				outputFrames += encodeFrames;
 				ConfigPakcet(outPacket);
 				return true;
 			}

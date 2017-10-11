@@ -21,9 +21,6 @@ namespace Saar.FFmpeg.CSharp {
 		public override TimeSpan InputTimestamp
 			=> TimeSpan.FromTicks(inputFrames * 10000000 / outFormat.SampleRate);
 
-		public override TimeSpan OutputTimestamp
-			=> TimeSpan.FromTicks(outputFrames * 10000000 / outFormat.SampleRate);
-
 		public AudioEncoder(AVCodecID codecID, AudioFormat inFormat)
 			: this(codecID, inFormat, BitRate.Zero) { }
 
@@ -155,7 +152,7 @@ namespace Saar.FFmpeg.CSharp {
 					frame = tempFrame;
 				} else {
 					resampler.ResampleFinal(tempFrame);
-					if (tempFrame.sampleCount > 0) {
+					if (tempFrame.SampleCount > 0) {
 						frame = tempFrame;
 					}
 				}
@@ -176,11 +173,10 @@ namespace Saar.FFmpeg.CSharp {
 				inputFrames += encodeFrames;
 			} else {
 				int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, null, &gotPicture);
-				if (result < 0) throw new CSharp.FFmpegException(result, "音频编码发生错误");
+				if (result < 0) throw new FFmpegException(result, "音频编码发生错误");
 			}
 
 			if (gotPicture != 0) {
-				outputFrames += encodeFrames;
 				ConfigPakcet(outPacket);
 				return true;
 			}
