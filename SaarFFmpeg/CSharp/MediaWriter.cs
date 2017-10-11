@@ -110,7 +110,7 @@ namespace Saar.FFmpeg.CSharp {
 						var stream = FF.avformat_new_stream(formatContext, decoder.codec);
 						if (stream == null) throw new InvalidOperationException("无法创建流");
 						int result = FF.avcodec_copy_context(stream->Codec, decoder.codecContext);
-						if (result < 0) throw new CSharp.FFmpegException(result);
+						if (result < 0) throw new FFmpegException(result);
 						stream->Codec->CodecTag = 0;
 						if (outputFormat->Flags.HasFlag(AVFmt.GlobalHeader)) {
 							stream->Codec->Flags |= AVCodecFlag.GlobalHeader;
@@ -227,7 +227,7 @@ namespace Saar.FFmpeg.CSharp {
 		private void InternalWrite(Packet packet) {
 			if (packet.Size > 0) {
 				var result = FF.av_interleaved_write_frame(formatContext, packet.packet);
-				if (result < 0) throw new CSharp.FFmpegException(result);
+				if (result < 0) throw new FFmpegException(result);
 			}
 		}
 
@@ -259,7 +259,7 @@ namespace Saar.FFmpeg.CSharp {
 		public bool Write(RequestFrameHandle handler) {
 			if (readyEncoders == null) throw new InvalidOperationException($"该{nameof(MediaWriter)}对象未初始化或已释放");
 
-			var encoder = readyEncoders.OrderBy(e => e.InputFrames * e.codecContext->TimeBase.Value).FirstOrDefault();
+			var encoder = readyEncoders.Minimal(e => e.InputFrames * e.codecContext->TimeBase.Value);
 			if (encoder == null) return false;
 
 			var frame = handler(encoder);
@@ -283,9 +283,9 @@ namespace Saar.FFmpeg.CSharp {
 		public void Flush() {
 			if (readyEncoders == null) return;
 
+			readyEncoders = new HashSet<Encoder>(encoders);
 			while (true) {
-				readyEncoders = new HashSet<Encoder>(encoders);
-				var encoder = readyEncoders.OrderBy(e => e.InputFrames * e.codecContext->TimeBase.Value).FirstOrDefault();
+				var encoder = readyEncoders.Minimal(e => e.InputFrames * e.codecContext->TimeBase.Value);
 				if (encoder == null) break;
 
 				var fixedFrame = fixedAudioFrames[encoder.StreamIndex];
@@ -306,7 +306,7 @@ namespace Saar.FFmpeg.CSharp {
 			}
 
 			int result = FF.av_write_trailer(formatContext);
-			if (result < 0) throw new CSharp.FFmpegException(result);
+			if (result < 0) throw new FFmpegException(result);
 			readyEncoders = null;
 		}
 

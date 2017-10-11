@@ -22,5 +22,24 @@ namespace Saar.FFmpeg.CSharp {
 		public static bool EqualsType(this AVSampleFormat @this, AVSampleFormat other) {
 			return @this.ToPacked() == other.ToPacked();
 		}
+
+		public static T Minimal<T, E>(this IEnumerable<T> @this, Func<T, E> map) where E : IComparable<E> {
+			using (var enumer = @this.GetEnumerator()) {
+				if (!enumer.MoveNext()) return default(T);
+
+				var result = enumer.Current;
+				var minValue = map(result);
+
+				while (enumer.MoveNext()) {
+					var otherValue = map(enumer.Current);
+					if (otherValue.CompareTo(minValue) < 0) {
+						result = enumer.Current;
+						minValue = otherValue;
+					}
+				}
+
+				return result;
+			}
+		}
 	}
 }

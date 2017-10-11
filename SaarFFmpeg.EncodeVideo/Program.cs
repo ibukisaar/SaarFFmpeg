@@ -12,7 +12,7 @@ namespace SaarFFmpeg.EncodeVideo {
 			var audioFormat = new AudioFormat(44100, AVChannelLayout.LayoutStereo, AVSampleFormat.FloatPlanar);
 			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Bgr24);
 			using (var writer = new MediaWriter(@"Z:\test.mkv")
-				.AddVideo(videoFormat, new VideoEncoderParameters() { FrameRate = new Fraction(60, 1) })
+				.AddVideo(videoFormat)
 				.AddAudio(audioFormat)
 				.Initialize()) {
 
