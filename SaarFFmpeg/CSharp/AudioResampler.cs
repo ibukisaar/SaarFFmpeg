@@ -61,13 +61,13 @@ namespace Saar.FFmpeg.CSharp {
 		/// <returns>返回输出的采样个数</returns>
 		public int Resample(IntPtr inDatas, int inSampleCount, IntPtr outDatas, int outSampleCount) {
 			int resultSampleCount = FF.swr_convert(ctx, (byte**) outDatas, outSampleCount, (byte**) inDatas, inSampleCount);
-			if (resultSampleCount < 0) throw new CSharp.FFmpegException(resultSampleCount);
+			if (resultSampleCount < 0) throw new FFmpegException(resultSampleCount);
 			return resultSampleCount;
 		}
 
 		/// <summary>
 		/// 重采样
-		/// <para>参考：<seealso cref="Resample(IntPtr inDatas, int inSampleCount, IntPtr outDatas, int outSampleCount)"/></para>
+		/// <para>参考：<see cref="Resample(IntPtr, int, IntPtr, int)"/></para>
 		/// </summary>
 		/// <param name="inDatas"></param>
 		/// <param name="inSampleCount"></param>
@@ -89,7 +89,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		/// <summary>
 		/// 重采样
-		/// <para>参考：<seealso cref="Resample(IntPtr inDatas, int inSampleCount, IntPtr outDatas, int outSampleCount)"/></para>
+		/// <para>参考：<see cref="Resample(IntPtr, int, IntPtr, int)"/></para>
 		/// </summary>
 		/// <param name="inArrays"></param>
 		/// <param name="inSampleCount"></param>
@@ -162,6 +162,11 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Resample(AudioFrame inFrame, AudioFrame outFrame) {
+			if (inFrame == null) {
+				ResampleFinal(outFrame);
+				return;
+			}
+
 			if (!Source.Equals(inFrame.format))
 				throw new ArgumentException("输入帧的格式和重采样器的源格式不一致", nameof(inFrame));
 

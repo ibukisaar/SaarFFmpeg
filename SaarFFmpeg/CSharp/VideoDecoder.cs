@@ -51,10 +51,7 @@ namespace Saar.FFmpeg.CSharp {
 			if (videoFrame == null) {
 				throw new ArgumentException($"{nameof(outFrame)}必须是{nameof(VideoFrame)}类型且不为null。");
 			}
-
-			if (packet.StreamIndex != StreamIndex) {
-				throw new ArgumentException($"无法解码该{nameof(packet)}，原因是({nameof(packet.StreamIndex)}={packet.StreamIndex})不等于({nameof(StreamIndex)}={StreamIndex})。");
-			}
+			
 			int gotPicture = 0;
 			int resultCode = FF.avcodec_decode_video2(codecContext, outFrame.frame, &gotPicture, packet.packet);
 			if (resultCode < 0) throw new CSharp.FFmpegException(resultCode, "视频解码发生错误");

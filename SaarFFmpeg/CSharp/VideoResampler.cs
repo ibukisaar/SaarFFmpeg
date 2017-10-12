@@ -14,10 +14,12 @@ namespace Saar.FFmpeg.CSharp {
 
 		public VideoFormat Source { get; }
 		public VideoFormat Destination { get; }
+		public SwsFlags Flags { get; }
 
 		public VideoResampler(VideoFormat source, VideoFormat destination, SwsFlags flags = SwsFlags.FastBilinear) {
 			Source = source;
 			Destination = destination;
+			Flags = flags;
 
 			ctx = FF.sws_getContext(
 				source.Width, source.Height, source.PixelFormat,
@@ -33,7 +35,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Resample(IntPtr srcDatas, IntPtr srcLengths, IntPtr dstDatas, IntPtr dstLengths) {
-			FF.sws_scale(ctx, (byte**) srcDatas, (int*) srcLengths, 0, Source.Height, (byte**) dstDatas, (int*) dstLengths);
+			FF.sws_scale(ctx, (byte**)srcDatas, (int*)srcLengths, 0, Source.Height, (byte**)dstDatas, (int*)dstLengths);
 		}
 
 		internal void InternalResample(VideoFrame frame) {
@@ -42,7 +44,7 @@ namespace Saar.FFmpeg.CSharp {
 
 			fixed (IntPtr* dst = frame.datas)
 			fixed (int* dstLinesize = Destination.strides) {
-				Resample((IntPtr) (&frame.frame->Data), (IntPtr) frame.frame->Linesize, (IntPtr) dst, (IntPtr) dstLinesize);
+				Resample((IntPtr)(&frame.frame->Data), (IntPtr)frame.frame->Linesize, (IntPtr)dst, (IntPtr)dstLinesize);
 			}
 		}
 
@@ -56,7 +58,7 @@ namespace Saar.FFmpeg.CSharp {
 			fixed (int* inputLengths = Source.strides)
 			fixed (IntPtr* output = dst.datas)
 			fixed (int* outputLengths = Destination.strides) {
-				Resample((IntPtr) input, (IntPtr) inputLengths, (IntPtr) output, (IntPtr) outputLengths);
+				Resample((IntPtr)input, (IntPtr)inputLengths, (IntPtr)output, (IntPtr)outputLengths);
 			}
 		}
 	}

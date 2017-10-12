@@ -9,7 +9,7 @@ using Saar.FFmpeg.FFTW;
 namespace Saar.FFmpeg.CSharp.DSP {
 	unsafe public sealed class DoubleFFT : DoubleFFTBase {
 		public static DoubleFFT Create(int fftSize)
-			=> Create(typeof(DoubleFFT), fftSize, () => new DoubleFFT(fftSize));
+			=> Create(fftSize, () => new DoubleFFT(fftSize));
 
 		public override int InputBytes => fftSize * sizeof(double);
 

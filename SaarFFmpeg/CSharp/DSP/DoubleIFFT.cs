@@ -8,7 +8,7 @@ using Saar.FFmpeg.FFTW;
 namespace Saar.FFmpeg.CSharp.DSP {
 	public sealed class DoubleIFFT : DoubleFFTBase {
 		public static DoubleIFFT Create(int fftSize)
-			=> Create(typeof(DoubleIFFT), fftSize, () => new DoubleIFFT(fftSize));
+			=> Create(fftSize, () => new DoubleIFFT(fftSize));
 
 		public override int InputBytes => fftComplexCount * sizeof(double) * 2;
 

@@ -114,6 +114,7 @@
     <Compile Include="Enumerates\AVPictureStructure.cs" />
     <Compile Include="Enumerates\AVPictureType.cs" />
     <Compile Include="Enumerates\AVPixelFormat.cs" />
+    <Compile Include="Enumerates\AVPixelFormatFlag.cs" />
     <Compile Include="Enumerates\AVPktFlag.cs" />
     <Compile Include="Enumerates\AVRounding.cs" />
     <Compile Include="Enumerates\AVSampleFormat.cs" />

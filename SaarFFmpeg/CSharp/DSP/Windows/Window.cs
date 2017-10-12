@@ -11,5 +11,12 @@ namespace Saar.FFmpeg.CSharp.DSP.Windows {
 		public Window(int fftSize) {
 			window = new double[fftSize];
 		}
+
+		unsafe public void Apply(double* input, double* output) {
+			int length = window.Length;
+			for (int i = 0; i < length; i++) {
+				output[i] = input[i] * window[i];
+			}
+		}
 	}
 }

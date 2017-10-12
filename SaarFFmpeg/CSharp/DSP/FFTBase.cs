@@ -24,13 +24,13 @@ namespace Saar.FFmpeg.CSharp.DSP {
 
 		private static readonly IDictionary<OptimalPlanKey, FFTBase> optimalPlanMap = new ConcurrentDictionary<OptimalPlanKey, FFTBase>();
 
-		protected static T Create<T>(Type type, int fftSize, Func<T> creator) where T : FFTBase {
+		protected static T Create<T>(int fftSize, Func<T> creator) where T : FFTBase {
 			lock (optimalPlanMap) {
-				if (optimalPlanMap.TryGetValue(new OptimalPlanKey(type, fftSize), out var result)) {
+				if (optimalPlanMap.TryGetValue(new OptimalPlanKey(typeof(T), fftSize), out var result)) {
 					result.Ref();
 				} else {
 					result = creator();
-					optimalPlanMap.Add(new OptimalPlanKey(type, fftSize), result);
+					optimalPlanMap.Add(new OptimalPlanKey(typeof(T), fftSize), result);
 				}
 				return result as T;
 			}
@@ -118,7 +118,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 				} else {
 					DestroyPlan(fftPlan);
 				}
-				
+
 				fftPlan = IntPtr.Zero;
 			}
 		}

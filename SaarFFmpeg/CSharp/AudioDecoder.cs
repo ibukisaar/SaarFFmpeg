@@ -54,10 +54,6 @@ namespace Saar.FFmpeg.CSharp {
 			}
 
 			if (packet != null) {
-				if (packet.StreamIndex != StreamIndex) {
-					throw new ArgumentException($"无法解码该{nameof(packet)}，原因是流编号和解码器不一致。");
-				}
-
 				int gotPicture = 0;
 				int resultCode = FF.avcodec_decode_audio4(codecContext, outFrame.frame, &gotPicture, packet.packet);
 				if (resultCode < 0) throw new CSharp.FFmpegException(resultCode, "音频解码发生错误");

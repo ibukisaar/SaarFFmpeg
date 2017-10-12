@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Saar.FFmpeg.CSharp;
 
 namespace Saar.FFmpeg.Structs {
 	[StructLayout(LayoutKind.Sequential)]
@@ -12,7 +13,7 @@ namespace Saar.FFmpeg.Structs {
 		public byte NbComponents;
 		public byte Log2ChromeW;
 		public byte Log2ChromeH;
-		public ulong Flags;
+		public AVPixelFormatFlag Flags;
 		public AVComponentDescriptor Component0;
 		public AVComponentDescriptor Component1;
 		public AVComponentDescriptor Component2;

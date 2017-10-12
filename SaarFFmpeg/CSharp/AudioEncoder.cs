@@ -66,7 +66,7 @@ namespace Saar.FFmpeg.CSharp {
 				var rates = codecContext->Flags;
 
 				int result = FF.avcodec_open2(codecContext, codec, null);
-				if (result < 0) throw new CSharp.FFmpegException(result);
+				if (result < 0) throw new FFmpegException(result);
 			} catch {
 				Dispose();
 				throw;
@@ -158,14 +158,14 @@ namespace Saar.FFmpeg.CSharp {
 				}
 			}
 
-			outPacket.Unref();
+			outPacket.ReleaseNativeBuffer();
 			int gotPicture = 0;
 			if (frame != null) {
 				try {
 					frame.SetupToNative();
 					frame.frame->Pts = FF.av_rescale_q(inputFrames, new AVRational(1, OutFormat.SampleRate), codecContext->TimeBase);
 					int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, frame.frame, &gotPicture);
-					if (result < 0) throw new CSharp.FFmpegException(result, "音频编码发生错误");
+					if (result < 0) throw new FFmpegException(result, "音频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
 				}

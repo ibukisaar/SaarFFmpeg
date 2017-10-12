@@ -16,6 +16,7 @@ namespace Saar.FFmpeg.CSharp {
 		internal AVCodecContext* codecContext;
 		internal AVCodec* codec;
 
+		public AVMediaType CodecType => codec->Type;
 		public AVCodecID ID => codecContext->CodecId;
 		public int StreamIndex => stream != null ? stream->Index : -1;
 		public string Name { get; }

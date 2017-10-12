@@ -13,9 +13,9 @@ namespace Saar.FFmpeg.CSharp {
 		internal IntPtr[] datas = new IntPtr[8];
 		internal int sampleCount;
 
-		public int TotalBytes => format.GetBytes(sampleCount);
+		public int TotalBytes => format?.GetBytes(sampleCount) ?? 0;
 		public IntPtr[] Data => datas;
-		public int LineDataBytes => format.GetLineBytes(SampleCount);
+		public int LineDataBytes => format?.GetLineBytes(SampleCount) ?? 0;
 		public int SampleCount => sampleCount;
 		public AudioFormat Format => format;
 		public override AVMediaType Type => AVMediaType.Audio;
@@ -42,7 +42,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Update(int sampleCount, IntPtr newData) {
-			if (format.LineCount != 1) throw new ArgumentException("数组长度和数据行数不一致", nameof(newData));
+			if (format.LineCount != 1) throw new ArgumentException($"该{nameof(AudioFrame)}对象拥有大于1的数据行数，因此不能调用此方法", nameof(newData));
 			Resize(sampleCount);
 			FF.av_samples_copy(datas, &newData, 0, 0, sampleCount, format.Channels, format.SampleFormat);
 		}
@@ -57,13 +57,13 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void Update(int sampleCount, params IntPtr[] newDatas) {
-			if (newDatas.Length != format.LineCount) throw new ArgumentException("数组长度和数据行数不一致", nameof(newDatas));
+			if (newDatas.Length != format.LineCount) throw new ArgumentException("参数个数和数据行数不一致", nameof(newDatas));
 			Resize(sampleCount);
 			FF.av_samples_copy(datas, newDatas, 0, 0, sampleCount, format.Channels, format.SampleFormat);
 		}
 
 		public void Update(int sampleCount, params Array[] newDatas) {
-			if (newDatas.Length != format.LineCount) throw new ArgumentException("数组长度和数据行数不一致", nameof(newDatas));
+			if (newDatas.Length != format.LineCount) throw new ArgumentException("数组个数和数据行数不一致", nameof(newDatas));
 			Resize(sampleCount);
 
 			int lineBytes = format.GetLineBytes(sampleCount);

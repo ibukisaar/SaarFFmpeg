@@ -28,7 +28,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public MediaStream(Stream baseStream, bool write = false, AVOutputFormat* outputFormat = null) {
 			if (write && !baseStream.CanWrite)
-				throw new ArgumentException($"流不能被写入，请确保{nameof(Stream)}.{nameof(baseStream.CanWrite)}为true");
+				throw new ArgumentException($"流不能被写入，请确保Stream.CanWrite为true");
 
 			if (baseStream.CanRead) procRead = Read;
 			if (write && baseStream.CanWrite) procWrite = Write;

@@ -12,7 +12,6 @@ namespace Saar.FFmpeg.CSharp {
 	unsafe public abstract class Frame : DisposableObject {
 		internal AVFrame* frame;
 		internal AutoCache cache = new AutoCache();
-		internal bool isSetupNative = false;
 
 		public abstract AVMediaType Type { get; }
 
@@ -22,21 +21,21 @@ namespace Saar.FFmpeg.CSharp {
 
 		internal abstract void UpdateFromNative();
 
-		internal void Unref() {
+		internal void ReleaseNativeBuffer() {
 			FF.av_frame_unref(frame);
 		}
 
 		protected abstract void Setup();
 
 		internal void SetupToNative() {
-			if (isSetupNative == true) return;
-			isSetupNative = true;
+			if (frame->ExtendedData != null) {
+				ReleaseNativeBuffer();
+			}
 			Setup();
 		}
 
 		internal void ReleaseSetup() {
 			frame->ExtendedData = null;
-			isSetupNative = false;
 		}
 
 		protected override void Dispose(bool disposing) {

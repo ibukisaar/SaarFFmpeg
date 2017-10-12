@@ -20,42 +20,41 @@ namespace Saar.FFmpeg.CSharp {
 		public int[] Strides => strides;
 
 		unsafe public VideoFormat(int width, int height, AVPixelFormat pixelFormat, int align = 8) {
-			if (align <= 0) align = 1;
+			if (!align.IsPowOf2()) throw new ArgumentException($"对齐数必须是2的整数幂", nameof(align));
 
 			Width = width;
 			Height = height;
 			PixelFormat = pixelFormat;
 			Align = align;
-			Bytes = FF.av_image_get_buffer_size(pixelFormat, width, height, align);
-			PlaneCount = FF.av_pix_fmt_count_planes(pixelFormat);
+			Bytes = FF.av_image_get_buffer_size(pixelFormat, width, height, align).CheckFFmpegCode();
+			PlaneCount = FF.av_pix_fmt_count_planes(pixelFormat).CheckFFmpegCode();
+
+			//--- 参考 imgutils.c 的 av_image_fill_arrays
+			var stridesTmp = stackalloc int[4];
+			FF.av_image_fill_linesizes(stridesTmp, pixelFormat, width).CheckFFmpegCode();
+
 			strides = new int[PlaneCount];
-			fixed (int* linesize = strides) {
-				FF.av_image_fill_linesizes(linesize, pixelFormat, width);
-			}
 			for (int i = 0; i < PlaneCount; i++) {
-				int tail = strides[i] % align;
-				if (tail != 0) {
-					strides[i] += align - tail;
-				}
+				strides[i] = (stridesTmp[i] + (align - 1)) & ~(align - 1);
 			}
+			//---
 		}
 
 		public static bool operator ==(VideoFormat left, VideoFormat right) {
 			if (ReferenceEquals(left, right)) return true;
-			if (ReferenceEquals(left, null)) return false;
+			if (left is null) return false;
 			return left.Equals(right);
 		}
 
 		public static bool operator !=(VideoFormat left, VideoFormat right) {
 			if (ReferenceEquals(left, right)) return false;
-			if (ReferenceEquals(left, null)) return true;
+			if (left is null) return true;
 			return !left.Equals(right);
 		}
 
 		public override bool Equals(object obj) {
-			var other = obj as VideoFormat;
-			if (ReferenceEquals(other, null)) return false;
-			return Width == other.Width
+			return obj is VideoFormat other
+				&& Width == other.Width
 				&& Height == other.Height
 				&& PixelFormat == other.PixelFormat
 				&& Align == other.Align;

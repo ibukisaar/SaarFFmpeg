@@ -29,14 +29,14 @@ namespace Saar.FFmpeg.CSharp {
 			packet->Size = 0;
 		}
 
-		internal void Unref() {
+		internal void ReleaseNativeBuffer() {
 			FF.av_packet_unref(packet);
 		}
 
 		protected override void Dispose(bool disposing) {
 			if (packet == null) return;
 
-			Unref();
+			ReleaseNativeBuffer();
 
 			FF.av_packet_free(ref packet);
 		}

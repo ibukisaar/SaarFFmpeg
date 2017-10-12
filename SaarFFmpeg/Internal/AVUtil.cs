@@ -369,6 +369,8 @@ namespace Saar.FFmpeg.Internal {
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public static extern int av_image_fill_linesizes(int* linesizes_Array4, AVPixelFormat pix_fmt, int width);
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
+		public static extern int av_image_fill_linesizes(int[] linesizes_Array4, AVPixelFormat pix_fmt, int width);
+		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public static extern int av_image_fill_pointers(byte** data_Array4, AVPixelFormat pix_fmt, int height, byte* ptr, int* linesizes_Array4);
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public static extern int av_image_alloc(byte** pointers_Array4, int* linesizes_Array4, int w, int h, AVPixelFormat pix_fmt, int align);

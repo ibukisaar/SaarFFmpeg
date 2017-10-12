@@ -67,6 +67,18 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			return (int) Math.Round(frequency * fftSize / sampleRate);
 		}
 
+		public static int CutFrequencyLength(int fftSize, double minFrequency, double maxFrequency, int sampleRate, int maxLength) {
+			int minIndex = Math.Max(GetFrequencyIndex(fftSize, minFrequency, sampleRate), 0);
+			int maxIndex = Math.Min(GetFrequencyIndex(fftSize, maxFrequency, sampleRate) + 1, maxLength);
+			return maxIndex - minIndex;
+		}
+
+		public static void CutFrequency(int fftSize, double* inData, int inLength, double minFrequency, double maxFrequency, int sampleRate, double* outData, int outLength) {
+			int minIndex = Math.Max(GetFrequencyIndex(fftSize, minFrequency, sampleRate), 0);
+			int maxIndex = Math.Min(GetFrequencyIndex(fftSize, maxFrequency, sampleRate) + 1, inLength);
+			Buffer.MemoryCopy(inData + minIndex, outData, outLength * sizeof(double), (maxIndex - minIndex) * sizeof(double));
+		}
+
 		private static double Max(double* data, int length, double index1, double index2) {
 			double y = 0;
 
@@ -80,7 +92,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 			return y;
 		}
 
-		public static void Logarithm(double* src, int srcWidth, int srcMinFrequency, int srcMaxFrequency, double* dst, int dstWidth, ILogarithm log) {
+		public static void Logarithm(double* src, int srcWidth, double srcMinFrequency, double srcMaxFrequency, double* dst, int dstWidth, ILogarithm log) {
 			if (log != null) {
 				double scale = (srcWidth - 1) / (srcMaxFrequency - srcMinFrequency);
 				double minMel = log.Log(srcMinFrequency);

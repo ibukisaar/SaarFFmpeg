@@ -21,7 +21,7 @@ namespace Saar.FFmpeg.CSharp {
 		public double FramesPerSecond => framePerSecond.Value;
 
 		public override TimeSpan InputTimestamp
-			=> TimeSpan.FromTicks(inputFrames * 10000000 * framePerSecond.den / framePerSecond.num);
+			=> TimeSpan.FromTicks(inputFrames * 10000000 * framePerSecond.Den / framePerSecond.Num);
 
 		public VideoEncoder(AVCodecID codecID, VideoFormat format, VideoEncoderParameters encoderParams = null) : base(codecID) {
 			encoderParams = encoderParams ?? VideoEncoderParameters.Default;
@@ -59,7 +59,7 @@ namespace Saar.FFmpeg.CSharp {
 				codecContext->Width = OutFormat.Width;
 				codecContext->Height = OutFormat.Height;
 				codecContext->BitRate = encoderParams.BitRate.Value;
-				codecContext->TimeBase = encoderParams.FrameRate.ToReciprocal();
+				codecContext->TimeBase = encoderParams.FrameRate.Reciprocal;
 				codecContext->Framerate = encoderParams.FrameRate;
 				if (encoderParams.GopSize != 0)
 					codecContext->GopSize = encoderParams.GopSize;
@@ -166,12 +166,12 @@ namespace Saar.FFmpeg.CSharp {
 				}
 			}
 
-			outPacket.Unref();
+			outPacket.ReleaseNativeBuffer();
 			int gotPicture = 0;
 			if (frame != null) {
 				try {
 					frame.SetupToNative();
-					frame.frame->Pts = FF.av_rescale_q(inputFrames, framePerSecond.ToReciprocal(), codecContext->TimeBase);
+					frame.frame->Pts = FF.av_rescale_q(inputFrames, framePerSecond.Reciprocal, codecContext->TimeBase);
 					int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture);
 					if (result < 0) throw new CSharp.FFmpegException(result, "视频编码发生错误");
 				} finally {

@@ -8,7 +8,7 @@ using Saar.FFmpeg.FFTW;
 namespace Saar.FFmpeg.CSharp.DSP {
 	public sealed class FloatFFT : FloatFFTBase {
 		public static FloatFFT Create(int fftSize)
-			=> Create(typeof(FloatFFT), fftSize, () => new FloatFFT(fftSize));
+			=> Create(fftSize, () => new FloatFFT(fftSize));
 
 		public override int InputBytes => fftSize * sizeof(float);
 

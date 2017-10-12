@@ -8,39 +8,44 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	public struct Fraction : IComparable<Fraction> {
-		internal int num;
-		internal int den;
+		public readonly int Num;
+		public readonly int Den;
 
-		public int Numerator => num;
-		public int Denominator => den;
-		public bool Invalid => den == 0;
-		public double Value => (double) num / den;
+		public bool Invalid => Den == 0;
+		public double Value => (double) Num / Den;
+		public Fraction Reciprocal => new Fraction(Den, Num);
 
 		public Fraction(int num, int den) {
-			this.num = num;
-			this.den = den;
+			if (num == 0) {
+				this.Num = 0;
+				this.Den = 1;
+			} else if (den == 0) {
+				this.Num = 0;
+				this.Den = 0;
+			} else {
+				int r = GCD(num, den);
+				this.Num = num / r;
+				this.Den = den / r;
+			}
 		}
 
 		public Fraction(int num) : this(num, 1) { }
 
-		public Fraction ToReciprocal() => new Fraction(den, num);
+		internal AVRational ToAVRational() => new AVRational { Num = Num, Den = Den };
 
-		internal AVRational ToAVRational() => new AVRational { Num = num, Den = den };
-
-		public override string ToString() => $"({num}/{den}={Value})";
+		public override string ToString() => $"({Num}/{Den}={Value})";
 
 
 		public int CompareTo(Fraction other) {
-			return ((long) num * other.den).CompareTo((long) den * other.num);
+			return ((long) Num * other.Den).CompareTo((long) Den * other.Num);
 		}
 
 		public override bool Equals(object obj) {
-			if (!(obj is Fraction)) return false;
-			return CompareTo((Fraction) obj) == 0;
+			return obj is Fraction other && CompareTo(other) == 0;
 		}
 
 		public override int GetHashCode() {
-			return num ^ den;
+			return Num ^ Den;
 		}
 
 		public static implicit operator AVRational(Fraction @this) {
@@ -49,6 +54,11 @@ namespace Saar.FFmpeg.CSharp {
 
 		public static implicit operator Fraction(AVRational rational) {
 			return new Fraction(rational.Num, rational.Den);
+		}
+
+		private static int GCD(int x, int y) {
+			if (y == 0) return x;
+			else return GCD(y, x % y);
 		}
 	}
 }

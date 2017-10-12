@@ -40,9 +40,6 @@ namespace Saar.FFmpeg.Structs {
 		/// <para>对于视频应当设置这个值。</para>
 		/// </summary>
 		public AVRational AvgFrameRate;
-		/// <summary>
-		/// 附带的图片。比如音乐专辑封面。
-		/// </summary>
 		public AVPacket AttachedPic;
 		public AVPacketSideData* SideData;
 		public int NbSideData;

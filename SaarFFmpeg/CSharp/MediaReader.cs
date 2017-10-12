@@ -9,7 +9,6 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public class MediaReader : MediaStream {
-		private string filename;
 		private Packet packet = new Packet();
 		private int defaultStreamIndex = 0;
 
@@ -31,19 +30,17 @@ namespace Saar.FFmpeg.CSharp {
 		public MediaReader(string file) : this(File.OpenRead(file)) { }
 
 		public MediaReader(Stream inputStream) : base(inputStream) {
-			if (!inputStream.CanRead) throw new ArgumentException($"流不能被读取，请确保{nameof(Stream)}.{nameof(inputStream.CanRead)}为true");
-
 			try {
-				filename = (inputStream as FileStream)?.Name;
-
+				if (!inputStream.CanRead) throw new ArgumentException($"流不能被读取，请确保Stream.CanRead为true");
+				
 				int resultCode;
 				fixed (AVFormatContext** pFormatContext = &formatContext) {
 					resultCode = FF.avformat_open_input(pFormatContext, null, null, null);
 				}
-				if (resultCode != 0) throw new CSharp.FFmpegException(resultCode);
+				if (resultCode != 0) throw new FFmpegException(resultCode);
 
 				resultCode = FF.avformat_find_stream_info(formatContext, null);
-				if (resultCode != 0) throw new CSharp.FFmpegException(resultCode);
+				if (resultCode != 0) throw new FFmpegException(resultCode);
 
 				var decoders = new Decoder[StreamCount];
 				for (int i = 0; i < StreamCount; i++) {
@@ -66,7 +63,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public bool ReadPacket(Packet packet, int matchStreamIndex = -1) {
 			while (true) {
-				packet.Unref();
+				packet.ReleaseNativeBuffer();
 
 				int result = FF.av_read_frame(formatContext, packet.packet);
 				if (result != 0) {

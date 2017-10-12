@@ -27,20 +27,41 @@ namespace Saar.FFmpeg.CSharp {
 			Resize();
 		}
 
-		public VideoFrame(VideoFormat format, IntPtr scan0) : this(format) {
-			Update(scan0);
-		}
-
-		public void Update(IntPtr scan0) {
+		public void Update(IntPtr newData, int planeIndex = 0) {
 			if (format == null) throw new InvalidOperationException($"{nameof(VideoFrame)} 对象未指定格式");
-			if (format.PlaneCount != 1) throw new InvalidOperationException($"{nameof(format)}的{nameof(format.PlaneCount)}必须等于1");
+			if (planeIndex < 0 || planeIndex >= format.PlaneCount) throw new ArgumentOutOfRangeException(nameof(planeIndex), $"{nameof(planeIndex)}必须大于等于0，且小于格式的{nameof(format.PlaneCount)}");
 
-			FF.av_image_copy_plane((byte*) datas[0], format.strides[0], (byte*) scan0, format.strides[0], format.strides[0], format.Height);
+			var bytewidth = FF.av_image_get_linesize(format.PixelFormat, format.Width, planeIndex);
+			FF.av_image_copy_plane((byte*) datas[planeIndex], format.strides[planeIndex], (byte*) newData, format.strides[planeIndex], bytewidth, format.Height);
 		}
 
-		public void Update(byte[] bitmapData) {
-			fixed (byte *data = bitmapData) {
-				Update((IntPtr) data);
+		public void Update(params IntPtr[] newDatas) {
+			if (format.PlaneCount != newDatas.Length) throw new InvalidOperationException($"该 {nameof(VideoFrame)} 对象格式的{nameof(format.PlaneCount)}必须等于参数个数");
+
+			for (int i = 0; i < format.PlaneCount; i++) {
+				Update(newDatas[i], i);
+			}
+		}
+
+		public void Update(Array newData, int planeIndex = 0) {
+			var handle = GCHandle.Alloc(newData, GCHandleType.Pinned);
+			try {
+				Update(handle.AddrOfPinnedObject(), planeIndex);
+			} finally {
+				handle.Free();
+			}
+		}
+
+		public void Update(params Array[] newDatas) {
+			if (format.PlaneCount != newDatas.Length) throw new InvalidOperationException($"该 {nameof(VideoFrame)} 对象格式的{nameof(format.PlaneCount)}必须等于数组个数");
+
+			for (int i = 0; i < format.PlaneCount; i++) {
+				var handle = GCHandle.Alloc(newDatas[i], GCHandleType.Pinned);
+				try {
+					Update(handle.AddrOfPinnedObject(), i);
+				} finally {
+					handle.Free();
+				}
 			}
 		}
 
@@ -53,6 +74,11 @@ namespace Saar.FFmpeg.CSharp {
 			fixed (int* linesize = format.strides) {
 				FF.av_image_fill_pointers((byte**) datas, format.PixelFormat, format.Height, (byte*) cache, linesize);
 			}
+		}
+
+		public void Resize(VideoFormat format) {
+			this.format = format;
+			Resize();
 		}
 
 		internal override void UpdateFromNative() {

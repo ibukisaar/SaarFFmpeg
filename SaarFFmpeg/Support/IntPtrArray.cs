@@ -68,14 +68,15 @@ namespace Saar.FFmpeg.CSharp {
 
 		public IntPtr[] ToArray() {
 			List<IntPtr> result = new List<IntPtr>(FixedCount);
-			if (_0 == null) return result.ToArray(); result.Add((IntPtr) _0);
-			if (_1 == null) return result.ToArray(); result.Add((IntPtr) _1);
-			if (_2 == null) return result.ToArray(); result.Add((IntPtr) _2);
-			if (_3 == null) return result.ToArray(); result.Add((IntPtr) _3);
-			if (_4 == null) return result.ToArray(); result.Add((IntPtr) _4);
-			if (_5 == null) return result.ToArray(); result.Add((IntPtr) _5);
-			if (_6 == null) return result.ToArray(); result.Add((IntPtr) _6);
-			if (_7 == null) return result.ToArray(); result.Add((IntPtr) _7);
+			if (_0 == null) goto Result; result.Add((IntPtr) _0);
+			if (_1 == null) goto Result; result.Add((IntPtr) _1);
+			if (_2 == null) goto Result; result.Add((IntPtr) _2);
+			if (_3 == null) goto Result; result.Add((IntPtr) _3);
+			if (_4 == null) goto Result; result.Add((IntPtr) _4);
+			if (_5 == null) goto Result; result.Add((IntPtr) _5);
+			if (_6 == null) goto Result; result.Add((IntPtr) _6);
+			if (_7 == null) goto Result; result.Add((IntPtr) _7);
+			Result:
 			return result.ToArray();
 		}
 	}
@@ -122,10 +123,11 @@ namespace Saar.FFmpeg.CSharp {
 
 		public IntPtr[] ToArray() {
 			List<IntPtr> result = new List<IntPtr>(FixedCount);
-			if (_0 == null) return result.ToArray(); result.Add((IntPtr) _0);
-			if (_1 == null) return result.ToArray(); result.Add((IntPtr) _1);
-			if (_2 == null) return result.ToArray(); result.Add((IntPtr) _2);
-			if (_3 == null) return result.ToArray(); result.Add((IntPtr) _3);
+			if (_0 == null) goto Result; result.Add((IntPtr) _0);
+			if (_1 == null) goto Result; result.Add((IntPtr) _1);
+			if (_2 == null) goto Result; result.Add((IntPtr) _2);
+			if (_3 == null) goto Result; result.Add((IntPtr) _3);
+			Result:
 			return result.ToArray();
 		}
 	}
@@ -188,14 +190,15 @@ namespace Saar.FFmpeg.CSharp {
 
 		public IntPtr[] ToArray() {
 			List<IntPtr> result = new List<IntPtr>(FixedCount);
-			if (_0 == null) return result.ToArray(); result.Add((IntPtr) _0);
-			if (_1 == null) return result.ToArray(); result.Add((IntPtr) _1);
-			if (_2 == null) return result.ToArray(); result.Add((IntPtr) _2);
-			if (_3 == null) return result.ToArray(); result.Add((IntPtr) _3);
-			if (_4 == null) return result.ToArray(); result.Add((IntPtr) _4);
-			if (_5 == null) return result.ToArray(); result.Add((IntPtr) _5);
-			if (_6 == null) return result.ToArray(); result.Add((IntPtr) _6);
-			if (_7 == null) return result.ToArray(); result.Add((IntPtr) _7);
+			if (_0 == null) goto Result; result.Add((IntPtr) _0);
+			if (_1 == null) goto Result; result.Add((IntPtr) _1);
+			if (_2 == null) goto Result; result.Add((IntPtr) _2);
+			if (_3 == null) goto Result; result.Add((IntPtr) _3);
+			if (_4 == null) goto Result; result.Add((IntPtr) _4);
+			if (_5 == null) goto Result; result.Add((IntPtr) _5);
+			if (_6 == null) goto Result; result.Add((IntPtr) _6);
+			if (_7 == null) goto Result; result.Add((IntPtr) _7);
+			Result:
 			return result.ToArray();
 		}
 	}
