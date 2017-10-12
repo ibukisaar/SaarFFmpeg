@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.ConvolverTest", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.FFTWTest", "SaarFFmpeg.FFTWTest\SaarFFmpeg.FFTWTest.csproj", "{EAD981EC-9B4B-4242-8EDD-943A2E79D59F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.FFTVisual", "Saar.FFTVisual\SaarFFmpeg.FFTVisual.csproj", "{4748F8D8-33FD-4319-8195-9FA18A484066}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.FFTVisual", "SaarFFmpeg.FFTVisual\SaarFFmpeg.FFTVisual.csproj", "{4748F8D8-33FD-4319-8195-9FA18A484066}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
