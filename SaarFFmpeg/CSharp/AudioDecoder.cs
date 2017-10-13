@@ -36,7 +36,11 @@ namespace Saar.FFmpeg.CSharp {
 		public AudioResampler Resampler => resampler;
 
 		internal AudioDecoder(AVStream* stream) : base(stream) {
-			InFormat = new AudioFormat(codecContext->SampleRate, codecContext->ChannelLayout, codecContext->SampleFmt);
+			var sampleRate = codecContext->SampleRate;
+			var channelLayout = codecContext->ChannelLayout;
+			var sampleFormat = codecContext->SampleFmt;
+			if (channelLayout == 0) channelLayout = FF.av_get_default_channel_layout(codecContext->Channels);
+			InFormat = new AudioFormat(sampleRate, channelLayout, sampleFormat);
 		}
 
 		protected override void Dispose(bool disposing) {

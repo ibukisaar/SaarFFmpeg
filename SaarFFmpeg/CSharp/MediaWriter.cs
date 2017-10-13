@@ -43,18 +43,17 @@ namespace Saar.FFmpeg.CSharp {
 
 		public delegate Frame RequestFrameHandle(Encoder encoder);
 
-		private bool remuxing = false;
+		//private bool remuxing = false;
 		private Packet packet = new Packet();
 		private AVOutputFormat* outputFormat;
 		private List<Encoder> encoders = new List<Encoder>();
 		private List<Encoder> readyEncoders;
-		private AVFormatContext* inputFmtCtx;
+		//private AVFormatContext* inputFmtCtx;
 		private FixedAudioFrame[] fixedAudioFrames;
-
 		public IReadOnlyList<Encoder> Encoders => encoders;
 
-		public AVCodecID AudioCodecID => remuxing ? inputFmtCtx->AudioCodecId : outputFormat->AudioCodec;
-		public AVCodecID VideoCodecID => remuxing ? inputFmtCtx->VideoCodecId : outputFormat->VideoCodec;
+		//public AVCodecID AudioCodecID => remuxing ? inputFmtCtx->AudioCodecId : outputFormat->AudioCodec;
+		//public AVCodecID VideoCodecID => remuxing ? inputFmtCtx->VideoCodecId : outputFormat->VideoCodec;
 
 		/// <summary>
 		/// 创建一个编码模式的媒体写入器
@@ -76,57 +75,57 @@ namespace Saar.FFmpeg.CSharp {
 			outputFormat = formatContext->Oformat;
 		}
 
-		/// <summary>
-		/// 创建一个封装模式的媒体写入器
-		/// </summary>
-		/// <param name="file"></param>
-		/// <param name="mediaReader"></param>
-		public MediaWriter(string file, MediaReader mediaReader)
-			: base(File.Open(file, FileMode.Create, FileAccess.Write), true, FF.av_guess_format(null, file, null)) {
-			outputFormat = formatContext->Oformat;
-			remuxing = true;
+		///// <summary>
+		///// 创建一个封装模式的媒体写入器
+		///// </summary>
+		///// <param name="file"></param>
+		///// <param name="mediaReader"></param>
+		//public MediaWriter(string file, MediaReader mediaReader)
+		//	: base(File.Open(file, FileMode.Create, FileAccess.Write), true, FF.av_guess_format(null, file, null)) {
+		//	outputFormat = formatContext->Oformat;
+		//	remuxing = true;
 
-			SetEncoders(mediaReader);
-		}
+		//	SetEncoders(mediaReader);
+		//}
 
-		/// <summary>
-		/// 创建一个封装模式的媒体写入器
-		/// </summary>
-		/// <param name="outputStream"></param>
-		/// <param name="mediaName"></param>
-		/// <param name="mediaReader"></param>
-		public MediaWriter(Stream outputStream, string mediaName, MediaReader mediaReader)
-			: base(outputStream, true, FF.av_guess_format(mediaName, null, null)) {
-			outputFormat = formatContext->Oformat;
-			remuxing = true;
+		///// <summary>
+		///// 创建一个封装模式的媒体写入器
+		///// </summary>
+		///// <param name="outputStream"></param>
+		///// <param name="mediaName"></param>
+		///// <param name="mediaReader"></param>
+		//public MediaWriter(Stream outputStream, string mediaName, MediaReader mediaReader)
+		//	: base(outputStream, true, FF.av_guess_format(mediaName, null, null)) {
+		//	outputFormat = formatContext->Oformat;
+		//	remuxing = true;
 
-			SetEncoders(mediaReader);
-		}
+		//	SetEncoders(mediaReader);
+		//}
 
-		private void SetEncoders(MediaReader mediaReader) {
-			try {
-				foreach (var decoder in mediaReader.Decoders) {
-					if (decoder != null) {
-						var stream = FF.avformat_new_stream(formatContext, decoder.codec);
-						if (stream == null) throw new InvalidOperationException("无法创建流");
-						int result = FF.avcodec_copy_context(stream->Codec, decoder.codecContext);
-						if (result < 0) throw new FFmpegException(result);
-						stream->Codec->CodecTag = 0;
-						if (outputFormat->Flags.HasFlag(AVFmt.GlobalHeader)) {
-							stream->Codec->Flags |= AVCodecFlag.GlobalHeader;
-						}
-						stream->TimeBase = mediaReader.formatContext->Streams[decoder.StreamIndex]->TimeBase;
-						//stream->TimeBase = decoder.codecContext->TimeBase;
-						result = FF.avcodec_parameters_from_context(stream->Codecpar, stream->Codec);
-						if (result < 0) throw new FFmpegException(result);
-					}
-				}
-				inputFmtCtx = mediaReader.formatContext;
-			} catch {
-				Dispose();
-				throw;
-			}
-		}
+		//private void SetEncoders(MediaReader mediaReader) {
+		//	try {
+		//		foreach (var decoder in mediaReader.Decoders) {
+		//			if (decoder != null) {
+		//				var stream = FF.avformat_new_stream(formatContext, decoder.codec);
+		//				if (stream == null) throw new InvalidOperationException("无法创建流");
+		//				int result = FF.avcodec_copy_context(stream->Codec, decoder.codecContext);
+		//				if (result < 0) throw new FFmpegException(result);
+		//				stream->Codec->CodecTag = 0;
+		//				if (outputFormat->Flags.HasFlag(AVFmt.GlobalHeader)) {
+		//					stream->Codec->Flags |= AVCodecFlag.GlobalHeader;
+		//				}
+		//				stream->TimeBase = mediaReader.formatContext->Streams[decoder.StreamIndex]->TimeBase;
+		//				//stream->TimeBase = decoder.codecContext->TimeBase;
+		//				result = FF.avcodec_parameters_from_context(stream->Codecpar, stream->Codec);
+		//				if (result < 0) throw new FFmpegException(result);
+		//			}
+		//		}
+		//		inputFmtCtx = mediaReader.formatContext;
+		//	} catch {
+		//		Dispose();
+		//		throw;
+		//	}
+		//}
 
 		public MediaWriter AddAudio(AudioFormat format, BitRate bitRate) {
 			if (readyEncoders != null) throw new InvalidOperationException($"该{nameof(MediaWriter)}对象已经初始化");
@@ -202,34 +201,27 @@ namespace Saar.FFmpeg.CSharp {
 			return this;
 		}
 
-		/// <summary>
-		/// 封装模式专用
-		/// </summary>
-		/// <param name="packet"></param>
-		public void Write(Packet packet) {
-			if (packet.StreamIndex >= 0 && packet.StreamIndex < formatContext->NbStreams) {
-				if (inputFmtCtx != null) {
-					var inTimebase = inputFmtCtx->Streams[packet.StreamIndex]->TimeBase;
-					var outTimebase = formatContext->Streams[packet.StreamIndex]->TimeBase;
-					if (packet.packet->Pts != long.MinValue) {
-						packet.packet->Pts = FF.av_rescale_q(packet.packet->Pts, inTimebase, outTimebase);
-					}
-					if (packet.packet->Dts != long.MinValue) {
-						packet.packet->Dts = FF.av_rescale_q(packet.packet->Dts, inTimebase, outTimebase);
-					}
-					packet.packet->Duration = FF.av_rescale_q(packet.packet->Duration, inTimebase, outTimebase);
-				}
-				packet.packet->Pos = -1;
-				InternalWrite(packet);
-			}
-		}
-
-		private void InternalWrite(Packet packet) {
-			if (packet.Size > 0) {
-				var result = FF.av_interleaved_write_frame(formatContext, packet.packet);
-				if (result < 0) throw new FFmpegException(result);
-			}
-		}
+		///// <summary>
+		///// 封装模式专用
+		///// </summary>
+		///// <param name="packet"></param>
+		//public void Write(Packet packet) {
+		//	if (packet.StreamIndex >= 0 && packet.StreamIndex < formatContext->NbStreams) {
+		//		if (inputFmtCtx != null) {
+		//			var inTimebase = inputFmtCtx->Streams[packet.StreamIndex]->TimeBase;
+		//			var outTimebase = formatContext->Streams[packet.StreamIndex]->TimeBase;
+		//			if (packet.packet->Pts != long.MinValue) {
+		//				packet.packet->Pts = FF.av_rescale_q(packet.packet->Pts, inTimebase, outTimebase);
+		//			}
+		//			if (packet.packet->Dts != long.MinValue) {
+		//				packet.packet->Dts = FF.av_rescale_q(packet.packet->Dts, inTimebase, outTimebase);
+		//			}
+		//			packet.packet->Duration = FF.av_rescale_q(packet.packet->Duration, inTimebase, outTimebase);
+		//		}
+		//		packet.packet->Pos = -1;
+		//		InternalWrite(packet);
+		//	}
+		//}
 
 		private void Encode(Encoder encoder, Frame frame) {
 			var audioEncoder = encoder as AudioEncoder;

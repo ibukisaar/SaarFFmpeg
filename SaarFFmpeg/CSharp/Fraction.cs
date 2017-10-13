@@ -16,12 +16,12 @@ namespace Saar.FFmpeg.CSharp {
 		public Fraction Reciprocal => new Fraction(Den, Num);
 
 		public Fraction(int num, int den) {
-			if (num == 0) {
-				this.Num = 0;
-				this.Den = 1;
-			} else if (den == 0) {
+			if (den == 0) {
 				this.Num = 0;
 				this.Den = 0;
+			} else if (num == 0) {
+				this.Num = 0;
+				this.Den = 1;
 			} else {
 				int r = GCD(num, den);
 				this.Num = num / r;

@@ -12,12 +12,12 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public abstract class MediaStream : DisposableObject {
-		protected const int bufferLength = 4096;
+		private const int bufferLength = 4096;
 
 		protected AVIOContext* ioContext;
-		public AVFormatContext* formatContext;
-		protected byte[] tempBuffer = new byte[bufferLength];
-		protected byte* buffer;
+		internal AVFormatContext* formatContext;
+		private byte[] tempBuffer = new byte[bufferLength];
+		private byte* buffer;
 		protected Stream baseStream;
 
 		private Internal.Delegates.IOBufferDelegate procRead = null;
@@ -91,6 +91,12 @@ namespace Saar.FFmpeg.CSharp {
 				return baseStream.Seek(offset, (SeekOrigin) whence);
 			} else {
 				return -1;
+			}
+		}
+
+		protected void InternalWrite(Packet packet) {
+			if (packet.Size > 0) {
+				FF.av_interleaved_write_frame(formatContext, packet.packet).CheckFFmpegCode();
 			}
 		}
 	}

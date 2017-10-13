@@ -178,6 +178,7 @@ namespace Saar.FFmpeg.CSharp {
 
 			if (gotPicture != 0) {
 				ConfigPakcet(outPacket);
+				// outputFrames = outPacket.Timestamp;
 				return true;
 			}
 			return false;

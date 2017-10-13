@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.FFTWTest", "Saar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.FFTVisual", "SaarFFmpeg.FFTVisual\SaarFFmpeg.FFTVisual.csproj", "{4748F8D8-33FD-4319-8195-9FA18A484066}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.H264Output", "SaarFFmpeg.H264Output\SaarFFmpeg.H264Output.csproj", "{64200330-3EA7-4960-8C82-3C35A7E4D09F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{4748F8D8-33FD-4319-8195-9FA18A484066}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4748F8D8-33FD-4319-8195-9FA18A484066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4748F8D8-33FD-4319-8195-9FA18A484066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64200330-3EA7-4960-8C82-3C35A7E4D09F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64200330-3EA7-4960-8C82-3C35A7E4D09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64200330-3EA7-4960-8C82-3C35A7E4D09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64200330-3EA7-4960-8C82-3C35A7E4D09F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +105,7 @@ Global
 		{4FFEFA6E-295D-4900-BE29-A2CF7B85FBF6} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 		{EAD981EC-9B4B-4242-8EDD-943A2E79D59F} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 		{4748F8D8-33FD-4319-8195-9FA18A484066} = {7841373E-43F6-46BA-B6AD-7356308765A2}
+		{64200330-3EA7-4960-8C82-3C35A7E4D09F} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {06E3976E-161F-476A-AC7F-05BF84D87E7A}

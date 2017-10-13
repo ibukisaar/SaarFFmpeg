@@ -11,16 +11,16 @@ using System.Runtime.InteropServices;
 namespace SaarFFmpeg.FFTVisual {
 	class Program {
 		unsafe static void Main(string[] args) {
-			const double MinimumFrequency = 20;
-			const double MaximumFrequency = 18000;
-			const double MaxDB = 60;
-			const int fftSize = 8192;
+			const double MinimumFrequency = 10;
+			const double MaximumFrequency = 20000;
+			const double MaxDB = 65;
+			const int fftSize = 4192 * 4;
 
-			var reader = new MediaReader(@"Z:\Secret Messenger-ReBirth.mp3");
+			var reader = new MediaReader(@"Z:\N-tone-MISOGI .mp3");
 			var decoder = reader.Decoders.OfType<AudioDecoder>().First();
 			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Rgb0);
-			var writer = new MediaWriter(@"Z:\fft-visual.mp4")
-				.AddVideo(videoFormat)
+			var writer = new MediaWriter(@"Z:\N-tone-MISOGI-fft.mp4")
+				.AddVideo(videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 })
 				.AddAudio(decoder.InFormat)
 				.Initialize();
 
@@ -88,7 +88,7 @@ namespace SaarFFmpeg.FFTVisual {
 					p[0] = p[1] = p[2] = (byte) val;
 				}
 			};
-			
+
 			bool run = true;
 			while (run) {
 				writer.Write(encoder => {

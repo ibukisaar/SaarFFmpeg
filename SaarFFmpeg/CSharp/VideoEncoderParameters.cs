@@ -19,7 +19,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public static VideoEncoderParameters Default { get; }
 			= new VideoEncoderParameters {
-				BitRate = BitRate.FromMBytePerSecond(1.28),
+				BitRate = BitRate.FromMBitPerSecond(1.28),
 				FrameRate = new Fraction(25, 1),
 				ResampleFlags = SwsFlags.FastBilinear,
 			};

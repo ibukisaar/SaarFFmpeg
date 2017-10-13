@@ -45,7 +45,7 @@ namespace SaarFFmpeg.FFTVisual {
 			}
 		}
 
-		public int Count { get { return count; } }
+		public int Count => count;
 
 		public event Action<IntPtr> Completed;
 

@@ -29,7 +29,7 @@ namespace Saar.FFmpeg.CSharp {
 				codec = GetDecoder(codecID);
 			}
 			Name = Marshal.PtrToStringAnsi((IntPtr) codec->Name);
-			FullName = Marshal.PtrToStringAnsi((IntPtr) codec->LongName);
+			FullName = Marshal.PtrToStringAnsi((IntPtr) codec->LongName) ?? Name;
 		}
 
 		public Codec(AVStream* stream) {
@@ -40,7 +40,7 @@ namespace Saar.FFmpeg.CSharp {
 			}
 			codec = stream->Codec->Codec;
 			Name = Marshal.PtrToStringAnsi((IntPtr) codec->Name);
-			FullName = Marshal.PtrToStringAnsi((IntPtr) codec->LongName);
+			FullName = Marshal.PtrToStringAnsi((IntPtr) codec->LongName) ?? Name;
 		}
 
 		internal static AVCodec* GetDecoder(AVCodecID codecID) {
@@ -62,5 +62,15 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public override string ToString() => FullName;
+
+		public static IReadOnlyList<CodecDescription> GetAllCodecs() {
+			var list = new List<CodecDescription>();
+			AVCodec* codec = FF.av_codec_next(null);
+			while (codec != null) {
+				list.Add(new CodecDescription(codec));
+				codec = FF.av_codec_next(codec);
+			}
+			return list;
+		}
 	}
 }

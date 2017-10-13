@@ -226,6 +226,13 @@ namespace Saar.FFmpeg.Internal {
 		public static extern long av_rescale(long a, long b, long c);
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public static extern long av_rescale_rnd(long a, long b, long c, AVRounding rnd);
+		/// <summary>
+		/// a * bq / cq
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="bq"></param>
+		/// <param name="cq"></param>
+		/// <returns></returns>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public static extern long av_rescale_q(long a, AVRational bq, AVRational cq);
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]

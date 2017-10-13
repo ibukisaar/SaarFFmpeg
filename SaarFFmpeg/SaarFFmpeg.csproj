@@ -53,8 +53,11 @@
     <Compile Include="CSharp\AudioEncoder.cs" />
     <Compile Include="CSharp\Codec.cs" />
     <Compile Include="CSharp\AudioDecoder.cs" />
+    <Compile Include="CSharp\CodecDescription.cs" />
     <Compile Include="CSharp\Decoder.cs" />
     <Compile Include="CSharp\Encoder.cs" />
+    <Compile Include="CSharp\MediaRemuxer.cs" />
+    <Compile Include="CSharp\Timer.cs" />
     <Compile Include="CSharp\VideoDecoder.cs" />
     <Compile Include="CSharp\VideoEncoder.cs" />
     <Compile Include="CSharp\VideoEncoderParameters.cs" />
