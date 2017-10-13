@@ -10,36 +10,36 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public class MediaWriter : MediaStream {
-		private class FixedAudioFrame {
-			public AudioFrame Frame { get; }
-			public int Offset { get; private set; } = 0;
+		//private class FixedAudioFrame {
+		//	public AudioFrame Frame { get; }
+		//	public int Offset { get; private set; } = 0;
 
-			public FixedAudioFrame(AudioFormat format, int fixedCount) {
-				Frame = new AudioFrame(format);
-				Frame.Resize(fixedCount);
-			}
+		//	public FixedAudioFrame(AudioFormat format, int fixedCount) {
+		//		Frame = new AudioFrame(format);
+		//		Frame.Resize(fixedCount);
+		//	}
 
-			public void AppendForEach(AudioFrame input, Action<AudioFrame> callback) {
-				int fixedCount = Frame.sampleCount;
-				int length = Offset + input.sampleCount;
-				int i;
-				if (fixedCount <= length) {
-					for (i = 0; i + fixedCount <= length; i += fixedCount) {
-						if (i == 0) {
-							input.CopyToNoResize(0, fixedCount - Offset, Frame, Offset);
-						} else {
-							input.CopyToNoResize(i - Offset, fixedCount, Frame, 0);
-						}
-						callback(Frame);
-					}
-					input.CopyToNoResize(i - Offset, length - i, Frame, 0);
-					Offset = length - i;
-				} else {
-					input.CopyToNoResize(0, input.sampleCount, Frame, Offset);
-					Offset += input.sampleCount;
-				}
-			}
-		}
+		//	public void AppendForEach(AudioFrame input, Action<AudioFrame> callback) {
+		//		int fixedCount = Frame.sampleCount;
+		//		int length = Offset + input.sampleCount;
+		//		int i;
+		//		if (fixedCount <= length) {
+		//			for (i = 0; i + fixedCount <= length; i += fixedCount) {
+		//				if (i == 0) {
+		//					input.CopyToNoResize(0, fixedCount - Offset, Frame, Offset);
+		//				} else {
+		//					input.CopyToNoResize(i - Offset, fixedCount, Frame, 0);
+		//				}
+		//				callback(Frame);
+		//			}
+		//			input.CopyToNoResize(i - Offset, length - i, Frame, 0);
+		//			Offset = length - i;
+		//		} else {
+		//			input.CopyToNoResize(0, input.sampleCount, Frame, Offset);
+		//			Offset += input.sampleCount;
+		//		}
+		//	}
+		//}
 
 		public delegate Frame RequestFrameHandle(Encoder encoder);
 
@@ -313,6 +313,11 @@ namespace Saar.FFmpeg.CSharp {
 				packet.Dispose();
 				foreach (var enc in encoders)
 					enc.Dispose();
+
+				for (int i = 0; i < fixedQueues.Length; i++) {
+					fixedQueues[i]?.Dispose();
+					fixedQueues[i] = null;
+				}
 			}
 
 			base.Dispose(disposing);
