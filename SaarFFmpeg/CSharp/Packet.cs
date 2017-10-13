@@ -17,7 +17,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public IntPtr Data => (IntPtr) packet->Data;
 		public int Size => packet->Size;
-		public int StreamIndex => packet->StreamIndex;
+		public ref int StreamIndex => ref packet->StreamIndex;
 		public TimeSpan Timestamp => timestamp;
 		public TimeSpan CodecTimestamp => codecTimestamp;
 		public long Position => packet->Pos;

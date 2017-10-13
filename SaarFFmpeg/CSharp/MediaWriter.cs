@@ -49,7 +49,7 @@ namespace Saar.FFmpeg.CSharp {
 		private List<Encoder> encoders = new List<Encoder>();
 		private List<Encoder> readyEncoders;
 		//private AVFormatContext* inputFmtCtx;
-		private FixedAudioFrame[] fixedAudioFrames;
+		private FixedAudioFrameQueue[] fixedQueues;
 		public IReadOnlyList<Encoder> Encoders => encoders;
 
 		//public AVCodecID AudioCodecID => remuxing ? inputFmtCtx->AudioCodecId : outputFormat->AudioCodec;
@@ -197,7 +197,11 @@ namespace Saar.FFmpeg.CSharp {
 			if (result < 0) throw new FFmpegException(result, "写入头部错误");
 
 			readyEncoders = new List<Encoder>(encoders);
-			fixedAudioFrames = new FixedAudioFrame[encoders.Count];
+			fixedQueues = new FixedAudioFrameQueue[encoders.Count];
+			for (int i = 0; i < encoders.Count; i++) {
+				if (encoders[i] is AudioEncoder audioEncoder)
+					fixedQueues[i] = new FixedAudioFrameQueue(audioEncoder.RequestSamples);
+			}
 			return this;
 		}
 
@@ -224,31 +228,15 @@ namespace Saar.FFmpeg.CSharp {
 		//}
 
 		private void Encode(Encoder encoder, Frame frame) {
-			var audioEncoder = encoder as AudioEncoder;
-			var audioFrame = frame as AudioFrame;
-			if (audioEncoder != null && audioFrame != null) {
-				ref FixedAudioFrame fixedAudioFrame = ref fixedAudioFrames[encoder.StreamIndex];
-				if (fixedAudioFrame == null)
-					fixedAudioFrame = new FixedAudioFrame(audioFrame.format, audioEncoder.RequestSamples);
-				if (fixedAudioFrame.Frame.SampleCount != audioEncoder.RequestSamples)
-					throw new InvalidOperationException();
-
-				fixedAudioFrame.AppendForEach(audioFrame, f => {
-					if (encoder.Encode(f, packet)) {
-						InternalWrite(packet);
-					}
-				});
-			} else {
-				if (encoder.Encode(frame, packet)) {
-					InternalWrite(packet);
-				}
+			if (encoder.Encode(frame, packet)) {
+				InternalWrite(packet);
 			}
 		}
 
 		/// <summary>
-		/// 编码并写入流
+		/// 编码并写入流。不要调用<see cref="Encoder.Encode(Frame, Packet)"/>，<see cref="MediaWriter"/>会自动调用。
 		/// </summary>
-		/// <param name="handler">当<paramref name="handler"/>返回null表示编码结束。不要调用<see cref="Encoder.Encode(Frame, Packet)"/>，<see cref="MediaWriter"/>会自动调用。</param>
+		/// <param name="handler">当<paramref name="handler"/>返回null表示编码结束。</param>
 		/// <returns>当全部编码结束时返回false</returns>
 		public bool Write(RequestFrameHandle handler) {
 			if (readyEncoders == null) throw new InvalidOperationException($"该{nameof(MediaWriter)}对象未初始化或已释放");
@@ -256,7 +244,25 @@ namespace Saar.FFmpeg.CSharp {
 			var encoder = readyEncoders.Minimal(e => e.InputFrames * e.codecContext->TimeBase.Value);
 			if (encoder == null) return false;
 
-			var frame = handler(encoder);
+			Frame frame;
+			if (encoder is AudioEncoder) {
+				var queue = fixedQueues[encoder.StreamIndex];
+				while (true) {
+					frame = queue.Dequeue();
+					if (frame != null) break;
+					frame = handler(encoder);
+					if (frame == null) {
+						frame = queue.Dequeue(false);
+						readyEncoders.Remove(encoder);
+						break;
+					} else {
+						queue.Enqueue(frame as AudioFrame ?? throw new InvalidOperationException("返回必须是音频帧"));
+					}
+				}
+			} else {
+				frame = handler(encoder);
+			}
+
 			if (frame == null) {
 				readyEncoders.Remove(encoder);
 			} else {
@@ -277,25 +283,19 @@ namespace Saar.FFmpeg.CSharp {
 		public void Flush() {
 			if (readyEncoders == null) return;
 
-			for (int i = 0; i < fixedAudioFrames.Length; i++) {
-				var fixedFrame = fixedAudioFrames[i];
-				if (fixedFrame != null && fixedFrame.Offset > 0) {
-					var encoder = encoders[i];
-					using (var tempFrame = new AudioFrame(fixedFrame.Frame.format)) {
-						tempFrame.Resize(fixedFrame.Offset);
-						fixedFrame.Frame.CopyToNoResize(0, fixedFrame.Offset, tempFrame);
-						if (encoder.Encode(tempFrame, packet)) InternalWrite(packet);
-					}
-					fixedFrame.Frame.Dispose();
-					fixedAudioFrames[encoder.StreamIndex] = null;
-				}
-			}
-
 			readyEncoders = new List<Encoder>(encoders);
 			while (true) {
 				var encoder = readyEncoders.Minimal(e => e.InputFrames * e.codecContext->TimeBase.Value);
 				if (encoder == null) break;
 
+				var queue = fixedQueues[encoder.StreamIndex];
+				if (queue != null) {
+					var frame = queue.Dequeue(false);
+					if (frame != null) {
+						Encode(encoder, frame);
+						continue;
+					}
+				}
 				while (encoder.Encode(null, packet)) InternalWrite(packet);
 				readyEncoders.Remove(encoder);
 				formatContext->Streams[encoder.StreamIndex]->Duration = encoder.InputTimestamp.Ticks / 10;

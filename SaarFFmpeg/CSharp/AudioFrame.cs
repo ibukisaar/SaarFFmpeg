@@ -127,8 +127,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public void CopyTo(int srcSampleOffset, int srcSampleCount, AudioFrame dstFrame) {
-			dstFrame.format = format;
-			dstFrame.Resize(srcSampleCount);
+			dstFrame.Resize(format, srcSampleCount);
 			FF.av_samples_copy(dstFrame.datas, datas, 0, srcSampleOffset, srcSampleCount, format.Channels, format.SampleFormat);
 		}
 

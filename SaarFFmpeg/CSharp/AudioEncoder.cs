@@ -25,19 +25,29 @@ namespace Saar.FFmpeg.CSharp {
 			: this(codecID, inFormat, BitRate.Zero) { }
 
 		public AudioEncoder(AVCodecID codecID, AudioFormat inFormat, BitRate bitRate) : base(codecID) {
-			if (codec->Type != AVMediaType.Audio)
-				throw new ArgumentException($"{codecID}不是音频格式", nameof(codecID));
+			try {
+				if (codec->Type != AVMediaType.Audio)
+					throw new ArgumentException($"{codecID}不是音频格式", nameof(codecID));
 
-			codecContext = FF.avcodec_alloc_context3(codec);
-			if (codecContext == null) throw new Exception("无法分配编码器上下文");
+				codecContext = FF.avcodec_alloc_context3(codec);
+				if (codecContext == null) throw new Exception("无法分配编码器上下文");
 
-			InFormat = inFormat;
-			Init(codecID, bitRate);
+				InFormat = inFormat;
+				Init(codecID, bitRate);
+			} catch {
+				Dispose();
+				throw;
+			}
 		}
 
 		internal AudioEncoder(AVStream* stream, AudioFormat inFormat, BitRate bitRate) : base(stream) {
-			InFormat = inFormat;
-			Init(codecContext->CodecId, bitRate);
+			try {
+				InFormat = inFormat;
+				Init(codecContext->CodecId, bitRate);
+			} catch {
+				Dispose();
+				throw;
+			}
 		}
 
 		protected override void Dispose(bool disposing) {
@@ -57,20 +67,15 @@ namespace Saar.FFmpeg.CSharp {
 				tempFrame = new AudioFrame();
 			}
 
-			try {
-				codecContext->SampleFmt = outFormat.SampleFormat;
-				codecContext->SampleRate = outFormat.SampleRate;
-				codecContext->ChannelLayout = outFormat.ChannelLayout;
-				codecContext->Channels = outFormat.Channels;
-				codecContext->BitRate = bitRate.Value;
-				var rates = codecContext->Flags;
+			codecContext->SampleFmt = outFormat.SampleFormat;
+			codecContext->SampleRate = outFormat.SampleRate;
+			codecContext->ChannelLayout = outFormat.ChannelLayout;
+			codecContext->Channels = outFormat.Channels;
+			codecContext->BitRate = bitRate.Value;
+			var rates = codecContext->Flags;
 
-				int result = FF.avcodec_open2(codecContext, codec, null);
-				if (result < 0) throw new FFmpegException(result);
-			} catch {
-				Dispose();
-				throw;
-			}
+			int result = FF.avcodec_open2(codecContext, codec, null);
+			if (result < 0) throw new FFmpegException(result);
 		}
 
 		public static bool IsSupportedFormat(AVCodecID codecID, AudioFormat format) {

@@ -14,14 +14,16 @@ namespace SaarFFmpeg.FFTVisual {
 			const double MinimumFrequency = 10;
 			const double MaximumFrequency = 20000;
 			const double MaxDB = 65;
-			const int fftSize = 4192 * 4;
+			const int fftSize = 4192 * 6;
 
-			var reader = new MediaReader(@"Z:\N-tone-MISOGI .mp3");
+			var reader = new MediaReader(@"Z:\Secret Messenger-ReBirth.mp3");
 			var decoder = reader.Decoders.OfType<AudioDecoder>().First();
 			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Rgb0);
-			var writer = new MediaWriter(@"Z:\N-tone-MISOGI-fft.mp4")
-				.AddVideo(videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 })
-				.AddAudio(decoder.InFormat)
+			var writer = new MediaWriter(@"Z:\Secret Messenger-ReBirth-fft-2.mkv")
+				.AddEncoder(new VideoEncoder(AVCodecID.H264, videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 }))
+				.AddEncoder(new AudioEncoder(AVCodecID.Mp3, decoder.InFormat))
+				//.AddVideo(videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 })
+				//.AddAudio(decoder.InFormat)
 				.Initialize();
 
 			int sampleRate = decoder.InFormat.SampleRate;
@@ -32,7 +34,7 @@ namespace SaarFFmpeg.FFTVisual {
 			var image = new VideoFrame(videoFormat);
 
 			var viewHeight = videoFormat.Height / 2;
-			var observer = new StreamObserver<double>(fftSize * 2, fftSize / 4, 2);
+			var observer = new StreamObserver<double>(fftSize * 2, fftSize / 6, 2);
 			var fft = DoubleFFT.Create(fftSize);
 			var inFFT = fft.AllocInput();
 			var outFFT = fft.AllocOutput();
