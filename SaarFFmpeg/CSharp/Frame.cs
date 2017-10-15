@@ -13,6 +13,8 @@ namespace Saar.FFmpeg.CSharp {
 		internal AVFrame* frame;
 		internal AutoCache cache = new AutoCache();
 
+		public Timestamp PresentTimestamp { get; internal set; }
+
 		public abstract AVMediaType Type { get; }
 
 		protected Frame() {

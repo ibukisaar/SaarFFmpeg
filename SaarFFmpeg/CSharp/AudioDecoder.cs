@@ -59,11 +59,10 @@ namespace Saar.FFmpeg.CSharp {
 
 			if (packet != null) {
 				int gotPicture = 0;
-				int resultCode = FF.avcodec_decode_audio4(codecContext, outFrame.frame, &gotPicture, packet.packet);
-				if (resultCode < 0) throw new CSharp.FFmpegException(resultCode, "音频解码发生错误");
-
+				FF.avcodec_decode_audio4(codecContext, outFrame.frame, &gotPicture, packet.packet).CheckFFmpegCode("音频解码发生错误");
 				if (gotPicture == 0) return false;
 
+				if (stream != null) outFrame.PresentTimestamp = new Timestamp(outFrame.frame->Pts, stream->TimeBase);
 				audioFrame.format = InFormat;
 				if (resampler != null) {
 					resampler.InternalResample(audioFrame); // resample and update

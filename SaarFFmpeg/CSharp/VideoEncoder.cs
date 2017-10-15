@@ -166,14 +166,16 @@ namespace Saar.FFmpeg.CSharp {
 				}
 			}
 
+			encodeFrames = 0;
 			outPacket.ReleaseNativeBuffer();
 			int gotPicture = 0;
 			if (frame != null) {
 				try {
 					frame.SetupToNative();
-					frame.frame->Pts = FF.av_rescale_q(inputFrames, framePerSecond.Reciprocal, codecContext->TimeBase);
-					int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture);
-					if (result < 0) throw new FFmpegException(result, "视频编码发生错误");
+					frame.PresentTimestamp = new Timestamp(inputFrames, framePerSecond.Reciprocal);
+					frame.PresentTimestamp.Transform(codecContext->TimeBase);
+					frame.frame->Pts = frame.PresentTimestamp.Value;
+					FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture).CheckFFmpegCode("视频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
 				}
@@ -181,8 +183,7 @@ namespace Saar.FFmpeg.CSharp {
 				inputFrames++;
 				encodeFrames = 1;
 			} else {
-				int result = FF.avcodec_encode_video2(codecContext, outPacket.packet, null, &gotPicture);
-				if (result < 0) throw new FFmpegException(result, "视频编码发生错误");
+				FF.avcodec_encode_video2(codecContext, outPacket.packet, null, &gotPicture).CheckFFmpegCode("视频编码发生错误");
 			}
 
 			if (gotPicture != 0) {

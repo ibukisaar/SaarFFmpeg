@@ -12,14 +12,16 @@ namespace Saar.FFmpeg.CSharp {
 	/// </summary>
 	unsafe public class Packet : DisposableObject {
 		internal AVPacket* packet;
-		internal TimeSpan timestamp;
-		internal TimeSpan codecTimestamp;
 
 		public IntPtr Data => (IntPtr) packet->Data;
 		public int Size => packet->Size;
-		public ref int StreamIndex => ref packet->StreamIndex;
-		public TimeSpan Timestamp => timestamp;
-		public TimeSpan CodecTimestamp => codecTimestamp;
+		public int StreamIndex {
+			get => packet->StreamIndex;
+			set => packet->StreamIndex = value;
+		}
+		public Timestamp PresentTimestamp { get; internal set; }
+		public Timestamp DecodeTimestamp { get; internal set; }
+		public Timestamp Duration { get; internal set; }
 		public long Position => packet->Pos;
 
 		public Packet() {
@@ -39,6 +41,24 @@ namespace Saar.FFmpeg.CSharp {
 			ReleaseNativeBuffer();
 
 			FF.av_packet_free(ref packet);
+		}
+
+		internal void UpdateTimestampFromNative(Fraction timeBase) {
+			PresentTimestamp = new Timestamp(packet->Pts, timeBase);
+			DecodeTimestamp = new Timestamp(packet->Dts, timeBase);
+			Duration = new Timestamp(packet->Duration, timeBase);
+		}
+
+		internal void TransformTimestamp(Fraction timeBase) {
+			PresentTimestamp.Transform(timeBase);
+			DecodeTimestamp.Transform(timeBase);
+			Duration.Transform(timeBase);
+		}
+
+		internal void UpdateTimestampToNative() {
+			packet->Pts = PresentTimestamp.Value;
+			packet->Dts = DecodeTimestamp.Value;
+			packet->Duration = Duration.Value;
 		}
 	}
 }

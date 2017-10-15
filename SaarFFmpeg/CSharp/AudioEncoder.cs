@@ -163,27 +163,27 @@ namespace Saar.FFmpeg.CSharp {
 				}
 			}
 
+			encodeFrames = 0;
 			outPacket.ReleaseNativeBuffer();
 			int gotPicture = 0;
 			if (frame != null) {
 				try {
 					frame.SetupToNative();
-					frame.frame->Pts = FF.av_rescale_q(inputFrames, new AVRational(1, OutFormat.SampleRate), codecContext->TimeBase);
-					int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, frame.frame, &gotPicture);
-					if (result < 0) throw new FFmpegException(result, "音频编码发生错误");
+					frame.PresentTimestamp = new Timestamp(inputFrames, new AVRational(1, OutFormat.SampleRate));
+					frame.PresentTimestamp.Transform(codecContext->TimeBase);
+					frame.frame->Pts = frame.PresentTimestamp.Value;
+					FF.avcodec_encode_audio2(codecContext, outPacket.packet, frame.frame, &gotPicture).CheckFFmpegCode("音频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
 				}
 				encodeFrames = frame.frame->NbSamples;
 				inputFrames += encodeFrames;
 			} else {
-				int result = FF.avcodec_encode_audio2(codecContext, outPacket.packet, null, &gotPicture);
-				if (result < 0) throw new FFmpegException(result, "音频编码发生错误");
+				FF.avcodec_encode_audio2(codecContext, outPacket.packet, null, &gotPicture).CheckFFmpegCode("音频编码发生错误");
 			}
 
 			if (gotPicture != 0) {
 				ConfigPakcet(outPacket);
-				// outputFrames = outPacket.Timestamp;
 				return true;
 			}
 			return false;

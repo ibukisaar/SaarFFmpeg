@@ -25,9 +25,9 @@ namespace Saar.FFmpeg.CSharp {
 		internal void ConfigPakcet(Packet packet) {
 			var frame = codecContext->CodedFrame;
 			if (stream != null) {
-				packet.packet->Pts = FF.av_rescale_q(packet.packet->Pts, codecContext->TimeBase, stream->TimeBase);
-				packet.packet->Dts = FF.av_rescale_q(packet.packet->Dts, codecContext->TimeBase, stream->TimeBase);
-				packet.packet->Duration = FF.av_rescale_q(packet.packet->Duration, codecContext->TimeBase, stream->TimeBase);
+				packet.UpdateTimestampFromNative(codecContext->TimeBase);
+				packet.TransformTimestamp(stream->TimeBase);
+				packet.UpdateTimestampToNative();
 				packet.packet->StreamIndex = stream->Index;
 			}
 

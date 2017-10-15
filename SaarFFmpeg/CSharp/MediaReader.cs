@@ -13,7 +13,7 @@ namespace Saar.FFmpeg.CSharp {
 		private int defaultStreamIndex = 0;
 
 
-		public TimeSpan Duration { get; }
+		public Timestamp Duration { get; }
 
 		public IReadOnlyList<Decoder> Decoders { get; }
 
@@ -32,7 +32,7 @@ namespace Saar.FFmpeg.CSharp {
 		public MediaReader(Stream inputStream) : base(inputStream) {
 			try {
 				if (!inputStream.CanRead) throw new ArgumentException($"流不能被读取，请确保Stream.CanRead为true");
-				
+
 				int resultCode;
 				fixed (AVFormatContext** pFormatContext = &formatContext) {
 					resultCode = FF.avformat_open_input(pFormatContext, null, null, null);
@@ -48,13 +48,12 @@ namespace Saar.FFmpeg.CSharp {
 					if (formatContext->Streams[i]->Codec->CodecType == AVMediaType.Video) {
 						FramesPerSecond = formatContext->Streams[i]->AvgFrameRate.Value;
 						VideoStreamIndex = i;
-						defaultStreamIndex = i;
+						// defaultStreamIndex = i;
 					}
+					formatContext->Streams[i]->CurDts = 0;
 				}
 				Decoders = decoders;
-				if (formatContext->Duration != long.MinValue) {
-					Duration = TimeSpan.FromTicks(formatContext->Duration * 10);
-				}
+				Duration = new Timestamp(formatContext->Duration, Timestamp.FFmpeg_AVTimeBase);
 			} catch {
 				Dispose();
 				throw;
@@ -71,17 +70,8 @@ namespace Saar.FFmpeg.CSharp {
 				}
 
 				if (matchStreamIndex == -1 || packet.StreamIndex == matchStreamIndex) {
-					double timebase = formatContext->Streams[packet.StreamIndex]->TimeBase.Value;
-					if (packet.packet->Pts != long.MinValue) {
-						packet.timestamp = TimeSpan.FromSeconds(packet.packet->Pts * timebase);
-					} else {
-						packet.timestamp = TimeSpan.MinValue;
-					}
-					if (packet.packet->Dts != long.MinValue) {
-						packet.codecTimestamp = TimeSpan.FromSeconds(packet.packet->Dts * timebase);
-					} else {
-						packet.codecTimestamp = TimeSpan.MinValue;
-					}
+					var timebase = formatContext->Streams[packet.StreamIndex]->TimeBase;
+					packet.UpdateTimestampFromNative(timebase);
 					return true;
 				}
 			}
@@ -114,10 +104,11 @@ namespace Saar.FFmpeg.CSharp {
 		public TimeSpan Position {
 			get {
 				var stream = formatContext->Streams[defaultStreamIndex];
-				return TimeSpan.FromSeconds(stream->CurDts * stream->TimeBase.Value);
+				return TimeSpan.FromTicks(FF.av_rescale_q(stream->CurDts, stream->TimeBase, new AVRational(1, 1000_0000)));
 			}
 			set {
-				FF.av_seek_frame(formatContext, -1, value.Ticks / 10, AVSeekFlag.Any);
+				var pos = new Timestamp(value.Ticks, Timestamp.NET_TicksTimeBase);
+				FF.av_seek_frame(formatContext, -1, pos.GetTimestamp(Timestamp.FFmpeg_AVTimeBase), AVSeekFlag.Backward);
 				//foreach (Decoder decoder in Decoders) {
 				//	if (decoder is AudioDecoder || decoder is VideoDecoder) {
 				//		var timebase = formatContext->Streams[decoder.StreamIndex]->TimeBase;

@@ -51,13 +51,13 @@ namespace Saar.FFmpeg.CSharp {
 			if (videoFrame == null) {
 				throw new ArgumentException($"{nameof(outFrame)}必须是{nameof(VideoFrame)}类型且不为null。");
 			}
-			
+
 			int gotPicture = 0;
-			int resultCode = FF.avcodec_decode_video2(codecContext, outFrame.frame, &gotPicture, packet.packet);
-			if (resultCode < 0) throw new CSharp.FFmpegException(resultCode, "视频解码发生错误");
+			FF.avcodec_decode_video2(codecContext, outFrame.frame, &gotPicture, packet.packet).CheckFFmpegCode("视频解码发生错误");
 
 			if (gotPicture == 0) return false;
 
+			if (stream != null) outFrame.PresentTimestamp = new Timestamp(outFrame.frame->Pts, stream->TimeBase);
 			videoFrame.pictureType = outFrame.frame->PictType;
 			videoFrame.format = InFormat;
 			if (resampler != null) {

@@ -57,6 +57,7 @@
     <Compile Include="CSharp\Decoder.cs" />
     <Compile Include="CSharp\Encoder.cs" />
     <Compile Include="CSharp\FixedAudioFrameQueue.cs" />
+    <Compile Include="CSharp\Timestamp.cs" />
     <Compile Include="CSharp\MediaRemuxer.cs" />
     <Compile Include="CSharp\Timer.cs" />
     <Compile Include="CSharp\VideoDecoder.cs" />
