@@ -12,8 +12,9 @@ namespace Saar.FFmpeg.CSharp {
 	unsafe public abstract class Frame : DisposableObject {
 		internal AVFrame* frame;
 		internal AutoCache cache = new AutoCache();
+		internal Timestamp presentTimestamp;
 
-		public Timestamp PresentTimestamp { get; internal set; }
+		public Timestamp PresentTimestamp => presentTimestamp;
 
 		public abstract AVMediaType Type { get; }
 

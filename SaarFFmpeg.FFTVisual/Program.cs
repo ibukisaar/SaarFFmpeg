@@ -16,10 +16,10 @@ namespace SaarFFmpeg.FFTVisual {
 			const double MaxDB = 65;
 			const int fftSize = 4192 * 6;
 
-			var reader = new MediaReader(@"Z:\Secret Messenger-ReBirth.mp3");
+			var reader = new MediaReader(@"Z:\Land-YOU-Rammentatore.mp3");
 			var decoder = reader.Decoders.OfType<AudioDecoder>().First();
 			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Rgb0);
-			var writer = new MediaWriter(@"Z:\Secret Messenger-ReBirth-fft-2.mkv")
+			var writer = new MediaWriter(@"Z:\Land-YOU-Rammentatore-fft.mkv")
 				.AddEncoder(new VideoEncoder(AVCodecID.H264, videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 }))
 				.AddEncoder(new AudioEncoder(AVCodecID.Mp3, decoder.InFormat))
 				//.AddVideo(videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 })

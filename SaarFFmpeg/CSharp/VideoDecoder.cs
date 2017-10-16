@@ -57,7 +57,7 @@ namespace Saar.FFmpeg.CSharp {
 
 			if (gotPicture == 0) return false;
 
-			if (stream != null) outFrame.PresentTimestamp = new Timestamp(outFrame.frame->Pts, stream->TimeBase);
+			if (stream != null) outFrame.presentTimestamp = new Timestamp(outFrame.frame->Pts, stream->TimeBase);
 			videoFrame.pictureType = outFrame.frame->PictType;
 			videoFrame.format = InFormat;
 			if (resampler != null) {

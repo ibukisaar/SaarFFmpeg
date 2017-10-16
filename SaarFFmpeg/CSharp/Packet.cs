@@ -12,6 +12,9 @@ namespace Saar.FFmpeg.CSharp {
 	/// </summary>
 	unsafe public class Packet : DisposableObject {
 		internal AVPacket* packet;
+		private Timestamp presentTimestamp;
+		private Timestamp decodeTimestamp;
+		private Timestamp duration;
 
 		public IntPtr Data => (IntPtr) packet->Data;
 		public int Size => packet->Size;
@@ -19,9 +22,10 @@ namespace Saar.FFmpeg.CSharp {
 			get => packet->StreamIndex;
 			set => packet->StreamIndex = value;
 		}
-		public Timestamp PresentTimestamp { get; internal set; }
-		public Timestamp DecodeTimestamp { get; internal set; }
-		public Timestamp Duration { get; internal set; }
+
+		public Timestamp PresentTimestamp => presentTimestamp;
+		public Timestamp DecodeTimestamp => decodeTimestamp;
+		public Timestamp Duration => duration;
 		public long Position => packet->Pos;
 
 		public Packet() {
@@ -44,21 +48,21 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		internal void UpdateTimestampFromNative(Fraction timeBase) {
-			PresentTimestamp = new Timestamp(packet->Pts, timeBase);
-			DecodeTimestamp = new Timestamp(packet->Dts, timeBase);
-			Duration = new Timestamp(packet->Duration, timeBase);
+			presentTimestamp = new Timestamp(packet->Pts, timeBase);
+			decodeTimestamp = new Timestamp(packet->Dts, timeBase);
+			duration = new Timestamp(packet->Duration, timeBase);
 		}
 
 		internal void TransformTimestamp(Fraction timeBase) {
-			PresentTimestamp.Transform(timeBase);
-			DecodeTimestamp.Transform(timeBase);
-			Duration.Transform(timeBase);
+			presentTimestamp.Transform(timeBase);
+			decodeTimestamp.Transform(timeBase);
+			duration.Transform(timeBase);
 		}
 
 		internal void UpdateTimestampToNative() {
-			packet->Pts = PresentTimestamp.Value;
-			packet->Dts = DecodeTimestamp.Value;
-			packet->Duration = Duration.Value;
+			packet->Pts = presentTimestamp.Value;
+			packet->Dts = decodeTimestamp.Value;
+			packet->Duration = duration.Value;
 		}
 	}
 }

@@ -104,7 +104,8 @@ namespace Saar.FFmpeg.CSharp {
 		public TimeSpan Position {
 			get {
 				var stream = formatContext->Streams[defaultStreamIndex];
-				return TimeSpan.FromTicks(FF.av_rescale_q(stream->CurDts, stream->TimeBase, new AVRational(1, 1000_0000)));
+				var pos = new Timestamp(stream->CurDts, stream->TimeBase);
+				return pos.TimeSpan;
 			}
 			set {
 				var pos = new Timestamp(value.Ticks, Timestamp.NET_TicksTimeBase);

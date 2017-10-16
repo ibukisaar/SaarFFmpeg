@@ -172,9 +172,9 @@ namespace Saar.FFmpeg.CSharp {
 			if (frame != null) {
 				try {
 					frame.SetupToNative();
-					frame.PresentTimestamp = new Timestamp(inputFrames, framePerSecond.Reciprocal);
-					frame.PresentTimestamp.Transform(codecContext->TimeBase);
-					frame.frame->Pts = frame.PresentTimestamp.Value;
+					frame.presentTimestamp = new Timestamp(inputFrames, framePerSecond.Reciprocal);
+					frame.presentTimestamp.Transform(codecContext->TimeBase);
+					frame.frame->Pts = frame.presentTimestamp.Value;
 					FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture).CheckFFmpegCode("视频编码发生错误");
 				} finally {
 					frame.ReleaseSetup();
