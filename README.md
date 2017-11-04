@@ -20,25 +20,5 @@
 
 ***
 
-> ### 示例(examples)
-> #### SaarFFmpeg.AudioTest
-> 播放音频，需要[Coolest库](https://github.com/ibukisaar/Coolest)。
-***
-> #### SaarFFmpeg.VideoTest
-> 解码视频生成图像。
-***
-> #### SaarFFmpeg.EncodeAudio
-> 解码mp3并编码成mp3。
-> * Bug：生成flac没有时间长度信息。
-> 
-***
-> #### SaarFFmpeg.EncodeVideo
-> 生成一个空图像的视频。
-***
-> #### SaarFFmpeg.Remuxer
-> 把一个视频转成封装格式的视频(mkv,flv,mp4...)
-
-***
-
 > ### 作者
 > Saar, email:rockman.x8@qq.com, QQ:631759794
