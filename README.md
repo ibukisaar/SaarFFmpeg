@@ -22,6 +22,10 @@
 
 [下载DLL](http://ffmpeg.zeranoe.com/builds/)，下载页面里选择Shared。
 
+License
+------
+MIT License
+
 作者
 ------
 Saar, email:rockman.x8@qq.com, QQ:631759794
