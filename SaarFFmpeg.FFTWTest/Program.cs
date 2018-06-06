@@ -45,18 +45,7 @@ namespace SaarFFmpeg.FFTWTest {
 				filter[i] = Filter(i, FFTSize);
 			}
 
-			//fixed (double* kernel = Kernel) {
-			//	int len = conv.Convolve(input, FFTSize, input2, FFTSize);
-			//	len = conv.ConvolveFinal(input2 + len, FFTSize - len);
-			//}
-
-			//input[0] = 1;
-			//for (int i = 1; i < FFTSize; i++) {
-			//	input[i] = 0;
-			//}
-			//for (int i = 0; i < FFTSize; i++) {
-			//	input[i] = i % 2 == 0 ? 1 : 0;
-			//}
+			
 			fft.WriteInput(input);
 			fft.Execute();
 			fft.ReadOutput(output);
