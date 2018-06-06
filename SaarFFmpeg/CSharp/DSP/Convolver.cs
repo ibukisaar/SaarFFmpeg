@@ -22,7 +22,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		private AutoCache delayData = new AutoCache();
 		private AutoCache tempBuffer = new AutoCache();
 
-		public Convolver(double[] kerenl) : this(kerenl, 0, kerenl.Length) { }
+		public Convolver(double[] kernel) : this(kernel, 0, kernel.Length) { }
 
 		public Convolver(double[] kernel, int index, int length) {
 			if (kernel == null) throw new ArgumentNullException(nameof(kernel));

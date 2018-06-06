@@ -16,10 +16,10 @@ namespace SaarFFmpeg.FFTVisual {
 			const double MaxDB = 65;
 			const int fftSize = 4192 * 6;
 
-			var reader = new MediaReader(@"Z:\Land-YOU-Rammentatore.mp3");
+			var reader = new MediaReader(@"D:\CloudMusic\MAN WITH A MISSION - My Hero.mp3");
 			var decoder = reader.Decoders.OfType<AudioDecoder>().First();
 			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Rgb0);
-			var writer = new MediaWriter(@"Z:\Land-YOU-Rammentatore-fft.mkv")
+			var writer = new MediaWriter(@"D:\CloudMusic\MAN WITH A MISSION - My Hero-fft.mkv")
 				.AddEncoder(new VideoEncoder(AVCodecID.H264, videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 }))
 				.AddEncoder(new AudioEncoder(AVCodecID.Mp3, decoder.InFormat))
 				//.AddVideo(videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 })
@@ -91,7 +91,7 @@ namespace SaarFFmpeg.FFTVisual {
 				}
 			};
 
-			bool run = true;
+			bool end = false, run = true;
 			while (run) {
 				writer.Write(encoder => {
 					switch (encoder) {
@@ -104,11 +104,12 @@ namespace SaarFFmpeg.FFTVisual {
 							} else {
 								resampler.ResampleFinal(outFrame);
 								observer.Write(outFrame.Data[0], outFrame.SampleCount * channels);
-								run = false;
+								end = true;
 								Console.WriteLine($"\r{audioEncoder.InputTimestamp}");
 								return null;
 							}
 						case VideoEncoder videoEncoder:
+							if (end) run = false;
 							return image;
 						default:
 							throw new NotImplementedException();

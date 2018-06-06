@@ -52,8 +52,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public override bool Decode(Packet packet, Frame outFrame) {
-			var audioFrame = outFrame as AudioFrame;
-			if (audioFrame == null) {
+			if (!(outFrame is AudioFrame audioFrame)) {
 				throw new ArgumentException($"{nameof(outFrame)}必须是{nameof(AudioFrame)}类型且不为null。");
 			}
 

@@ -103,7 +103,7 @@ namespace Saar.FFmpeg.CSharp.DSP {
 		}
 
 		protected override void Dispose(bool disposing) {
-			if (disposing) Unref();
+			Unref();
 		}
 
 		protected void Free() {

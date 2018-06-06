@@ -13,7 +13,5 @@ namespace Saar.FFmpeg.Internal {
 
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate long SeekBufferDelegate(void* opaque, long offset, AVSeek whence);
-
-
 	}
 }

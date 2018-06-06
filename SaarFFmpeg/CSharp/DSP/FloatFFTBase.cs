@@ -7,11 +7,6 @@ using Saar.FFmpeg.FFTW;
 
 namespace Saar.FFmpeg.CSharp.DSP {
 	unsafe public abstract class FloatFFTBase : FFTBase {
-		static FloatFFTBase() {
-			// fftwf.import_wisdom_from_filename(FFTWF_ConfigName);
-			fftwf.thread_safe();
-		}
-
 		public override Type SampleType => typeof(float);
 
 		protected FloatFFTBase(int fftSize) : base(fftSize) { }

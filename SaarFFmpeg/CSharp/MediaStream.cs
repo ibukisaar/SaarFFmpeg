@@ -34,7 +34,7 @@ namespace Saar.FFmpeg.CSharp {
 			if (write && baseStream.CanWrite) procWrite = Write;
 			if (baseStream.CanSeek) procSeek = Seek;
 			this.baseStream = baseStream;
-
+			
 			try {
 				formatContext = FF.avformat_alloc_context();
 				buffer = (byte*) FF.av_malloc((IntPtr) bufferLength);

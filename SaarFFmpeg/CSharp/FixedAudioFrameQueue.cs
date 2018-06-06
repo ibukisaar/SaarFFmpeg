@@ -70,6 +70,8 @@ namespace Saar.FFmpeg.CSharp {
 				main = null;
 				minor?.Dispose();
 				minor = null;
+				result?.Dispose();
+				result = null;
 			}
 		}
 	}
