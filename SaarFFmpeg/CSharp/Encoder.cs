@@ -14,7 +14,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public long InputFrames => inputFrames;
 		public long EncodeFrames => encodeFrames;
-		public virtual TimeSpan InputTimestamp => TimeSpan.FromSeconds(inputFrames * codecContext->TimeBase.Value);
+		public virtual TimeSpan InputTimestamp => TimeSpan.FromSeconds(inputFrames * (double)codecContext->TimeBase.Num / codecContext->TimeBase.Den);
 
 		public Encoder(AVCodecID codecID) : base(codecID) { }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
@@ -17,10 +18,10 @@ namespace Saar.FFmpeg.CSharp {
 			ErrorCode = errorCode;
 		}
 
-		private static string GetErrorString(int errorCode) {
-			StringBuilder buffer = new StringBuilder(1000);
-			FF.av_strerror(errorCode, buffer, (IntPtr) 1000);
-			return buffer.ToString();
+		unsafe public static string GetErrorString(int errorCode) {
+			byte* buffer = stackalloc byte[Internal.Constant.AV_ERROR_MAX_STRING_SIZE];
+			FF.av_strerror(errorCode, buffer, (IntPtr)Internal.Constant.AV_ERROR_MAX_STRING_SIZE);
+			return Marshal.PtrToStringAnsi((IntPtr)buffer);
 		}
 	}
 }

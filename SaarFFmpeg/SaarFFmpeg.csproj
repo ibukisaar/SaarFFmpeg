@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -41,6 +43,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -51,12 +54,22 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.0\lib\netstandard1.1\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -119,109 +132,25 @@
     <Compile Include="CSharp\VideoFrame.cs" />
     <Compile Include="CSharp\VideoResampler.cs" />
     <Compile Include="CSharp\扩展.cs" />
-    <Compile Include="Enumerates\AVAudioServiceType.cs" />
-    <Compile Include="Enumerates\AVChannelLayout.cs" />
-    <Compile Include="Enumerates\AVChromaLocation.cs" />
-    <Compile Include="Enumerates\AVClassCategory.cs" />
-    <Compile Include="Enumerates\AVCodecFlag.cs" />
-    <Compile Include="Enumerates\AVCodecID.cs" />
-    <Compile Include="Enumerates\AVColorPrimaries.cs" />
-    <Compile Include="Enumerates\AVColorRange.cs" />
-    <Compile Include="Enumerates\AVColorSpace.cs" />
-    <Compile Include="Enumerates\AVColorTransferCharacteristic.cs" />
-    <Compile Include="Enumerates\AVDiscard.cs" />
-    <Compile Include="Enumerates\AVDurationEstimationMethod.cs" />
-    <Compile Include="Enumerates\AVFieldOrder.cs" />
-    <Compile Include="Enumerates\AVFmt.cs" />
-    <Compile Include="Enumerates\AVFmtFlag.cs" />
-    <Compile Include="Enumerates\AVFrameSideDataType.cs" />
-    <Compile Include="Enumerates\AVIODataMarkerType.cs" />
-    <Compile Include="Enumerates\AVIODirEntryType.cs" />
-    <Compile Include="Enumerates\AVMediaType.cs" />
-    <Compile Include="Enumerates\AVOptionType.cs" />
-    <Compile Include="Enumerates\AVPacketSideDataType.cs" />
-    <Compile Include="Enumerates\AVPictureStructure.cs" />
-    <Compile Include="Enumerates\AVPictureType.cs" />
-    <Compile Include="Enumerates\AVPixelFormat.cs" />
-    <Compile Include="Enumerates\AVPixelFormatFlag.cs" />
-    <Compile Include="Enumerates\AVPktFlag.cs" />
-    <Compile Include="Enumerates\AVRounding.cs" />
-    <Compile Include="Enumerates\AVSampleFormat.cs" />
-    <Compile Include="Enumerates\AVSeekFlag.cs" />
-    <Compile Include="Enumerates\AVSideDataParamChangeFlags.cs" />
-    <Compile Include="Enumerates\AVStreamParseType.cs" />
-    <Compile Include="Enumerates\AVSubtitleType.cs" />
-    <Compile Include="Enumerates\AVSeek.cs" />
-    <Compile Include="Enumerates\DCTTransformType.cs" />
-    <Compile Include="Enumerates\RDFTransformType.cs" />
-    <Compile Include="Enumerates\SwsFlags.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Arrays.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Delegates.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Enums.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.avcodec.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.avdevice.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.avfilter.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.avformat.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.avutil.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.Config.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.postproc.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.swresample.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Functions.swscale.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Macros.cs" />
+    <Compile Include="FFmpeg\FFmpeg.Structs.cs" />
     <Compile Include="FFTW\Config.cs" />
     <Compile Include="FFTW\Interop.cs" />
-    <Compile Include="Internal\AVCodec.cs" />
-    <Compile Include="Internal\AVFormat.cs" />
-    <Compile Include="Internal\AVUtil.cs" />
-    <Compile Include="Internal\Config.cs" />
-    <Compile Include="Internal\Delegates.cs" />
-    <Compile Include="Internal\Swresample.cs" />
-    <Compile Include="Internal\Swscale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Structs\AVBitStreamFilter.cs" />
-    <Compile Include="Structs\AVBitStreamFilterContext.cs" />
-    <Compile Include="Structs\AVBufferRef.cs" />
-    <Compile Include="Structs\AVChapter.cs" />
-    <Compile Include="Structs\AVClass.cs" />
-    <Compile Include="Structs\AVCodec.cs" />
-    <Compile Include="Structs\AVCodecContext.cs" />
-    <Compile Include="Structs\AVCodecDefault.cs" />
-    <Compile Include="Structs\AVCodecDescriptor.cs" />
-    <Compile Include="Structs\AVCodecParameters.cs" />
-    <Compile Include="Structs\AVCodecParser.cs" />
-    <Compile Include="Structs\AVCodecParserContext.cs" />
-    <Compile Include="Structs\AVCodecTag.cs" />
-    <Compile Include="Structs\AVComponentDescriptor.cs" />
-    <Compile Include="Structs\AVDictionary.cs" />
-    <Compile Include="Structs\AVFormatContext.cs" />
-    <Compile Include="Structs\AVFrac.cs" />
-    <Compile Include="Structs\AVFrame.cs" />
-    <Compile Include="Structs\AVFrameSideData.cs" />
-    <Compile Include="Structs\AVHWAccel.cs" />
-    <Compile Include="Structs\AVIndexEntry.cs" />
-    <Compile Include="Structs\AVInputFormat.cs" />
-    <Compile Include="Structs\AVIOContext.cs" />
-    <Compile Include="Structs\AVIODirContext.cs" />
-    <Compile Include="Structs\AVIODirEntry.cs" />
-    <Compile Include="Structs\AVIOInterruptCB.cs" />
-    <Compile Include="Structs\AVOption.cs" />
-    <Compile Include="Structs\AVOptionRange.cs" />
-    <Compile Include="Structs\AVOptionRanges.cs" />
-    <Compile Include="Structs\AVOutputFormat.cs" />
-    <Compile Include="Structs\AVPacket.cs" />
-    <Compile Include="Structs\AVPacketList.cs" />
-    <Compile Include="Structs\AVPacketSideData.cs" />
-    <Compile Include="Structs\AVPicture.cs" />
-    <Compile Include="Structs\AVPixFmtDescriptor.cs" />
-    <Compile Include="Structs\AVProbeData.cs" />
-    <Compile Include="Structs\AVProfile.cs" />
-    <Compile Include="Structs\AVProgram.cs" />
-    <Compile Include="Structs\AVRational.cs" />
-    <Compile Include="Structs\AVResampleContext.cs" />
-    <Compile Include="Structs\AVStream.cs" />
-    <Compile Include="Structs\AVStreamInfo.cs" />
-    <Compile Include="Structs\AVSubtitle.cs" />
-    <Compile Include="Structs\AVSubtitleRect.cs" />
-    <Compile Include="Structs\DCTContext.cs" />
-    <Compile Include="Structs\FFTComplex.cs" />
-    <Compile Include="Structs\FFTContext.cs" />
-    <Compile Include="Structs\RcOverride.cs" />
-    <Compile Include="Structs\RDFTContext.cs" />
-    <Compile Include="Structs\ReSampleContextPtr.cs" />
-    <Compile Include="Structs\SwrContext.cs" />
-    <Compile Include="Structs\SwsContext.cs" />
-    <Compile Include="Structs\SwsFilter.cs" />
-    <Compile Include="Structs\SwsVector.cs" />
     <Compile Include="Support\Debug.cs" />
     <Compile Include="Support\FFmpegException.cs" />
-    <Compile Include="Support\IntPtrArray.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="libfftw3-3.dll">
@@ -232,6 +161,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

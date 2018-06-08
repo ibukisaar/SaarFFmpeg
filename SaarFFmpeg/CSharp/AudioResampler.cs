@@ -225,8 +225,7 @@ namespace Saar.FFmpeg.CSharp {
 		public static AudioResampler GetPackedResampler(AudioFormat planarFormat) {
 			if (!planarFormat.IsPlanarFormat) return null;
 
-			AudioResampler resampler;
-			if (planarResamplers.TryGetValue(planarFormat, out resampler)) {
+			if (planarResamplers.TryGetValue(planarFormat, out AudioResampler resampler)) {
 				return resampler;
 			}
 			resampler = new AudioResampler(planarFormat, planarFormat.ToPacked());
@@ -237,8 +236,7 @@ namespace Saar.FFmpeg.CSharp {
 		public static AudioResampler GetPlanarResampler(AudioFormat packedFormat) {
 			if (packedFormat.IsPlanarFormat) return null;
 
-			AudioResampler resampler;
-			if (planarResamplers.TryGetValue(packedFormat, out resampler)) {
+			if (planarResamplers.TryGetValue(packedFormat, out AudioResampler resampler)) {
 				return resampler;
 			}
 			resampler = new AudioResampler(packedFormat, packedFormat.ToPlanar());

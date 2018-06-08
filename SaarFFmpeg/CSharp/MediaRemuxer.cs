@@ -33,7 +33,7 @@ namespace Saar.FFmpeg.CSharp {
 					if (stream == null) throw new InvalidOperationException("无法创建流");
 					FF.avcodec_copy_context(stream->Codec, codec.codecContext).CheckFFmpegCode();
 					stream->Codec->CodecTag = 0;
-					if (outputFormat->Flags.HasFlag(AVFmt.GlobalHeader)) {
+					if (outputFormat->Flags.HasFlag(AVFmt.Globalheader)) {
 						stream->Codec->Flags |= AVCodecFlag.GlobalHeader;
 					}
 					stream->TimeBase = codec.codecContext->TimeBase;

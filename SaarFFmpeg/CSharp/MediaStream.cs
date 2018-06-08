@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using Saar.FFmpeg.Delegates;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
@@ -20,9 +20,9 @@ namespace Saar.FFmpeg.CSharp {
 		private byte* buffer;
 		protected Stream baseStream;
 
-		private Internal.Delegates.IOBufferDelegate procRead = null;
-		private Internal.Delegates.IOBufferDelegate procWrite = null;
-		private Internal.Delegates.SeekBufferDelegate procSeek = null;
+		private avio_alloc_context_read_packet procRead = null;
+		private avio_alloc_context_write_packet procWrite = null;
+		private avio_alloc_context_seek procSeek = null;
 
 		public int StreamCount => (int) formatContext->NbStreams;
 
@@ -41,7 +41,7 @@ namespace Saar.FFmpeg.CSharp {
 				ioContext = FF.avio_alloc_context(buffer, bufferLength, write, null, procRead, procWrite, procSeek);
 				if (write) {
 					formatContext->Oformat = outputFormat;
-					formatContext->Flags = AVFmtFlag.CustomIO;
+					formatContext->Flags |= AVFmtFlag.CustomIO;
 				}
 				formatContext->Pb = ioContext;
 			} catch {

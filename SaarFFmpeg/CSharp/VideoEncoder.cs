@@ -116,9 +116,9 @@ namespace Saar.FFmpeg.CSharp {
 			}
 
 			if (frameRates != null && !frameRates.Contains(frameRate)) {
-				foreach (var fr in frameRates.OrderBy(fr => fr.Value)) {
+				foreach (var fr in frameRates.OrderBy(fr => (Fraction)fr)) {
 					frameRate = fr;
-					if (fr.Value >= frameRate.Value) {
+					if (((Fraction)fr).CompareTo(frameRate) >= 0) {
 						break;
 					}
 				}
