@@ -12,11 +12,14 @@
 
 需要DLL
 ------
-* avutil-55.dll
-* avcodec-57.dll
-* avformat-57.dll
-* swscale-4.dll
-* swresample-2.dll
+* avutil-56.dll
+* avcodec-58.dll
+* avformat-58.dll
+* swscale-5.dll
+* swresample-3.dll
+* avdevice-58.dll
+* avfilter-7.dll
+* postproc-55.dll
  
 如果是Android要换成so。
 
