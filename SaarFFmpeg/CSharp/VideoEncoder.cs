@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Saar.FFmpeg.CSharp;
+using Saar.FFmpeg.Structs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.CSharp;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
@@ -176,6 +176,16 @@ namespace Saar.FFmpeg.CSharp {
 					frame.presentTimestamp.Transform(codecContext->TimeBase);
 					frame.frame->Pts = frame.presentTimestamp.Value;
 					FF.avcodec_encode_video2(codecContext, outPacket.packet, frame.frame, &gotPicture).CheckFFmpegCode("视频编码发生错误");
+
+					//int ret = FF.avcodec_send_frame(codecContext, frame.frame).CheckFFmpegCode("视频编码发生错误");
+					//while (ret >= 0) {
+					//	ret = FF.avcodec_receive_packet(codecContext, outPacket.packet);
+					//	if (ret == Error.EAGAIN.AVError() || ret == (int)AVError.Eof) {
+					//		break;
+					//	} else if (ret < 0) {
+					//		throw new FFmpegException(ret);
+					//	}
+					//}
 				} finally {
 					frame.ReleaseSetup();
 				}
@@ -184,6 +194,15 @@ namespace Saar.FFmpeg.CSharp {
 				encodeFrames = 1;
 			} else {
 				FF.avcodec_encode_video2(codecContext, outPacket.packet, null, &gotPicture).CheckFFmpegCode("视频编码发生错误");
+				//int ret = FF.avcodec_send_frame(codecContext, null).CheckFFmpegCode("视频编码发生错误");
+				//while (ret >= 0) {
+				//	ret = FF.avcodec_receive_packet(codecContext, outPacket.packet);
+				//	if (ret == Error.EAGAIN.AVError() || ret == (int)AVError.Eof) {
+				//		break;
+				//	} else if (ret < 0) {
+				//		throw new FFmpegException(ret);
+				//	}
+				//}
 			}
 
 			if (gotPicture != 0) {

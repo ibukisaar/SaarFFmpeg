@@ -114,7 +114,7 @@ namespace SaarFFmpeg.AudioTest {
 		*/
 
 		static void Main(string[] args) {
-			var audioStream = new AudioStream(File.OpenRead(@"D:\MyDocuments\Music\虾米音乐\あゆ;イザベル;岩杉夏-紫雨UNITED まさかのアリス突撃编.mp3"));
+			var audioStream = new AudioStream(File.OpenRead(@"D:\MyDocuments\Music\虾米音乐\Cyua-Blumenkranz.mp3"));
 			using (var wasapi = new WasapiOut(ShareMode.Shared, true, Role.Multimedia, 640)) {
 				wasapi.Resample += (sender, e) => {
 					audioStream.Resample(e.OutFormat);

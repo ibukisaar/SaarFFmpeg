@@ -33,9 +33,10 @@ namespace Saar.FFmpeg.Internal {
 
 		static FFmpeg() {
 			av_register_all();
+			avcodec_register_all();
 
-			//Version = av_version_info();
-			//System.Diagnostics.Debug.WriteLine("FFmpeg Version: " + Version);
+			Version = Marshal.PtrToStringAnsi(av_version_info());
+			System.Diagnostics.Debug.WriteLine("FFmpeg Version: " + Version);
 		}
 	}
 }

@@ -68,18 +68,15 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		[AllowReversePInvokeCalls]
-		private int Read(void* opaque, IntPtr buffer, int bufferLength) {
+		private int Read(void* opaque, byte* buffer, int bufferLength) {
 			bufferLength = Math.Min(bufferLength, tempBuffer.Length);
-			int length = baseStream.Read(tempBuffer, 0, bufferLength);
-			Marshal.Copy(tempBuffer, 0, buffer, length);
-			return length;
+			return baseStream.Read(new Span<byte>(buffer, bufferLength));
 		}
 
 		[AllowReversePInvokeCalls]
-		private int Write(void* opaque, IntPtr buffer, int bufferLength) {
+		private int Write(void* opaque, byte* buffer, int bufferLength) {
 			bufferLength = Math.Min(bufferLength, tempBuffer.Length);
-			Marshal.Copy(buffer, tempBuffer, 0, bufferLength);
-			baseStream.Write(tempBuffer, 0, bufferLength);
+			baseStream.Write(new ReadOnlySpan<byte>(buffer, bufferLength));
 			return bufferLength;
 		}
 

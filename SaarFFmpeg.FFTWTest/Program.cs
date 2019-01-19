@@ -22,7 +22,7 @@ namespace SaarFFmpeg.FFTWTest {
 		}
 
 		static void Main(string[] args) {
-			const int FFTSize = 240;
+			const int FFTSize = 15;
 			const int FFTComplexSize = FFTSize / 2 + 1;
 			var fft = new FFT(FFTSize, fftw_direction.Forward);
 			var input = new Complex[FFTSize];
@@ -35,7 +35,8 @@ namespace SaarFFmpeg.FFTWTest {
 			for (int i = 0; i < FFTSize; i++) {
 				//input[i] = i / RectWaveWidth % 2 == 0 ? 1 : 0;
 				//input[i] += i / RectWaveWidth2 % 2 == 0 ? 1 : 0;
-				input[i] = 1000 + 50000 * Math.Sin(2 * Math.PI / FFTSize * 20.1 * i) + 40000 * Math.Sin(2 * Math.PI / FFTSize * 7 * i) + 9000 * Math.Sin(2 * Math.PI / FFTSize * 119 * i);
+				input[i] = 1000 + 50000 * Math.Sin(2 * Math.PI / FFTSize * 2 * i);
+				// input[i] = 1000 + 50000 * Math.Sin(2 * Math.PI / FFTSize * 20 * i) + 40000 * Math.Sin(2 * Math.PI / FFTSize * 7 * i) + 9000 * Math.Sin(2 * Math.PI / FFTSize * 119 * i);
 				// input[i] = 1 * Math.Sin(2 * Math.PI / FFTSize * 7 * i);
 				// input[i] *= 2 * Math.Cos(2 * Math.PI / FFTSize * 5 * i);
 			}

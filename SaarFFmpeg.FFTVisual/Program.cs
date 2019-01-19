@@ -16,10 +16,10 @@ namespace SaarFFmpeg.FFTVisual {
 			const double MaxDB = 65;
 			const int fftSize = 4192 * 6;
 
-			var reader = new MediaReader(@"D:\CloudMusic\MAN WITH A MISSION - My Hero.mp3");
+			var reader = new MediaReader(@"D:\MyDocuments\Music\虾米音乐\Shiggy Jr.-oyasumi.mp3");
 			var decoder = reader.Decoders.OfType<AudioDecoder>().First();
-			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Rgb0);
-			var writer = new MediaWriter(@"D:\CloudMusic\MAN WITH A MISSION - My Hero-fft.mkv")
+			var videoFormat = new VideoFormat(1280, 720, AVPixelFormat.Rgb0, 4);
+			var writer = new MediaWriter(@"D:\fft.mp4")
 				.AddEncoder(new VideoEncoder(AVCodecID.H264, videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 }))
 				.AddEncoder(new AudioEncoder(AVCodecID.Mp3, decoder.InFormat))
 				//.AddVideo(videoFormat, new VideoEncoderParameters { FrameRate = new Fraction(30), GopSize = 10 })

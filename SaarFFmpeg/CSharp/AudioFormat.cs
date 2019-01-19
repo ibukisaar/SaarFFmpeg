@@ -24,30 +24,24 @@ namespace Saar.FFmpeg.CSharp {
 		public int SampleRate { get; }
 		public AVChannelLayout ChannelLayout { get; }
 		public AVSampleFormat SampleFormat { get; }
-		public int Channels { get; }
+		public int Channels => GetChannels(ChannelLayout);
 		public int BitsPerSample { get; }
-		public int LineBlock { get; }
-		public Type SampleType { get; }
-		public bool IsPlanarFormat { get; }
-		public int LineCount { get; }
+		public Type SampleType => GetSampleType(SampleFormat);
+		public bool IsPlanarFormat => SampleFormat.IsPlanar();
+		public int LineCount => IsPlanarFormat ? Channels : 1;
+		public int LineBlock => IsPlanarFormat ? (BitsPerSample >> 3) : (BitsPerSample >> 3) * Channels;
 		public int ValidBitsPerSample { get; }
 
 		public AudioFormat(int sampleRate, AVChannelLayout channelLayout, AVSampleFormat sampleFormat) {
 			SampleRate = sampleRate;
 			ChannelLayout = channelLayout;
 			SampleFormat = sampleFormat;
-			Channels = GetChannels(channelLayout);
 			BitsPerSample = GetBytePerSample(sampleFormat) * 8;
-			SampleType = GetSampleType(sampleFormat);
-			IsPlanarFormat = sampleFormat.IsPlanar();
-			LineCount = IsPlanarFormat ? Channels : 1;
-			LineBlock = IsPlanarFormat ? (BitsPerSample >> 3) : (BitsPerSample >> 3) * Channels;
 			ValidBitsPerSample = SampleFormat.EqualsType(AVSampleFormat.Int32) ? 24 : BitsPerSample;
 		}
 
 		public AudioFormat(int sampleRate, int channels, int sampleBits, bool planar = false) {
 			SampleRate = sampleRate;
-			Channels = channels;
 			BitsPerSample = sampleBits == 24 ? 32 : sampleBits;
 			ChannelLayout = GetDefaultChannelLayout(channels);
 			switch (sampleBits) {
@@ -59,23 +53,19 @@ namespace Saar.FFmpeg.CSharp {
 				default: throw new ArgumentException($"不支持的采样位数:{sampleBits}");
 			}
 			if (planar) SampleFormat = SampleFormat.ToPlanar();
-			SampleType = GetSampleType(SampleFormat);
-			IsPlanarFormat = planar;
-			LineCount = IsPlanarFormat ? Channels : 1;
-			LineBlock = IsPlanarFormat ? (BitsPerSample >> 3) : (BitsPerSample >> 3) * Channels;
 			ValidBitsPerSample = SampleFormat.EqualsType(AVSampleFormat.Int32) ? 24 : BitsPerSample;
 		}
 
 		public override bool Equals(object obj) {
 			AudioFormat other = obj as AudioFormat;
-			if (ReferenceEquals(other, null)) return false;
+			if (other is null) return false;
 			return SampleRate == other.SampleRate
 				&& ChannelLayout == other.ChannelLayout
 				&& SampleFormat == other.SampleFormat;
 		}
 
 		public override int GetHashCode() {
-			return SampleRate + (int) ChannelLayout + (int) SampleFormat;
+			return SampleRate + (int)ChannelLayout + (int)SampleFormat;
 		}
 
 		public string String => $"{SampleRate} Hz, {Channels} channels, {ValidBitsPerSample} bits";
@@ -109,18 +99,18 @@ namespace Saar.FFmpeg.CSharp {
 
 		public static bool operator ==(AudioFormat left, AudioFormat right) {
 			if (ReferenceEquals(left, right)) return true;
-			if (ReferenceEquals(left, null)) return false;
+			if (left is null) return false;
 			return left.Equals(right);
 		}
 
 		public static bool operator !=(AudioFormat left, AudioFormat right) {
 			if (ReferenceEquals(left, right)) return false;
-			if (ReferenceEquals(left, null)) return true;
+			if (left is null) return true;
 			return !left.Equals(right);
 		}
 
 		public static Type GetSampleType(AVSampleFormat sampleFormat) {
-			return SampleTypeMap[(int) sampleFormat];
+			return SampleTypeMap[(int)sampleFormat];
 		}
 
 		public static int GetBytePerSample(AVSampleFormat sampleFormat) {

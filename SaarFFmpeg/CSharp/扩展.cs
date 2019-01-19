@@ -21,7 +21,7 @@ namespace Saar.FFmpeg.CSharp {
 
 		public static T Minimal<T, E>(this IEnumerable<T> @this, Func<T, E> map) where E : IComparable<E> {
 			using (var enumer = @this.GetEnumerator()) {
-				if (!enumer.MoveNext()) return default(T);
+				if (!enumer.MoveNext()) return default;
 
 				var result = enumer.Current;
 				var minValue = map(result);
@@ -43,8 +43,10 @@ namespace Saar.FFmpeg.CSharp {
 
 		public static int CheckFFmpegCode(this int code)
 			=> code >= 0 ? code : throw new FFmpegException(code);
-		
+
 		public static int CheckFFmpegCode(this int code, string message)
 			=> code >= 0 ? code : throw new FFmpegException(code, message);
+
+		public static int AVError(this Error error) => -(int)error;
 	}
 }

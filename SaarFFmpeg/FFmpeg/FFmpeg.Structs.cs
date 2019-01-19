@@ -1,10 +1,10 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using Saar.FFmpeg.Support;
 using Saar.FFmpeg.CSharp;
-using Saar.FFmpeg.Internal;
 using Saar.FFmpeg.Delegates;
+using Saar.FFmpeg.Internal;
+using Saar.FFmpeg.Support;
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.Structs {
 #pragma warning disable IDE1006 // 命名样式
@@ -33,6 +33,8 @@ namespace Saar.FFmpeg.Structs {
 		}
 
 		public double Value => Num / (double)Den;
+
+		public override string ToString() => $"{Num}/{Den}";
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -704,7 +706,7 @@ namespace Saar.FFmpeg.Structs {
 		public void* SetPriority;
 		public void* GetPriority;
 		public void* PreLoad;
-		public void* NativeGetType;
+		public new void* GetType;
 		public void* GetContainer;
 		public void* GetDesc;
 		public void* LockRect;
@@ -932,7 +934,7 @@ namespace Saar.FFmpeg.Structs {
 		public void* CSGetConstantBuffers;
 		public void* ClearState;
 		public void* Flush;
-		public void* NativeGetType;
+		public new void* GetType;
 		public void* GetContextFlags;
 		public void* FinishCommandList;
 	}
@@ -1069,7 +1071,7 @@ namespace Saar.FFmpeg.Structs {
 		public void* GetPrivateData;
 		public void* SetPrivateData;
 		public void* SetPrivateDataInterface;
-		public void* NativeGetType;
+		public new void* GetType;
 		public void* SetEvictionPriority;
 		public void* GetEvictionPriority;
 		public void* GetDesc;
@@ -1666,6 +1668,10 @@ namespace Saar.FFmpeg.Structs {
 		/// The maximum number of streams. - encoding: unused - decoding: set by user
 		/// </summary>
 		public int MaxStreams;
+		/// <summary>
+		/// Skip duration calcuation in estimate_timings_from_pts. - encoding: unused - decoding: set by user
+		/// </summary>
+		public int SkipEstimateDurationFromPts;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -1814,6 +1820,7 @@ namespace Saar.FFmpeg.Structs {
 		public int ProgramNum;
 		public int PmtPid;
 		public int PcrPid;
+		public int PmtVersion;
 		/// <summary>
 		/// *************************************************************** All fields below this line are not part of the public API. They may not be used outside of libavformat and can be changed and removed at will. New public fields should be added right above. ****************************************************************
 		/// </summary>
@@ -1976,6 +1983,12 @@ namespace Saar.FFmpeg.Structs {
 		/// Stream Identifier This is the MPEG-TS stream identifier +1 0 means unknown
 		/// </summary>
 		public int StreamIdentifier;
+		/// <summary>
+		/// Details of the MPEG-TS program which created this stream.
+		/// </summary>
+		public int ProgramNum;
+		public int PmtVersion;
+		public int PmtStreamIdx;
 		public long InterleaverChunkSize;
 		public long InterleaverChunkDuration;
 		/// <summary>
@@ -2783,9 +2796,9 @@ namespace Saar.FFmpeg.Structs {
 		/// <summary>
 		/// AV_CODEC_FLAG2_* - encoding: Set by user. - decoding: Set by user.
 		/// </summary>
-		public int Flags2;
+		public AVCodecFlag2 Flags2;
 		/// <summary>
-		/// some codecs need / can use extradata like Huffman tables. MJPEG: Huffman tables rv10: additional flags MPEG-4: global headers (they can be in the bitstream or here) The allocated memory should be AV_INPUT_BUFFER_PADDING_SIZE bytes larger than extradata_size to avoid problems if it is read with the bitstream reader. The bytewise contents of extradata must not depend on the architecture or CPU endianness. - encoding: Set/allocated/freed by libavcodec. - decoding: Set/allocated/freed by user.
+		/// some codecs need / can use extradata like Huffman tables. MJPEG: Huffman tables rv10: additional flags MPEG-4: global headers (they can be in the bitstream or here) The allocated memory should be AV_INPUT_BUFFER_PADDING_SIZE bytes larger than extradata_size to avoid problems if it is read with the bitstream reader. The bytewise contents of extradata must not depend on the architecture or CPU endianness. Must be allocated with the av_malloc() family of functions. - encoding: Set/allocated/freed by libavcodec. - decoding: Set/allocated/freed by user.
 		/// </summary>
 		public byte* Extradata;
 		public int ExtradataSize;
@@ -3926,6 +3939,7 @@ namespace Saar.FFmpeg.Structs {
 		public AVBitStreamFilter_Init_Func Init;
 		public AVBitStreamFilter_Filter_Func Filter;
 		public AVBitStreamFilter_Close_Func Close;
+		public AVBitStreamFilter_Flush_Func Flush;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -4034,7 +4048,7 @@ namespace Saar.FFmpeg.Structs {
 		/// </summary>
 		public AVBufferRef* HwFramesCtx;
 		/// <summary>
-		/// Audio only, the audio sampling rate in samples per secon.
+		/// Audio only, the audio sampling rate in samples per second.
 		/// </summary>
 		public int SampleRate;
 		/// <summary>

@@ -47,8 +47,7 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public override bool Decode(Packet packet, Frame outFrame) {
-			var videoFrame = outFrame as VideoFrame;
-			if (videoFrame == null) {
+			if (!(outFrame is VideoFrame videoFrame)) {
 				throw new ArgumentException($"{nameof(outFrame)}必须是{nameof(VideoFrame)}类型且不为null。");
 			}
 

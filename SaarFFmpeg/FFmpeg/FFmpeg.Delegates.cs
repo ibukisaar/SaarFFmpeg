@@ -1053,6 +1053,17 @@ namespace Saar.FFmpeg.Delegates
     }
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate void AVBitStreamFilter_Flush(AVBSFContext* ctx);
+    public unsafe struct AVBitStreamFilter_Flush_Func
+    {
+        public IntPtr Pointer;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Invoke(AVBSFContext* ctx) => Marshal.GetDelegateForFunctionPointer<AVBitStreamFilter_Flush>(Pointer)(ctx);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator AVBitStreamFilter_Flush_Func(AVBitStreamFilter_Flush func) => new AVBitStreamFilter_Flush_Func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
+    }
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public unsafe delegate int avcodec_default_execute_func(AVCodecContext* c2, void* arg2);
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -1062,10 +1073,10 @@ namespace Saar.FFmpeg.Delegates
     public unsafe delegate int av_lockmgr_register_cb(void** mutex, AVLockOp op);
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate int avio_alloc_context_read_packet(void* opaque, IntPtr buf, int buf_size);
+    public unsafe delegate int avio_alloc_context_read_packet(void* opaque, byte* buf, int buf_size);
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate int avio_alloc_context_write_packet(void* opaque, IntPtr buf, int buf_size);
+    public unsafe delegate int avio_alloc_context_write_packet(void* opaque, byte* buf, int buf_size);
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public unsafe delegate long avio_alloc_context_seek(void* opaque, long offset, AVSeek whence);

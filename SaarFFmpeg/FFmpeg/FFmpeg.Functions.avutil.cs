@@ -1,10 +1,10 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Support;
 using Saar.FFmpeg.CSharp;
 using Saar.FFmpeg.Delegates;
+using Saar.FFmpeg.Structs;
+using Saar.FFmpeg.Support;
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.Internal {
 #pragma warning disable IDE1006 // 命名样式
@@ -121,7 +121,7 @@ namespace Saar.FFmpeg.Internal {
 		/// Append a description of a channel layout to a bprint buffer.
 		/// </summary>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_bprint_channel_layout(AVBPrint* bp, int nb_channels, AVChannelLayout channel_layout);
+		public extern static void av_bprint_channel_layout(AVBPrint* bp, int nb_channels, ulong channel_layout);
 
 		/// <summary>
 		/// Allocate an AVBuffer of the given size using av_malloc().
@@ -236,7 +236,7 @@ namespace Saar.FFmpeg.Internal {
 		/// Get the channel with the given index in channel_layout.
 		/// </summary>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static AVChannelLayout av_channel_layout_extract_channel(AVChannelLayout channel_layout, int index);
+		public extern static ulong av_channel_layout_extract_channel(ulong channel_layout, int index);
 
 		/// <summary>
 		/// Returns the AVChromaLocation value for name or an AVError if not found.
@@ -654,13 +654,6 @@ namespace Saar.FFmpeg.Internal {
 		/// </summary>
 		/// <param name="frame">frame to be freed. The pointer will be set to NULL.</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_frame_free(AVFrame** frame);
-
-		/// <summary>
-		/// Free the frame and any dynamically allocated objects in it, e.g. extended_data. If the frame is reference counted, it will be unreferenced first.
-		/// </summary>
-		/// <param name="frame">frame to be freed. The pointer will be set to NULL.</param>
-		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static void av_frame_free(ref AVFrame* frame);
 
 		/// <summary>
@@ -678,7 +671,7 @@ namespace Saar.FFmpeg.Internal {
 		public extern static int av_frame_get_buffer(AVFrame* frame, int align);
 
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static AVChannelLayout av_frame_get_channel_layout(AVFrame* frame);
+		public extern static long av_frame_get_channel_layout(AVFrame* frame);
 
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static int av_frame_get_channels(AVFrame* frame);
@@ -775,7 +768,7 @@ namespace Saar.FFmpeg.Internal {
 		public extern static void av_frame_set_best_effort_timestamp(AVFrame* frame, long val);
 
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_frame_set_channel_layout(AVFrame* frame, AVChannelLayout val);
+		public extern static void av_frame_set_channel_layout(AVFrame* frame, long val);
 
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static void av_frame_set_channels(AVFrame* frame, int val);
@@ -1014,7 +1007,7 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="layout">channel layout mask</param>
 		/// <param name="name">name of the layout</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_get_standard_channel_layout(uint index, AVChannelLayout* layout, byte** name);
+		public extern static int av_get_standard_channel_layout(uint index, ulong* layout, byte** name);
 
 		/// <summary>
 		/// Return the fractional representation of the internal time base.
@@ -1165,7 +1158,7 @@ namespace Saar.FFmpeg.Internal {
 		/// </summary>
 		/// <param name="align">the value to use for buffer size alignment</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_image_alloc(ref byte_ptrArray4 pointers, ref int_array4 linesizes, int w, int h, AVPixelFormat pix_fmt, int align);
+		public extern static int av_image_alloc(byte** pointers, int* linesizes, int w, int h, AVPixelFormat pix_fmt, int align);
 
 		/// <summary>
 		/// Check if the given sample aspect ratio of an image is valid.
@@ -1204,14 +1197,6 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="dst_linesizes">linesizes for the image in dst_data</param>
 		/// <param name="src_linesizes">linesizes for the image in src_data</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_image_copy(ref byte_ptrArray4 dst_data, ref int_array4 dst_linesizes, ref byte_ptrArray4 src_data, int_array4 src_linesizes, AVPixelFormat pix_fmt, int width, int height);
-
-		/// <summary>
-		/// Copy image in src_data to dst_data.
-		/// </summary>
-		/// <param name="dst_linesizes">linesizes for the image in dst_data</param>
-		/// <param name="src_linesizes">linesizes for the image in src_data</param>
-		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static void av_image_copy(byte** dst_data, int* dst_linesizes, byte** src_data, int* src_linesizes, AVPixelFormat pix_fmt, int width, int height);
 
 		/// <summary>
@@ -1234,26 +1219,13 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="height">the height of the source image in pixels</param>
 		/// <param name="align">the assumed linesize alignment for dst</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_image_copy_to_buffer(byte* dst, int dst_size, byte_ptrArray4 src_data, int_array4 src_linesize, AVPixelFormat pix_fmt, int width, int height, int align);
+		public extern static int av_image_copy_to_buffer(byte* dst, int dst_size, byte** src_data, int* src_linesize, AVPixelFormat pix_fmt, int width, int height, int align);
 
 		/// <summary>
 		/// Copy image data located in uncacheable (e.g. GPU mapped) memory. Where available, this function will use special functionality for reading from such memory, which may result in greatly improved performance compared to plain av_image_copy().
 		/// </summary>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_image_copy_uc_from(ref byte_ptrArray4 dst_data, long_array4 dst_linesizes, ref byte_ptrArray4 src_data, long_array4 src_linesizes, AVPixelFormat pix_fmt, int width, int height);
-
-		/// <summary>
-		/// Setup the data pointers and linesizes based on the specified image parameters and the provided array.
-		/// </summary>
-		/// <param name="dst_data">data pointers to be filled in</param>
-		/// <param name="dst_linesize">linesizes for the image in dst_data to be filled in</param>
-		/// <param name="src">buffer which will contain or contains the actual image data, can be NULL</param>
-		/// <param name="pix_fmt">the pixel format of the image</param>
-		/// <param name="width">the width of the image in pixels</param>
-		/// <param name="height">the height of the image in pixels</param>
-		/// <param name="align">the value used in src for linesize alignment</param>
-		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_image_fill_arrays(ref byte_ptrArray4 dst_data, ref int_array4 dst_linesize, byte* src, AVPixelFormat pix_fmt, int width, int height, int align);
+		public extern static void av_image_copy_uc_from(byte** dst_data, IntPtr* dst_linesizes, byte** src_data, IntPtr* src_linesizes, AVPixelFormat pix_fmt, int width, int height);
 
 		/// <summary>
 		/// Setup the data pointers and linesizes based on the specified image parameters and the provided array.
@@ -1278,14 +1250,7 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="width">the width of the image in pixels</param>
 		/// <param name="height">the height of the image in pixels</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_image_fill_black(ref byte_ptrArray4 dst_data, long_array4 dst_linesize, AVPixelFormat pix_fmt, AVColorRange range, int width, int height);
-
-		/// <summary>
-		/// Fill plane linesizes for an image with pixel format pix_fmt and width width.
-		/// </summary>
-		/// <param name="linesizes">array to be filled with the linesize for each plane</param>
-		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_image_fill_linesizes(ref int_array4 linesizes, AVPixelFormat pix_fmt, int width);
+		public extern static int av_image_fill_black(byte** dst_data, IntPtr* dst_linesize, AVPixelFormat pix_fmt, AVColorRange range, int width, int height);
 
 		/// <summary>
 		/// Fill plane linesizes for an image with pixel format pix_fmt and width width.
@@ -1300,16 +1265,7 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="max_pixsteps">an array which is filled with the max pixel step for each plane. Since a plane may contain different pixel components, the computed max_pixsteps[plane] is relative to the component in the plane with the max pixel step.</param>
 		/// <param name="max_pixstep_comps">an array which is filled with the component for each plane which has the max pixel step. May be NULL.</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_image_fill_max_pixsteps(ref int_array4 max_pixsteps, ref int_array4 max_pixstep_comps, AVPixFmtDescriptor* pixdesc);
-
-		/// <summary>
-		/// Fill plane data pointers for an image with pixel format pix_fmt and height height.
-		/// </summary>
-		/// <param name="data">pointers array to be filled with the pointer for each image plane</param>
-		/// <param name="ptr">the pointer to a buffer which will contain the image</param>
-		/// <param name="linesizes">the array containing the linesize for each plane, should be filled by av_image_fill_linesizes()</param>
-		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_image_fill_pointers(ref byte_ptrArray4 data, AVPixelFormat pix_fmt, int height, byte* ptr, int_array4 linesizes);
+		public extern static void av_image_fill_max_pixsteps(int* max_pixsteps, int* max_pixstep_comps, AVPixFmtDescriptor* pixdesc);
 
 		/// <summary>
 		/// Fill plane data pointers for an image with pixel format pix_fmt and height height.
@@ -1583,7 +1539,7 @@ namespace Saar.FFmpeg.Internal {
 		public extern static int av_opt_get(void* obj, [MarshalAs(UnmanagedType.LPStr)] string name, int search_flags, byte** out_val);
 
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_opt_get_channel_layout(void* obj, [MarshalAs(UnmanagedType.LPStr)] string name, int search_flags, AVChannelLayout* ch_layout);
+		public extern static int av_opt_get_channel_layout(void* obj, [MarshalAs(UnmanagedType.LPStr)] string name, int search_flags, long* ch_layout);
 
 		/// <param name="out_val">The returned dictionary is a copy of the actual value and must be freed with av_dict_free() by the caller</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
@@ -1693,7 +1649,7 @@ namespace Saar.FFmpeg.Internal {
 		public extern static int av_opt_set_bin(void* obj, [MarshalAs(UnmanagedType.LPStr)] string name, byte* val, int size, int search_flags);
 
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_opt_set_channel_layout(void* obj, [MarshalAs(UnmanagedType.LPStr)] string name, AVChannelLayout ch_layout, int search_flags);
+		public extern static int av_opt_set_channel_layout(void* obj, [MarshalAs(UnmanagedType.LPStr)] string name, long ch_layout, int search_flags);
 
 		/// <summary>
 		/// Set the values of all AVOption fields to their default values.
@@ -1832,6 +1788,9 @@ namespace Saar.FFmpeg.Internal {
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static uint av_q2intfloat(AVRational q);
 
+		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
+		public extern static void av_read_image_line(ushort* dst, byte** data, int* linesize, AVPixFmtDescriptor* desc, int x, int y, int c, int w, int read_pal_component);
+
 		/// <summary>
 		/// Read a line from an image, and write the values of the pixel format component c to dst.
 		/// </summary>
@@ -1842,8 +1801,9 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="y">the vertical coordinate of the first pixel to read</param>
 		/// <param name="w">the width of the line to read, that is the number of values to write to dst</param>
 		/// <param name="read_pal_component">if not zero and the format is a paletted format writes the values corresponding to the palette component c in data[1] to dst, rather than the palette indexes in data[0]. The behavior is undefined if the format is not paletted.</param>
+		/// <param name="dst_element_size">size of elements in dst array (2 or 4 byte)</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_read_image_line(ushort* dst, ref byte_ptrArray4 data, int_array4 linesize, AVPixFmtDescriptor* desc, int x, int y, int c, int w, int read_pal_component);
+		public extern static void av_read_image_line2(void* dst, byte** data, int* linesize, AVPixFmtDescriptor* desc, int x, int y, int c, int w, int read_pal_component, int dst_element_size);
 
 		/// <summary>
 		/// Allocate, reallocate, or free a block of memory.
@@ -1980,7 +1940,7 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="nb_channels">number of audio channels</param>
 		/// <param name="sample_fmt">audio sample format</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_samples_copy(IntPtr[] dst, IntPtr* src, int dst_offset, int src_offset, int nb_samples, int nb_channels, AVSampleFormat sample_fmt);
+		public extern static int av_samples_copy(IntPtr[] dst, IntPtr[] src, int dst_offset, int src_offset, int nb_samples, int nb_channels, AVSampleFormat sample_fmt);
 
 		/// <summary>
 		/// Copy samples from src to dst.
@@ -1993,7 +1953,8 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="nb_channels">number of audio channels</param>
 		/// <param name="sample_fmt">audio sample format</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static int av_samples_copy(IntPtr[] dst, IntPtr[] src, int dst_offset, int src_offset, int nb_samples, int nb_channels, AVSampleFormat sample_fmt);
+		public extern static int av_samples_copy(IntPtr[] dst, IntPtr* src, int dst_offset, int src_offset, int nb_samples, int nb_channels, AVSampleFormat sample_fmt);
+
 
 		/// <summary>
 		/// Fill plane data pointers and linesize for samples with sample format sample_fmt.
@@ -2020,6 +1981,7 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="align">buffer size alignment (0 = default, 1 = no alignment)</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static int av_samples_fill_arrays(IntPtr[] audio_data, int* linesize, IntPtr buf, int nb_channels, int nb_samples, AVSampleFormat sample_fmt, int align);
+
 
 		/// <summary>
 		/// Get the required buffer size for the given audio parameters.
@@ -2163,8 +2125,7 @@ namespace Saar.FFmpeg.Internal {
 		/// Return an informative version string. This usually is the actual release version number or a git commit description. This string has no fixed format and can change any time. It should never be parsed by code.
 		/// </summary>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		[return: MarshalAs(UnmanagedType.LPStr)]
-		public extern static string av_version_info();
+		public extern static IntPtr av_version_info();
 
 		/// <summary>
 		/// Send the specified message to the log if the level is less than or equal to the current av_log_level. By default, all logging messages are sent to stderr. This behavior can be altered by setting a different logging callback function.
@@ -2176,6 +2137,9 @@ namespace Saar.FFmpeg.Internal {
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
 		public extern static void av_vlog(void* avcl, int level, [MarshalAs(UnmanagedType.LPStr)] string fmt, byte* vl);
 
+		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
+		public extern static void av_write_image_line(ushort* src, byte** data, int* linesize, AVPixFmtDescriptor* desc, int x, int y, int c, int w);
+
 		/// <summary>
 		/// Write the values from src to the pixel format component c of an image line.
 		/// </summary>
@@ -2186,8 +2150,9 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="x">the horizontal coordinate of the first pixel to write</param>
 		/// <param name="y">the vertical coordinate of the first pixel to write</param>
 		/// <param name="w">the width of the line to write, that is the number of values to write to the image line</param>
+		/// <param name="src_element_size">size of elements in src array (2 or 4 byte)</param>
 		[DllImport(Dll_AVUtil, CallingConvention = Convention)]
-		public extern static void av_write_image_line(ushort* src, ref byte_ptrArray4 data, int_array4 linesize, AVPixFmtDescriptor* desc, int x, int y, int c, int w);
+		public extern static void av_write_image_line2(void* src, byte** data, int* linesize, AVPixFmtDescriptor* desc, int x, int y, int c, int w, int src_element_size);
 
 		/// <summary>
 		/// Return the libavutil build-time configuration.

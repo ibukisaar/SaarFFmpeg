@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg", "SaarFFmpeg\SaarFFmpeg.csproj", "{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaarFFmpeg", "SaarFFmpeg\SaarFFmpeg.csproj", "{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7841373E-43F6-46BA-B6AD-7356308765A2}"
 EndProject
@@ -11,13 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.MemoryTest", "Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coolest", "..\Coolest\Coolest\Coolest.csproj", "{A0B6587D-1BEF-439F-8715-A3419EC53568}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.VideoTest", "SaarFFmpeg.VideoTest\SaarFFmpeg.VideoTest.csproj", "{FFA14E61-6EA2-4287-B136-7FA71690CB5F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.DecodeVideo", "SaarFFmpeg.VideoTest\SaarFFmpeg.DecodeVideo.csproj", "{FFA14E61-6EA2-4287-B136-7FA71690CB5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.EncodeAudio", "SaarFFmpeg.EncodeAudio\SaarFFmpeg.EncodeAudio.csproj", "{58A5272B-BE3B-44F3-8927-D287219F4075}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.Remuxer", "SaarFFmpeg.Remuxer\SaarFFmpeg.Remuxer.csproj", "{963FA7DD-9900-40BD-A1FC-DF1420B9B88C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.AudioTest", "SaarFFmpeg.AudioTest\SaarFFmpeg.AudioTest.csproj", "{BDDF8A10-42FE-49F3-9F87-B2BD7BBB1CCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.DecodeAudioAndPlay", "SaarFFmpeg.AudioTest\SaarFFmpeg.DecodeAudioAndPlay.csproj", "{BDDF8A10-42FE-49F3-9F87-B2BD7BBB1CCC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.EncodeVideo", "SaarFFmpeg.EncodeVideo\SaarFFmpeg.EncodeVideo.csproj", "{CB0DFF74-B100-4E35-81EE-B4C0A1D41A46}"
 EndProject
@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.DecodeHttpStream
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.AllCodec", "SaarFFmpeg.AllCodec\SaarFFmpeg.AllCodec.csproj", "{6ED32E28-87F9-4C5B-AFFA-54B2D97AB408}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaarFFmpeg.ApiTest", "SaarFFmpeg.ApiTest\SaarFFmpeg.ApiTest.csproj", "{66C0B6BF-C9AD-4303-9736-ECF67BB08075}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,8 +53,8 @@ Global
 		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Debug|x64.Build.0 = Debug|x64
 		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Release|x64.ActiveCfg = Release|x64
-		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Release|x64.Build.0 = Release|x64
+		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}.Release|x64.Build.0 = Release|Any CPU
 		{B5452F85-84D4-4652-88AE-2A20089E4B1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5452F85-84D4-4652-88AE-2A20089E4B1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5452F85-84D4-4652-88AE-2A20089E4B1F}.Debug|x64.ActiveCfg = Debug|x64
@@ -173,6 +175,14 @@ Global
 		{6ED32E28-87F9-4C5B-AFFA-54B2D97AB408}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6ED32E28-87F9-4C5B-AFFA-54B2D97AB408}.Release|x64.ActiveCfg = Release|Any CPU
 		{6ED32E28-87F9-4C5B-AFFA-54B2D97AB408}.Release|x64.Build.0 = Release|Any CPU
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Debug|x64.ActiveCfg = Debug|x64
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Debug|x64.Build.0 = Debug|x64
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Release|x64.ActiveCfg = Release|Any CPU
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,6 +203,7 @@ Global
 		{D832AE12-9C5D-4E04-83FA-C8C77D693AC4} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 		{52729B35-BB64-4B30-B14D-765117389D92} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 		{6ED32E28-87F9-4C5B-AFFA-54B2D97AB408} = {7841373E-43F6-46BA-B6AD-7356308765A2}
+		{66C0B6BF-C9AD-4303-9736-ECF67BB08075} = {7841373E-43F6-46BA-B6AD-7356308765A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {06E3976E-161F-476A-AC7F-05BF84D87E7A}

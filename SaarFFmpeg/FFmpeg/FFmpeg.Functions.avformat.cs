@@ -1,10 +1,10 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using Saar.FFmpeg.Structs;
-using Saar.FFmpeg.Support;
 using Saar.FFmpeg.CSharp;
 using Saar.FFmpeg.Delegates;
+using Saar.FFmpeg.Structs;
+using Saar.FFmpeg.Support;
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.Internal {
 #pragma warning disable IDE1006 // 命名样式
@@ -229,7 +229,7 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="mime_type">if non-NULL checks if mime_type matches with the MIME type of the registered formats</param>
 		[DllImport(Dll_AVFormat, CallingConvention = Convention)]
 		public extern static AVOutputFormat* av_guess_format([MarshalAs(UnmanagedType.LPStr)] string short_name, [MarshalAs(UnmanagedType.LPStr)] string filename, [MarshalAs(UnmanagedType.LPStr)] string mime_type);
-		
+
 		/// <summary>
 		/// Return the output format in the list of registered output formats which best matches the provided parameters, or return NULL if there is no match.
 		/// </summary>
@@ -238,7 +238,8 @@ namespace Saar.FFmpeg.Internal {
 		/// <param name="mime_type">if non-NULL checks if mime_type matches with the MIME type of the registered formats</param>
 		[DllImport(Dll_AVFormat, CallingConvention = Convention)]
 		public extern static AVOutputFormat* av_guess_format(byte* short_name, byte* filename, byte* mime_type);
-		
+
+
 		/// <summary>
 		/// Guess the frame rate, based on both the container and codec information.
 		/// </summary>

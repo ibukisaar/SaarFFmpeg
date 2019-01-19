@@ -47,14 +47,13 @@ namespace Saar.FFmpeg.CSharp {
 			FF.av_samples_copy(datas, &newData, 0, 0, sampleCount, format.Channels, format.SampleFormat);
 		}
 
-		public void Update(int sampleCount, Array newData) {
-			var handle = GCHandle.Alloc(newData, GCHandleType.Pinned);
-			try {
-				Update(sampleCount, handle.AddrOfPinnedObject());
-			} finally {
-				handle.Free();
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData) where T : unmanaged {
+			fixed (T* p = newData) {
+				Update(sampleCount, (IntPtr)p);
 			}
 		}
+
+		public void Update<T>(int sampleCount, T* newData) where T : unmanaged => Update(sampleCount, (IntPtr)newData);
 
 		public void Update(int sampleCount, params IntPtr[] newDatas) {
 			if (newDatas.Length != format.LineCount) throw new ArgumentException("参数个数和数据行数不一致", nameof(newDatas));
@@ -62,31 +61,123 @@ namespace Saar.FFmpeg.CSharp {
 			FF.av_samples_copy(datas, newDatas, 0, 0, sampleCount, format.Channels, format.SampleFormat);
 		}
 
-		public void Update(int sampleCount, params Array[] newDatas) {
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2) where T : unmanaged {
+			if (2 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是2才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2) {
+				T** srcPointers = stackalloc[] { p1, p2 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2, ReadOnlySpan<T> newData3) where T : unmanaged {
+			if (3 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是3才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2)
+			fixed (T* p3 = newData3) {
+				T** srcPointers = stackalloc[] { p1, p2, p3 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2, ReadOnlySpan<T> newData3, ReadOnlySpan<T> newData4) where T : unmanaged {
+			if (4 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是4才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2)
+			fixed (T* p3 = newData3)
+			fixed (T* p4 = newData4) {
+				T** srcPointers = stackalloc[] { p1, p2, p3, p4 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2, ReadOnlySpan<T> newData3, ReadOnlySpan<T> newData4, ReadOnlySpan<T> newData5) where T : unmanaged {
+			if (5 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是5才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2)
+			fixed (T* p3 = newData3)
+			fixed (T* p4 = newData4)
+			fixed (T* p5 = newData5) {
+				T** srcPointers = stackalloc[] { p1, p2, p3, p4, p5 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2, ReadOnlySpan<T> newData3, ReadOnlySpan<T> newData4, ReadOnlySpan<T> newData5, ReadOnlySpan<T> newData6) where T : unmanaged {
+			if (6 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是6才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2)
+			fixed (T* p3 = newData3)
+			fixed (T* p4 = newData4)
+			fixed (T* p5 = newData5)
+			fixed (T* p6 = newData6) {
+				T** srcPointers = stackalloc[] { p1, p2, p3, p4, p5, p6 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2, ReadOnlySpan<T> newData3, ReadOnlySpan<T> newData4, ReadOnlySpan<T> newData5, ReadOnlySpan<T> newData6, ReadOnlySpan<T> newData7) where T : unmanaged {
+			if (7 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是7才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2)
+			fixed (T* p3 = newData3)
+			fixed (T* p4 = newData4)
+			fixed (T* p5 = newData5)
+			fixed (T* p6 = newData6)
+			fixed (T* p7 = newData7) {
+				T** srcPointers = stackalloc[] { p1, p2, p3, p4, p5, p6, p7 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, ReadOnlySpan<T> newData1, ReadOnlySpan<T> newData2, ReadOnlySpan<T> newData3, ReadOnlySpan<T> newData4, ReadOnlySpan<T> newData5, ReadOnlySpan<T> newData6, ReadOnlySpan<T> newData7, ReadOnlySpan<T> newData8) where T : unmanaged {
+			if (8 != format.LineCount) throw new InvalidOperationException($"{nameof(Format)}的数据行数必须是8才能调用此方法");
+			Resize(sampleCount);
+
+			fixed (T* p1 = newData1)
+			fixed (T* p2 = newData2)
+			fixed (T* p3 = newData3)
+			fixed (T* p4 = newData4)
+			fixed (T* p5 = newData5)
+			fixed (T* p6 = newData6)
+			fixed (T* p7 = newData7)
+			fixed (T* p8 = newData8) {
+				T** srcPointers = stackalloc[] { p1, p2, p3, p4, p5, p6, p7, p8 };
+				FF.av_samples_copy(datas, (IntPtr*)srcPointers, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			}
+		}
+
+		public void Update<T>(int sampleCount, params T*[] newDatas) where T : unmanaged {
 			if (newDatas.Length != format.LineCount) throw new ArgumentException("数组个数和数据行数不一致", nameof(newDatas));
 			Resize(sampleCount);
 
-			int lineBytes = format.GetLineBytes(sampleCount);
-			for (int i = newDatas.Length - 1; i >= 0; i--) {
-				var handle = GCHandle.Alloc(newDatas[i], GCHandleType.Pinned);
-				try {
-					Buffer.MemoryCopy((void*) handle.AddrOfPinnedObject(), (void*) datas[i], lineBytes, lineBytes);
-				} finally {
-					handle.Free();
-				}
+			fixed (T** p = newDatas) {
+				FF.av_samples_copy(datas, (IntPtr*)p, 0, 0, sampleCount, format.Channels, format.SampleFormat);
 			}
 		}
 
 		public void PackedCopyTo(IntPtr outBuffer, int bufferBytes) {
 			int lineBytes = format.GetLineBytes(sampleCount);
 			if (!format.IsPlanarFormat) {
-				Buffer.MemoryCopy((void*) cache, (void*) outBuffer, bufferBytes, lineBytes);
+				Buffer.MemoryCopy((void*)cache, (void*)outBuffer, bufferBytes, lineBytes);
 				return;
 			}
 
 			var resampler = AudioResampler.GetPackedResampler(format);
 			fixed (IntPtr* input = datas) {
-				resampler.Resample((IntPtr) input, SampleCount, (IntPtr) (&outBuffer), SampleCount);
+				resampler.Resample((IntPtr)input, SampleCount, (IntPtr)(&outBuffer), SampleCount);
 			}
 		}
 
@@ -116,14 +207,14 @@ namespace Saar.FFmpeg.CSharp {
 		internal override void UpdateFromNative() {
 			int sampleCount = frame->NbSamples;
 			Resize(sampleCount);
-			FF.av_samples_copy(datas, (IntPtr*) frame->ExtendedData, 0, 0, sampleCount, format.Channels, format.SampleFormat);
+			FF.av_samples_copy(datas, (IntPtr*)frame->ExtendedData, 0, 0, sampleCount, format.Channels, format.SampleFormat);
 		}
 
 		protected override void Setup() {
 			frame->NbSamples = sampleCount;
-			frame->Format = (int) format.SampleFormat;
-			frame->ExtendedData = (byte**) &frame->Data;
-			FF.av_samples_fill_arrays(frame->ExtendedData, frame->Linesize, (byte*) cache, format.Channels, sampleCount, format.SampleFormat, 1);
+			frame->Format = (int)format.SampleFormat;
+			frame->ExtendedData = (byte**)&frame->Data;
+			FF.av_samples_fill_arrays(frame->ExtendedData, frame->Linesize, (byte*)cache, format.Channels, sampleCount, format.SampleFormat, 1);
 		}
 
 		public void CopyTo(int srcSampleOffset, int srcSampleCount, AudioFrame dstFrame) {

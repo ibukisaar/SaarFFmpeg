@@ -44,7 +44,7 @@ namespace Saar.FFmpeg.CSharp {
 		/// <returns></returns>
 		public int GetOutSampleCount(int inSampleCount) {
 			long delaySampleCount = FF.swr_get_delay(ctx, Source.SampleRate);
-			return (int) FF.av_rescale_rnd(delaySampleCount + inSampleCount, Destination.SampleRate, Source.SampleRate, AVRounding.Up);
+			return (int)FF.av_rescale_rnd(delaySampleCount + inSampleCount, Destination.SampleRate, Source.SampleRate, AVRounding.Up);
 		}
 
 		public int GetOutBytes(int outSampleCount) {
@@ -60,7 +60,7 @@ namespace Saar.FFmpeg.CSharp {
 		/// <param name="outSampleCount">输出缓冲区能够容纳的采样个数（多声道只计算一个）</param>
 		/// <returns>返回输出的采样个数</returns>
 		public int Resample(IntPtr inDatas, int inSampleCount, IntPtr outDatas, int outSampleCount) {
-			int resultSampleCount = FF.swr_convert(ctx, (byte**) outDatas, outSampleCount, (byte**) inDatas, inSampleCount);
+			int resultSampleCount = FF.swr_convert(ctx, (byte**)outDatas, outSampleCount, (byte**)inDatas, inSampleCount);
 			if (resultSampleCount < 0) throw new FFmpegException(resultSampleCount);
 			return resultSampleCount;
 		}
@@ -74,15 +74,15 @@ namespace Saar.FFmpeg.CSharp {
 		/// <param name="outDatas"></param>
 		/// <param name="outSampleCount"></param>
 		/// <returns></returns>
-		public int Resample(IntPtr[] inDatas, int inSampleCount, IntPtr[] outDatas, int outSampleCount) {
+		public int Resample(ReadOnlySpan<IntPtr> inDatas, int inSampleCount, ReadOnlySpan<IntPtr> outDatas, int outSampleCount) {
 			if (inDatas != null) {
 				fixed (IntPtr* pInDatas = inDatas)
 				fixed (IntPtr* pOutDatas = outDatas) {
-					return Resample((IntPtr) pInDatas, inSampleCount, (IntPtr) pOutDatas, outSampleCount);
+					return Resample((IntPtr)pInDatas, inSampleCount, (IntPtr)pOutDatas, outSampleCount);
 				}
 			} else {
 				fixed (IntPtr* pOutDatas = outDatas) {
-					return Resample(IntPtr.Zero, 0, (IntPtr) pOutDatas, outSampleCount);
+					return Resample(IntPtr.Zero, 0, (IntPtr)pOutDatas, outSampleCount);
 				}
 			}
 		}
@@ -96,11 +96,11 @@ namespace Saar.FFmpeg.CSharp {
 		/// <param name="outArrays"></param>
 		/// <param name="outSampleCount"></param>
 		/// <returns></returns>
-		public int Resample(Array[] inArrays, int inSampleCount, Array[] outArrays, int outSampleCount) {
-			if (inArrays != null && inArrays.Length > 8) throw new ArgumentException("输入数组数量不能大于8", nameof(inArrays));
+		public int Resample(ReadOnlyMemory<Array> inArrays, int inSampleCount, ReadOnlyMemory<Array> outArrays, int outSampleCount) {
+			if (!inArrays.IsEmpty && inArrays.Length > 8) throw new ArgumentException("输入数组数量不能大于8", nameof(inArrays));
 			if (outArrays.Length > 8) throw new ArgumentException("输出数组数量不能大于8", nameof(outArrays));
 
-			if (inArrays != null) {
+			if (!inArrays.IsEmpty) {
 				var inHandles = stackalloc GCHandle[inArrays.Length];
 				var outHandles = stackalloc GCHandle[outArrays.Length];
 				var inputs = stackalloc IntPtr[inArrays.Length];
@@ -108,15 +108,15 @@ namespace Saar.FFmpeg.CSharp {
 
 				try {
 					for (int i = 0; i < inArrays.Length; i++)
-						inHandles[i] = GCHandle.Alloc(inArrays[i], GCHandleType.Pinned);
+						inHandles[i] = GCHandle.Alloc(inArrays.Span[i], GCHandleType.Pinned);
 					for (int i = 0; i < outArrays.Length; i++)
-						outHandles[i] = GCHandle.Alloc(outArrays[i], GCHandleType.Pinned);
+						outHandles[i] = GCHandle.Alloc(outArrays.Span[i], GCHandleType.Pinned);
 					for (int i = 0; i < inArrays.Length; i++)
 						inputs[i] = inHandles[i].AddrOfPinnedObject();
 					for (int i = 0; i < outArrays.Length; i++)
 						outputs[i] = outHandles[i].AddrOfPinnedObject();
 
-					return Resample((IntPtr) inputs, inSampleCount, (IntPtr) outputs, outSampleCount);
+					return Resample((IntPtr)inputs, inSampleCount, (IntPtr)outputs, outSampleCount);
 				} finally {
 					for (int i = 0; i < inArrays.Length; i++)
 						if (inHandles[i].IsAllocated) inHandles[i].Free();
@@ -129,11 +129,11 @@ namespace Saar.FFmpeg.CSharp {
 
 				try {
 					for (int i = 0; i < outArrays.Length; i++)
-						outHandles[i] = GCHandle.Alloc(outArrays[i], GCHandleType.Pinned);
+						outHandles[i] = GCHandle.Alloc(outArrays.Span[i], GCHandleType.Pinned);
 					for (int i = 0; i < outArrays.Length; i++)
 						outputs[i] = outHandles[i].AddrOfPinnedObject();
 
-					return Resample(IntPtr.Zero, 0, (IntPtr) outputs, outSampleCount);
+					return Resample(IntPtr.Zero, 0, (IntPtr)outputs, outSampleCount);
 				} finally {
 					for (int i = 0; i < outArrays.Length; i++)
 						if (outHandles[i].IsAllocated) outHandles[i].Free();
@@ -148,7 +148,7 @@ namespace Saar.FFmpeg.CSharp {
 			frame.format = Destination;
 			frame.Resize(outSamples);
 			fixed (IntPtr* output = frame.datas) {
-				outSamples = Resample((IntPtr) frame.frame->ExtendedData, inSamples, (IntPtr) output, outSamples);
+				outSamples = Resample((IntPtr)frame.frame->ExtendedData, inSamples, (IntPtr)output, outSamples);
 			}
 			frame.sampleCount = outSamples;
 		}
@@ -187,7 +187,7 @@ namespace Saar.FFmpeg.CSharp {
 			packedCache.Resize(bytes);
 			var data = packedCache.data;
 			fixed (IntPtr* input = inOutFrame.datas) {
-				resampler.Resample((IntPtr) input, samples, (IntPtr) (&data), samples);
+				resampler.Resample((IntPtr)input, samples, (IntPtr)(&data), samples);
 			}
 			inOutFrame.format = resampler.Destination;
 			inOutFrame.Update(samples, packedCache.data);
@@ -201,19 +201,19 @@ namespace Saar.FFmpeg.CSharp {
 			int bytes = resampler.GetOutBytes(samples);
 			packedCache.Resize(bytes);
 			var data = packedCache.data;
-			Buffer.MemoryCopy((void*) inOutFrame.datas[0], (void*) data, bytes, bytes);
+			Buffer.MemoryCopy((void*)inOutFrame.datas[0], (void*)data, bytes, bytes);
 			int lineBytes = resampler.Destination.GetLineBytes(samples);
 			inOutFrame.format = resampler.Destination;
 			inOutFrame.Resize(samples);
 			fixed (IntPtr* input = inOutFrame.datas) {
-				resampler.Resample((IntPtr) (&data), samples, (IntPtr) input, samples);
+				resampler.Resample((IntPtr)(&data), samples, (IntPtr)input, samples);
 			}
 			inOutFrame.sampleCount = samples;
 		}
 
 		public void Reset() {
 			int result = FF.swr_init(ctx);
-			if (result != 0) throw new CSharp.FFmpegException(result);
+			if (result != 0) throw new FFmpegException(result);
 		}
 
 		protected override void Dispose(bool disposing) {

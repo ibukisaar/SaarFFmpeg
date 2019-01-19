@@ -30,7 +30,7 @@ namespace SaarFFmpeg.EncodeVideo {
 								float value = (float) Math.Sin(440d / 44100 * Math.PI * 2 * (i + offset));
 								left[i] = value;
 							}
-							aframe.Update(samples, left, left);
+							aframe.Update<float>(samples, left, left);
 							return aframe;
 						} else {
 							Console.WriteLine($"{encoder.FullName} ---> ({encoder.InputFrames}) {encoder.InputTimestamp}");

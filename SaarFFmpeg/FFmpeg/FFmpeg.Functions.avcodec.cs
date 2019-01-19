@@ -32,6 +32,12 @@ namespace Saar.FFmpeg.Internal
         public extern static int av_bsf_alloc(AVBitStreamFilter* filter, AVBSFContext** ctx);
         
         /// <summary>
+        /// Reset the internal bitstream filter state / flush internal buffers.
+        /// </summary>
+        [DllImport(Dll_AVCodec, CallingConvention = Convention)]
+        public extern static void av_bsf_flush(AVBSFContext* ctx);
+        
+        /// <summary>
         /// Free a bitstream filter context and everything associated with it; write NULL into the supplied pointer.
         /// </summary>
         [DllImport(Dll_AVCodec, CallingConvention = Convention)]
@@ -366,20 +372,13 @@ namespace Saar.FFmpeg.Internal
         /// </summary>
         /// <param name="pkt">packet to be freed. The pointer will be set to NULL.</param>
         [DllImport(Dll_AVCodec, CallingConvention = Convention)]
-        public extern static void av_packet_free(AVPacket** pkt);
-
-		/// <summary>
-		/// Free the packet, if the packet is reference counted, it will be unreferenced first.
-		/// </summary>
-		/// <param name="pkt">packet to be freed. The pointer will be set to NULL.</param>
-		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
-		public extern static void av_packet_free(ref AVPacket* pkt);
-
-		/// <summary>
-		/// Convenience function to free all the side data stored. All the other fields stay untouched.
-		/// </summary>
-		/// <param name="pkt">packet</param>
-		[DllImport(Dll_AVCodec, CallingConvention = Convention)]
+        public extern static void av_packet_free(ref AVPacket* pkt);
+        
+        /// <summary>
+        /// Convenience function to free all the side data stored. All the other fields stay untouched.
+        /// </summary>
+        /// <param name="pkt">packet</param>
+        [DllImport(Dll_AVCodec, CallingConvention = Convention)]
         public extern static void av_packet_free_side_data(AVPacket* pkt);
         
         /// <summary>

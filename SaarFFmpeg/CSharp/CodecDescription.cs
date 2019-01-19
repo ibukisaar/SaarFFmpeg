@@ -9,20 +9,20 @@ using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public struct CodecDescription {
-		public AVCodec* Codec;
+		public AVCodec* Codec { get; }
 
-		public CodecDescription(AVCodec* codec) => this.Codec = codec;
+		public CodecDescription(AVCodec* codec) => Codec = codec;
 
-		public string Name => Marshal.PtrToStringAnsi((IntPtr) Codec->Name);
+		public string Name => Marshal.PtrToStringAnsi((IntPtr)Codec->Name);
 
-		public string FullName => Marshal.PtrToStringAnsi((IntPtr) Codec->LongName);
+		public string FullName => Marshal.PtrToStringAnsi((IntPtr)Codec->LongName);
 
 		public string Dir {
 			get {
 				return
 					FF.av_codec_is_decoder(Codec) != 0 ? "[D]" :
 					FF.av_codec_is_encoder(Codec) != 0 ? "[E]" :
-					"[]";
+					"[?]";
 			}
 		}
 

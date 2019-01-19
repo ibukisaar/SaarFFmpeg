@@ -1,10 +1,10 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
+using Saar.FFmpeg.Delegates;
+using Saar.FFmpeg.Internal;
 using Saar.FFmpeg.Structs;
 using Saar.FFmpeg.Support;
-using Saar.FFmpeg.Internal;
-using Saar.FFmpeg.Delegates;
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Saar.FFmpeg.CSharp {
 	public enum AVActiveFormatDescription : int {
@@ -87,7 +87,6 @@ namespace Saar.FFmpeg.CSharp {
 		Nb = 9,
 	}
 
-	[Flags]
 	public enum AVBuffersinkFlag : int {
 		NoRequest = 0x2,
 		Peek = 0x1,
@@ -450,6 +449,7 @@ namespace Saar.FFmpeg.CSharp {
 		Dxv = 189,
 		Screenpresso = 190,
 		Rscc = 191,
+		Avs2 = 192,
 		Y41p = 32768,
 		Avrp = 32769,
 		_012V = 32770,
@@ -486,6 +486,11 @@ namespace Saar.FFmpeg.CSharp {
 		Svg = 32801,
 		Gdv = 32802,
 		Fits = 32803,
+		Imm4 = 32804,
+		Prosumer = 32805,
+		Mwsc = 32806,
+		Wcmv = 32807,
+		Rasc = 32808,
 		/// <summary>
 		/// A dummy id pointing at the start of audio codecs
 		/// </summary>
@@ -525,6 +530,7 @@ namespace Saar.FFmpeg.CSharp {
 		PcmS64be = 67585,
 		PcmF16le = 67586,
 		PcmF24le = 67587,
+		PcmVidc = 67588,
 		AdpcmImaQt = 69632,
 		AdpcmImaWav = 69633,
 		AdpcmImaDk3 = 69634,
@@ -670,6 +676,7 @@ namespace Saar.FFmpeg.CSharp {
 		Aptx = 88081,
 		AptxHd = 88082,
 		Sbc = 88083,
+		Atrac9 = 88084,
 		/// <summary>
 		/// A dummy ID pointing at the start of subtitle codecs.
 		/// </summary>
@@ -701,6 +708,7 @@ namespace Saar.FFmpeg.CSharp {
 		Pjs = 96268,
 		Ass = 96269,
 		HdmvTextSubtitle = 96270,
+		Ttml = 96271,
 		/// <summary>
 		/// A dummy ID pointing at the start of various fake codecs.
 		/// </summary>
@@ -1106,6 +1114,7 @@ namespace Saar.FFmpeg.CSharp {
 	public enum AVDisposition : int {
 		VisualImpaired = 0x100,
 		TimedThumbnails = 0x800,
+		StillImage = 0x100000,
 		Original = 0x4,
 		Metadata = 0x40000,
 		Lyrics = 0x10,
@@ -1340,6 +1349,10 @@ namespace Saar.FFmpeg.CSharp {
 		/// Raw QP table data. Its format is described by AV_FRAME_DATA_QP_TABLE_PROPERTIES. Use av_frame_set_qp_table() and av_frame_get_qp_table() to access this instead.
 		/// </summary>
 		QpTableData = 17,
+		/// <summary>
+		/// Timecode which conforms to SMPTE ST 12-1. The data is an array of 4 uint32_t where the first uint32_t describes how many (1-3) of the other timecodes are used. The timecode format is described in the av_timecode_get_smpte_from_framenum() function in libavutil/timecode.c.
+		/// </summary>
+		S12mTimecode = 18,
 	}
 
 	public enum AVHave : long {
@@ -1517,15 +1530,16 @@ namespace Saar.FFmpeg.CSharp {
 	}
 
 	public enum AVOpt : int {
-		FlagSubtitleParam = 0x20,
 		FlagReadonly = 0x80,
 		FlagFilteringParam = 0x1 << 0x10,
 		FlagExport = 0x40,
 		FlagEncodingParam = 0x1,
+		FlagDeprecated = 0x1 << 0x11,
 		FlagDecodingParam = 0x2,
 		FlagBsfParam = 0x1 << 0x8,
 		FlagAudioParam = 0x8,
 		AllowNull = 0x1 << 0x2,
+		FlagSubtitleParam = 0x20,
 		FlagVideoParam = 0x10,
 		MultiComponentRange = 0x1 << 0xc,
 		SearchChildren = 0x1 << 0x0,
@@ -1677,9 +1691,13 @@ namespace Saar.FFmpeg.CSharp {
 		/// </summary>
 		EncryptionInfo = 25,
 		/// <summary>
+		/// Active Format Description data consisting of a single byte as specified in ETSI TS 101 154 using AVActiveFormatDescription enum.
+		/// </summary>
+		Afd = 26,
+		/// <summary>
 		/// The number of side data types. This is not part of the public API/ABI in the sense that it may change when new side data types are added. This must stay the last enum value. If its value becomes huge, some code using it needs to be updated as it assumes it to be smaller than other limits.
 		/// </summary>
-		Nb = 26,
+		Nb = 27,
 	}
 
 	public enum AVPalette : long {
@@ -2486,12 +2504,27 @@ namespace Saar.FFmpeg.CSharp {
 		/// </summary>
 		Opencl = 182,
 		/// <summary>
+		/// Y , 14bpp, big-endian
+		/// </summary>
+		Gray14be = 183,
+		/// <summary>
+		/// Y , 14bpp, little-endian
+		/// </summary>
+		Gray14le = 184,
+		/// <summary>
+		/// IEEE-754 single precision Y, 32bpp, big-endian
+		/// </summary>
+		Grayf32be = 185,
+		/// <summary>
+		/// IEEE-754 single precision Y, 32bpp, little-endian
+		/// </summary>
+		Grayf32le = 186,
+		/// <summary>
 		/// number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 		/// </summary>
-		Nb = 183,
+		Nb = 187,
 	}
 
-	[Flags]
 	public enum AVPixFmtFlag : int {
 		Alpha = 0x1 << 0x7,
 		Bayer = 0x1 << 0x8,
@@ -2505,7 +2538,6 @@ namespace Saar.FFmpeg.CSharp {
 		Rgb = 0x1 << 0x5,
 	}
 
-	[Flags]
 	public enum AVPktFlag : int {
 		Corrupt = 0x2,
 		Discard = 0x4,
@@ -2584,7 +2616,6 @@ namespace Saar.FFmpeg.CSharp {
 		Size = 0x10000,
 	}
 
-	[Flags]
 	public enum AVSeekFlag : int {
 		Frame = 0x8,
 		Byte = 0x2,
@@ -2785,7 +2816,6 @@ namespace Saar.FFmpeg.CSharp {
 		Xvid = 0xe,
 	}
 
-	[Flags]
 	public enum FFLoss : int {
 		Alpha = 0x8,
 		Chroma = 0x20,
@@ -2918,7 +2948,6 @@ namespace Saar.FFmpeg.CSharp {
 		ReorderDelay = 0x10,
 	}
 
-	[Flags]
 	public enum ParserFlag : int {
 		CompleteFrames = 0x1,
 		FetchedOffset = 0x4,
@@ -2926,7 +2955,6 @@ namespace Saar.FFmpeg.CSharp {
 		UseCodecTs = 0x1000,
 	}
 
-	[Flags]
 	public enum SliceFlag : int {
 		AllowField = 0x2,
 		AllowPlane = 0x4,
@@ -3002,6 +3030,14 @@ namespace Saar.FFmpeg.CSharp {
 		Bicublin = 0x40,
 		Bilinear = 0x2,
 		Bitexact = 0x80000,
+		CsBt2020 = 0x9,
+		CsDefault = 0x5,
+		CsFcc = 0x4,
+		CsItu601 = 0x5,
+		CsItu624 = 0x5,
+		CsItu709 = 0x1,
+		CsSmpte170m = 0x5,
+		CsSmpte240m = 0x7,
 		DirectBgr = 0x8000,
 		ErrorDiffusion = 0x800000,
 		FastBilinear = 0x1,
@@ -3009,7 +3045,6 @@ namespace Saar.FFmpeg.CSharp {
 		FullChrHInt = 0x2000,
 		Gauss = 0x80,
 		Lanczos = 0x200,
-		//MaxReduceCutoff = 0.002D,
 		ParamDefault = 0x1e240,
 		Point = 0x10,
 		PrintInfo = 0x1000,
@@ -3020,14 +3055,4 @@ namespace Saar.FFmpeg.CSharp {
 		X = 0x8,
 	}
 
-	public enum SwsCs : int {
-		Bt2020 = 0x9,
-		Default = 0x5,
-		Fcc = 0x4,
-		Itu601 = 0x5,
-		Itu624 = 0x5,
-		Itu709 = 0x1,
-		Smpte170m = 0x5,
-		Smpte240m = 0x7,
-	}
 }
