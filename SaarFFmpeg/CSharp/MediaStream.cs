@@ -1,4 +1,5 @@
 ﻿using Saar.FFmpeg.CSharp;
+using Saar.FFmpeg.Delegates;
 using Saar.FFmpeg.Structs;
 using System;
 using System.Collections.Generic;
@@ -7,24 +8,24 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Saar.FFmpeg.Delegates;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
 	unsafe public abstract class MediaStream : DisposableObject {
 		private const int bufferLength = 4096;
 
-		protected AVIOContext* ioContext;
-		internal AVFormatContext* formatContext;
-		private byte[] tempBuffer = new byte[bufferLength];
-		private byte* buffer;
+#if !NETCORE
+		private readonly byte[] tempBuffer = new byte[bufferLength];
+#endif
+		internal protected AVIOContext* ioContext;
+		internal protected AVFormatContext* formatContext;
 		protected Stream baseStream;
 
-		private avio_alloc_context_read_packet procRead = null;
-		private avio_alloc_context_write_packet procWrite = null;
-		private avio_alloc_context_seek procSeek = null;
+		private readonly avio_alloc_context_read_packet procRead = null;
+		private readonly avio_alloc_context_write_packet procWrite = null;
+		private readonly avio_alloc_context_seek procSeek = null;
 
-		public int StreamCount => (int) formatContext->NbStreams;
+		public int StreamCount => (int)formatContext->NbStreams;
 
 		public MediaStream(Stream baseStream, bool write = false, AVOutputFormat* outputFormat = null) {
 			if (write && !baseStream.CanWrite)
@@ -34,14 +35,13 @@ namespace Saar.FFmpeg.CSharp {
 			if (write && baseStream.CanWrite) procWrite = Write;
 			if (baseStream.CanSeek) procSeek = Seek;
 			this.baseStream = baseStream;
-			
+
 			try {
 				formatContext = FF.avformat_alloc_context();
-				buffer = (byte*) FF.av_malloc((IntPtr) bufferLength);
+				var buffer = (byte*)FF.av_malloc((IntPtr)bufferLength);
 				ioContext = FF.avio_alloc_context(buffer, bufferLength, write, null, procRead, procWrite, procSeek);
 				if (write) {
 					formatContext->Oformat = outputFormat;
-					formatContext->Flags |= AVFmtFlag.CustomIO;
 				}
 				formatContext->Pb = ioContext;
 			} catch {
@@ -69,14 +69,25 @@ namespace Saar.FFmpeg.CSharp {
 
 		[AllowReversePInvokeCalls]
 		private int Read(void* opaque, byte* buffer, int bufferLength) {
-			bufferLength = Math.Min(bufferLength, tempBuffer.Length);
+#if !NETCORE
+			bufferLength = Math.Min(bufferLength, MediaStream.bufferLength);
+			int length = baseStream.Read(tempBuffer, 0, bufferLength);
+			Marshal.Copy(tempBuffer, 0, (IntPtr)buffer, length);
+			return length;
+#else
 			return baseStream.Read(new Span<byte>(buffer, bufferLength));
+#endif
 		}
 
 		[AllowReversePInvokeCalls]
 		private int Write(void* opaque, byte* buffer, int bufferLength) {
+#if !NETCORE
 			bufferLength = Math.Min(bufferLength, tempBuffer.Length);
+			Marshal.Copy((IntPtr)buffer, tempBuffer, 0, bufferLength);
+			baseStream.Write(tempBuffer, 0, bufferLength);
+#else
 			baseStream.Write(new ReadOnlySpan<byte>(buffer, bufferLength));
+#endif
 			return bufferLength;
 		}
 
@@ -84,8 +95,8 @@ namespace Saar.FFmpeg.CSharp {
 		private long Seek(void* opaque, long offset, AVSeek whence) {
 			if (whence == AVSeek.Size) {
 				return baseStream.Length;
-			} else if ((int) whence < 3) {
-				return baseStream.Seek(offset, (SeekOrigin) whence);
+			} else if ((int)whence < 3) {
+				return baseStream.Seek(offset, (SeekOrigin)whence);
 			} else {
 				return -1;
 			}

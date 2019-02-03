@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Saar.FFmpeg.CSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Saar.FFmpeg.CSharp;
 
 namespace Saar.FFmpeg.CSharp {
 	public sealed class AudioFormat {
@@ -57,9 +57,8 @@ namespace Saar.FFmpeg.CSharp {
 		}
 
 		public override bool Equals(object obj) {
-			AudioFormat other = obj as AudioFormat;
-			if (other is null) return false;
-			return SampleRate == other.SampleRate
+			return obj is AudioFormat other
+				&& SampleRate == other.SampleRate
 				&& ChannelLayout == other.ChannelLayout
 				&& SampleFormat == other.SampleFormat;
 		}

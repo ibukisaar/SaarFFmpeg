@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaarFFmpeg", "SaarFFmpeg\SaarFFmpeg.csproj", "{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaarFFmpeg", "SaarFFmpeg\SaarFFmpeg.netcore.csproj", "{AB4CABA1-06E4-4A32-8A15-1FBE20ED5BC6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7841373E-43F6-46BA-B6AD-7356308765A2}"
 EndProject

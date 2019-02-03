@@ -29,13 +29,11 @@ namespace Saar.FFmpeg.Internal {
 
 		const CallingConvention Convention = CallingConvention.Cdecl;
 
-		public static string Version { get; }
+		public static string Version => Marshal.PtrToStringAnsi(av_version_info());
 
 		static FFmpeg() {
 			av_register_all();
-			avcodec_register_all();
 
-			Version = Marshal.PtrToStringAnsi(av_version_info());
 			System.Diagnostics.Debug.WriteLine("FFmpeg Version: " + Version);
 		}
 	}

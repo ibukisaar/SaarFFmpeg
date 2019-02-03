@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Saar.FFmpeg.Structs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Saar.FFmpeg.Structs;
 using FF = Saar.FFmpeg.Internal.FFmpeg;
 
 namespace Saar.FFmpeg.CSharp {
@@ -50,6 +50,7 @@ namespace Saar.FFmpeg.CSharp {
 			if (!(outFrame is VideoFrame videoFrame)) {
 				throw new ArgumentException($"{nameof(outFrame)}必须是{nameof(VideoFrame)}类型且不为null。");
 			}
+			if (packet == null) return false;
 
 			int gotPicture = 0;
 			FF.avcodec_decode_video2(codecContext, outFrame.frame, &gotPicture, packet.packet).CheckFFmpegCode("视频解码发生错误");

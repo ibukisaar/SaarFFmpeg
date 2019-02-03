@@ -96,6 +96,9 @@ namespace Saar.FFmpeg.Structs {
 		/// Callback to return the supported/allowed ranges. available since version (52.12)
 		/// </summary>
 		public AVClass_QueryRanges_Func QueryRanges;
+
+		public override string ToString()
+			=> "ClassName = " + Marshal.PtrToStringAnsi((IntPtr)ClassName);
 	}
 
 	/// <summary>
@@ -1420,7 +1423,7 @@ namespace Saar.FFmpeg.Structs {
 		/// <summary>
 		/// Flags signalling stream properties. A combination of AVFMTCTX_*. Set by libavformat.
 		/// </summary>
-		public int CtxFlags;
+		public AVFmtctx CtxFlags;
 		/// <summary>
 		/// Number of elements in AVFormatContext.streams.
 		/// </summary>
@@ -1432,7 +1435,7 @@ namespace Saar.FFmpeg.Structs {
 		/// <summary>
 		/// input or output filename
 		/// </summary>
-		public byte_array1024 Filename;
+		public fixed byte Filename[1024];
 		/// <summary>
 		/// input or output URL. Unlike the old filename field, this field has no length restriction.
 		/// </summary>
@@ -1682,7 +1685,7 @@ namespace Saar.FFmpeg.Structs {
 	/// @{
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe struct AVOutputFormat {
+	public unsafe partial struct AVOutputFormat {
 		public byte* Name;
 		/// <summary>
 		/// Descriptive name for the format, meant to be more human-readable than name. You should use the NULL_IF_CONFIG_SMALL() macro to define it.

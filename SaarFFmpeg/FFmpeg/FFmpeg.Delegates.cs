@@ -22,12 +22,12 @@ namespace Saar.FFmpeg.Delegates
     public unsafe delegate void av_fifo_generic_peek_at_func(void* p0, void* p1, int p2);
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate string AVClass_ItemName(void* ctx);
+    public unsafe delegate IntPtr AVClass_ItemName(void* ctx);
     public unsafe struct AVClass_ItemName_Func
     {
         public IntPtr Pointer;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string Invoke(void* ctx) => Marshal.GetDelegateForFunctionPointer<AVClass_ItemName>(Pointer)(ctx);
+        public IntPtr Invoke(void* ctx) => Marshal.GetDelegateForFunctionPointer<AVClass_ItemName>(Pointer)(ctx);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator AVClass_ItemName_Func(AVClass_ItemName func) => new AVClass_ItemName_Func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
     }
